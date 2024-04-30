@@ -14,3 +14,4 @@
 -  Consommer les données en temps réel : classification polarité ou sentiment pour voir qui est le plus populaire
     * dataset : https://huggingface.co/datasets/fhamborg/news_sentiment_newsmtsc
 	* dataset : SEN - Sentiment analysis of Entities in News headlines (accès demandé)
+ * test
