@@ -162,3 +162,5 @@ cython_debug/
 *.cfg
 *.json
 *.idea/
+*.txt
+*.html

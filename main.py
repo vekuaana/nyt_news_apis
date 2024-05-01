@@ -14,7 +14,7 @@ BASE_URL_NEWSWIRE: str = BASE_URL + "news/v3/content"
 BASE_URL_BOOKS: str = BASE_URL + "books/v3"
 BASE_URL_KW: str = BASE_URL + "search/v2/articlesearch.json"
 BASE_URL_MOST_POPULAR: str = BASE_URL + "mostpopular/v2/"
-BASE_URL_ARCHIVE_METADATA: str = BASE_URL + "archive/v1/"
+BASE_URL_ARCHIVE: str = BASE_URL + "archive/v1/"
 
 clean_out_file_str = re.compile(r'[:.\s]')
 
@@ -53,6 +53,44 @@ class NYTConnector:
 
     def request_books(self):
         params = {"api-key": {self.API_KEY}}
+        # TODO: complete function
+
+    def request_most_popular(self):
+        params = {"api-key": {self.API_KEY}}
+        url = BASE_URL_MOST_POPULAR + 'viewed/30.json'
+        now = datetime.datetime.now()
+        _30_days_before = now - datetime.timedelta(days=30)
+        output_file_name = 'data_most_popular_{0}_{1}.json'.format(clean_out_file_str.sub('', str(_30_days_before)), clean_out_file_str.sub('', str(now)))
+        r = requests.get(url, params=params)
+        response = r.json()
+        num_results = response['num_results']
+        print("Number of results : ", num_results)
+        results = response['results']
+        if results:
+            with open(output_file_name, 'a', encoding='utf-8') as f:
+                json.dump(results, f, ensure_ascii=False, indent=4)
+        # TODO: complete function
+
+    def request_archive(self, month: str, year: str):
+        """
+        Requests the data from Archive API
+        :param month: int, month in numbers
+        :param year: int, year in yyyy format
+        :return:
+        """
+        params = {"api-key": {self.API_KEY}}
+        url = BASE_URL_ARCHIVE + '/{0}/{1}.json'.format(year, month)
+
+        output_file_name = 'data_archive_{0}_{1}.json'.format(month, year)
+        r = requests.get(url, params=params)
+        response = r.json()['response']
+        docs = response['docs']
+        if docs:
+            with open(output_file_name, 'a', encoding='utf-8') as f:
+                json.dump(docs, f, ensure_ascii=False, indent=4)
+
+        hits = response['meta']['hits']
+        print("Number of hits : ", hits)
         # TODO: complete function
 
     def request_by_keyword(self, kw: str, out_f: str, b_date: str = None, e_date: str = None):
@@ -102,5 +140,7 @@ class NYTConnector:
 
 if __name__ == "__main__":
     nyt_c = NYTConnector()
-    nyt_c.request_times_newswire('all', 'u.s.')
-    # nyt_c.request_by_keyword('Presidential Election of 2024', 'data_us_election', '20240301', '20240331')
+    # nyt_c.request_times_newswire('all', 'u.s.')
+    # nyt_c.request_archive('9', '1900')
+    nyt_c.request_most_popular()
+    # nyt_c.request_by_keyword('Presidential Election of 2024', 'data_us_election', '190000901', '19000930')
