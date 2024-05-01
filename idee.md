@@ -14,4 +14,15 @@
 -  Consommer les données en temps réel : classification polarité ou sentiment pour voir qui est le plus populaire
     * dataset : https://huggingface.co/datasets/fhamborg/news_sentiment_newsmtsc
 	* dataset : SEN - Sentiment analysis of Entities in News headlines (accès demandé)
- * test
+
+UPDATE 01/05/2024
+Trame : élections américaines de 2024
+
+* Classification en polarité pour voir qui est le plus populaire à l’instant T
+    * données à prédire : API Times Newswire  
+    * dataset : SEN - Sentiment analysis of Entities in News headlines https://zenodo.org/records/5211931 (accès autorisé)
+    * Note : le dataset match bien nos données : un headline, une entité (ex: Trump), une polarité
+      
+* Prédiction de la popularité des articles dès leur publication sur le site.
+    * données à prédire : API Times Newswire
+    * dataset : extraction et jointure des données de Archive API et Most Popular API
