@@ -53,7 +53,7 @@ class NYTConnector:
 
         # Generate an output file name for saving the data
         now = datetime.datetime.now()  # Get the current time
-        section_clean = CLEAN_FILE_NAME_REGEX.sub('', section)  # Clean section name
+        section_clean = CLEAN_FILE_NAME_REGEX.sub('', section)
         output_file_name = f"data_news_wire_{section_clean}_{now.strftime('%Y%m%d%H%M%S')}.json"
 
         # Send the HTTP GET request to the API and get the JSON response
@@ -138,7 +138,7 @@ class NYTConnector:
         response = requests.get(url, params=params).json()
         docs = response['response'].get('docs', [])
 
-        # If docs are present, save them to the output file
+        # If docs, save them to the output file
         if docs:
             with open(output_file_name, 'w', encoding='utf-8') as f:
                 json.dump(docs, f, ensure_ascii=False, indent=4)
@@ -152,8 +152,8 @@ class NYTConnector:
         Args:
             keyword (str): The search keyword.
             output_file (str): The base name for the output file.
-            start_date (str, optional): The start date for the search in 'yyyyMMdd' format.
-            end_date (str, optional): The end date for the search in 'yyyyMMdd' format.
+            start_date (str, optional): The start date for the search in 'yyyymmdd' format.
+            end_date (str, optional): The end date for the search in 'yyyymmdd' format.
 
         Returns:
             list: A list of NYT articles that match the keyword search.
@@ -185,11 +185,10 @@ class NYTConnector:
                 r = requests.get(BASE_URL_KW, params=search_params)
                 response = r.json()['response']
 
-                # Get the documents from the current page
+                # Get docs from the current page
                 docs = response.get('docs', [])
                 list_docs.extend(docs)
 
-                # Write each document to the output file
                 for doc in docs:
                     json.dump(doc, f, ensure_ascii=False, indent=4)
 
