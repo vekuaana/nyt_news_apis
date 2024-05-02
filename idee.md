@@ -23,6 +23,10 @@ Trame : élections américaines de 2024
     * dataset : SEN - Sentiment analysis of Entities in News headlines https://zenodo.org/records/5211931 (accès autorisé)
     * Note : le dataset match bien nos données : un headline, une entité (ex: Trump), une polarité
       
-* Prédiction de la popularité des articles dès leur publication sur le site.
+* /!\ pas  d'historique = semble compliqué à réaliser - Prédiction de la popularité des articles dès leur publication sur le site.
     * données à prédire : API Times Newswire
     * dataset : extraction et jointure des données de Archive API et Most Popular API
+
+* Détection du sarcasme dans les news headlines
+    * données à predire : API Times Newswire
+    * dataset : https://www.kaggle.com/datasets/rmisra/news-headlines-dataset-for-sarcasm-detection 
