@@ -72,8 +72,6 @@ class NYTConnector:
 
     def request_books(self):
         """
-        Placeholder for a function to fetch book data from the NYT API.
-
         TODO: complete function
         """
         params = {"api-key": self.API_KEY}
