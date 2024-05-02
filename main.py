@@ -70,15 +70,6 @@ class NYTConnector:
 
         return results
 
-    def request_books(self):
-        """
-        Placeholder for a function to fetch book data from the NYT API.
-
-        TODO: complete function
-        """
-        params = {"api-key": self.API_KEY}
-        pass
-
     def request_most_popular(self, period_of_time: int):
         """
         Fetches the most popular NYT articles for a given time period.
@@ -197,6 +188,58 @@ class NYTConnector:
 
         return list_docs
 
+    def request_bestsellers_list(self):
+        """
+        Fetches the name and informations of all the NYT Best Sellers lists. 
+
+        Returns:
+            A dict containing all NYT Best Sellers lists and their informations.
+        """
+        params = {"api-key": self.API_KEY}
+        # Build the endpoint URL for fetching book lists
+        url = f"{BASE_URL_BOOKS}/lists/names.json"
+
+        # Generate an output file name
+        output_file_name = f"data_all_NYT_best_sellers_lists_.json"
+
+        # Send the HTTP GET request and get the JSON response
+        response = requests.get(url, params=params).json()
+
+        # If response, save them to the output file
+        if response:
+            with open(output_file_name, 'w', encoding='utf-8') as f:
+                json.dump(response, f, ensure_ascii=False, indent=4)
+
+        return response
+    
+    def request_weelkly_nonfiction_bestsellers_books(self, week: str, month: str, year: str):
+        """
+        Fetches a list of the NYT Best Sellers Nonfictional Books for a given week, month and year.
+
+        Args:
+            week (str): The week for which to fetch the list.
+            month (str): The month for which to fetch the list.
+            year (str): The year for which to fetch the list.
+
+        Returns:
+            dict: A list of all NYT Best Sellers Nonfictional List for a given week, month and year.
+        """
+        params = {"api-key": self.API_KEY}
+        # Build the endpoint URL for fetching the book list. 
+        url = f"{BASE_URL_BOOKS}/lists/{year}-{month}-{week}/combined-print-and-e-book-nonfiction.json"
+
+        # Generate an output file name based on the week, month and year
+        output_file_name = f"data_nonfiction_bestsellers_{year}-{month}-{week}.json"
+
+        # Send the HTTP GET request and get the JSON response
+        response = requests.get(url, params=params).json()
+
+        # If response, save them to the output file
+        if response:
+            with open(output_file_name, 'w', encoding='utf-8') as f:
+                json.dump(response, f, ensure_ascii=False, indent=4)
+
+        return response
 
 if __name__ == "__main__":
     nyt_c = NYTConnector()
