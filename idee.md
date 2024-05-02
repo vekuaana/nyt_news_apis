@@ -38,3 +38,21 @@ Trame : élections américaines de 2024
     * note : voir si c'est possible car el dataset est sur les articles complets. Mais l'analyse des cadres a déjà été réalisées juste sur des entêtes  
 : Detecting Frames in News Headlines and Its Application to Analyzing News Framing Trends Surrounding U.S. Gun Violence
     * BONUS : détection de la polarité dans les archives
+
+UPDATE 02/05/2024
+Trame : élections américaines de 2024
+
+* Classification en polarité pour voir qui est le plus populaire à l’instant T
+    * données à prédire : API Times Newswire + API Archive
+    * dataset : SEN - Sentiment analysis of Entities in News headlines https://zenodo.org/records/5211931 (accès autorisé)
+    * Note : le dataset match bien nos données : un headline, une entité (ex: Trump), une polarité
+    * BONUS : détection de la polarité dans les archives
+
+* Recommandation de livres sur les élections yyyy ?
+    * données à prédire : API Books (+ webscrapping Amazon)
+    * dataset : dataset de classification en catégorie (à trouver)
+
+* Recommandation de livres en fonction d'un article lu
+    * données à prédire : API Books (+ webscrapping Amazon)
+    * dataset : dataset de matching de livres (à trouver)
+      
