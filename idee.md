@@ -22,6 +22,7 @@ Trame : élections américaines de 2024
     * données à prédire : API Times Newswire  
     * dataset : SEN - Sentiment analysis of Entities in News headlines https://zenodo.org/records/5211931 (accès autorisé)
     * Note : le dataset match bien nos données : un headline, une entité (ex: Trump), une polarité
+    * BONUS : détection de la polarité dans les archives
       
 * /!\ pas  d'historique = semble compliqué à réaliser - Prédiction de la popularité des articles dès leur publication sur le site.
     * données à prédire : API Times Newswire
@@ -29,4 +30,29 @@ Trame : élections américaines de 2024
 
 * Détection du sarcasme dans les news headlines
     * données à predire : API Times Newswire
-    * dataset : https://www.kaggle.com/datasets/rmisra/news-headlines-dataset-for-sarcasm-detection 
+    * dataset : https://www.kaggle.com/datasets/rmisra/news-headlines-dataset-for-sarcasm-detection
+      
+* BONUS : Détection des cadres dans les titres ou titre + résumé + paragraphe principal
+    * données à prédire : API Times NewsWire + join API Search pour récupérer lead paragraph
+    * dataset : https://github.com/zgjiangtoby/SemEval2023_QUST/tree/main/original_data_v4/data/en
+    * note : voir si c'est possible car el dataset est sur les articles complets. Mais l'analyse des cadres a déjà été réalisées juste sur des entêtes  
+: Detecting Frames in News Headlines and Its Application to Analyzing News Framing Trends Surrounding U.S. Gun Violence
+    * BONUS : détection de la polarité dans les archives
+
+UPDATE 02/05/2024
+Trame : élections américaines de 2024
+
+* Classification en polarité pour voir qui est le plus populaire à l’instant T
+    * données à prédire : API Times Newswire + API Archive
+    * dataset : SEN - Sentiment analysis of Entities in News headlines https://zenodo.org/records/5211931 (accès autorisé)
+    * Note : le dataset match bien nos données : un headline, une entité (ex: Trump), une polarité
+    * BONUS : détection de la polarité dans les archives
+
+* Recommandation de livres sur les élections yyyy ?
+    * données à prédire : API Books (+ webscrapping Amazon)
+    * dataset : dataset de classification en catégorie (à trouver)
+
+* Recommandation de livres en fonction d'un article lu
+    * données à prédire : API Books (+ webscrapping Amazon)
+    * dataset : dataset de matching de livres (à trouver)
+      
