@@ -1,4 +1,4 @@
-# coding:utf-8
+# coding: utf-8
 
 import requests
 import configparser
@@ -9,138 +9,199 @@ import datetime
 import re
 from pprint import pprint
 
-BASE_URL: str = "https://api.nytimes.com/svc/"
-BASE_URL_NEWSWIRE: str = BASE_URL + "news/v3/content"
-BASE_URL_BOOKS: str = BASE_URL + "books/v3"
-BASE_URL_KW: str = BASE_URL + "search/v2/articlesearch.json"
-BASE_URL_MOST_POPULAR: str = BASE_URL + "mostpopular/v2/"
-BASE_URL_ARCHIVE: str = BASE_URL + "archive/v1/"
+# Base URLs for NYT APIs
+BASE_URL = "https://api.nytimes.com/svc/"
+BASE_URL_NEWSWIRE = BASE_URL + "news/v3/content"
+BASE_URL_BOOKS = BASE_URL + "books/v3"
+BASE_URL_KW = BASE_URL + "search/v2/articlesearch.json"
+BASE_URL_MOST_POPULAR = BASE_URL + "mostpopular/v2/"
+BASE_URL_ARCHIVE = BASE_URL + "archive/v1/"
 
-clean_out_file_str = re.compile(r'[:.\s]')
+# Regex to clean file names by removing problematic char
+CLEAN_FILE_NAME_REGEX = re.compile(r'[:.\s]')
 
 
 class NYTConnector:
+    """
+    A class to connect to the NYT API and fetch various types of data.
+    """
 
     def __init__(self):
+        """
+        Initializes the NYTConnector by reading the API key from a configuration file.
+        """
         cfg = configparser.ConfigParser()
         cfg.read('api.cfg')
-        self.API_KEY: str = cfg.get('KEYS', 'key_nyt_news')
+        self.API_KEY = cfg.get('KEYS', 'key_nyt_news')
 
     def request_times_newswire(self, source: str, section: str):
         """
-        Requests the data from Times Newswire API
-        :param source: str, value between 'all', 'nyt' and 'inyt'
-        :param section: str, values from section_name.json ('science', 'sport', 'u.s.' etc.)
-        :return: # TODO
+        Fetches data from the NYT Newswire API for a given source and section.
+
+        Args:
+            source (str): The source of the news (e.g., 'all', 'nyt', 'inyt').
+            section (str): The news section (e.g., 'science', 'sport', 'u.s.').
+
+        Returns:
+            dict: A JSON response containing the newswire data.
         """
-        params = {"api-key": {self.API_KEY}}
-        url = BASE_URL_NEWSWIRE + '/{0}/{1}.json'.format(source, section)
 
-        # extract current datetime to create output file name
-        now = datetime.datetime.now()
-        output_file_name = 'data_news_wire_{0}_{1}.json'.format(clean_out_file_str.sub('', section), clean_out_file_str.sub('', str(now)))
-        r = requests.get(url, params=params)
-        response = r.json()
+        params = {"api-key": self.API_KEY}
 
-        num_results = response['num_results']
-        print("Number of results : ", num_results)
-        results = response['results']
+        # Construct the endpoint with the source and section
+        url = f"{BASE_URL_NEWSWIRE}/{source}/{section}.json"
+
+        # Generate an output file name for saving the data
+        now = datetime.datetime.now()  # Get the current time
+        section_clean = CLEAN_FILE_NAME_REGEX.sub('', section)  # Clean section name
+        output_file_name = f"data_news_wire_{section_clean}_{now.strftime('%Y%m%d%H%M%S')}.json"
+
+        # Send the HTTP GET request to the API and get the JSON response
+        response = requests.get(url, params=params).json()
+        num_results = response.get('num_results', 0)
+        print("Number of results:", num_results)
+
+        results = response.get('results', [])
+
+        # If results exist, save them to the output file
         if results:
-            with open(output_file_name, 'a', encoding='utf-8') as f:
+            with open(output_file_name, 'w', encoding='utf-8') as f:
                 json.dump(results, f, ensure_ascii=False, indent=4)
 
-        # TODO: add return
+        return results
 
     def request_books(self):
-        params = {"api-key": {self.API_KEY}}
-        # TODO: complete function
+        """
+        Placeholder for a function to fetch book data from the NYT API.
 
-    def request_most_popular(self):
-        params = {"api-key": {self.API_KEY}}
-        url = BASE_URL_MOST_POPULAR + 'viewed/30.json'
+        TODO: complete function
+        """
+        params = {"api-key": self.API_KEY}
+        pass
+
+    def request_most_popular(self, period_of_time: int):
+        """
+        Fetches the most popular NYT articles for a given time period.
+
+        Args:
+            period_of_time (int): The number of days for which to fetch popular articles.
+
+        Returns:
+            list: A list of the most popular articles.
+        """
+        params = {"api-key": self.API_KEY}
+        # Build the endpoint URL for fetching the most popular articles
+        url = f"{BASE_URL_MOST_POPULAR}/viewed/{period_of_time}.json"
+
+        # Get the current date and the date from "period_of_time" days ago
         now = datetime.datetime.now()
-        _30_days_before = now - datetime.timedelta(days=30)
-        output_file_name = 'data_most_popular_{0}_{1}.json'.format(clean_out_file_str.sub('', str(_30_days_before)), clean_out_file_str.sub('', str(now)))
-        r = requests.get(url, params=params)
-        response = r.json()
-        num_results = response['num_results']
-        print("Number of results : ", num_results)
-        results = response['results']
+        days_before = now - datetime.timedelta(days=period_of_time)
+
+        # Create a clean output file name based on the time period
+        start_date_str = CLEAN_FILE_NAME_REGEX.sub('', str(days_before))
+        end_date_str = CLEAN_FILE_NAME_REGEX.sub('', str(now))
+        output_file_name = f"data_most_popular_{start_date_str}_{end_date_str}.json"
+
+        # Send the HTTP GET request and get the JSON response
+        response = requests.get(url, params=params).json()
+        num_results = response.get('num_results', 0)
+        print("Number of results:", num_results)
+
+        results = response.get('results', [])
+
+        # If results exist, save them to the output file
         if results:
-            with open(output_file_name, 'a', encoding='utf-8') as f:
+            with open(output_file_name, 'w', encoding='utf-8') as f:
                 json.dump(results, f, ensure_ascii=False, indent=4)
-        # TODO: complete function
 
-    def request_archive(self, month: str, year: str):
-        """
-        Requests the data from Archive API
-        :param month: int, month in numbers
-        :param year: int, year in yyyy format
-        :return:
-        """
-        params = {"api-key": {self.API_KEY}}
-        url = BASE_URL_ARCHIVE + '/{0}/{1}.json'.format(year, month)
+        return results
 
-        output_file_name = 'data_archive_{0}_{1}.json'.format(month, year)
-        r = requests.get(url, params=params)
-        response = r.json()['response']
-        docs = response['docs']
+    def request_archive(self, month: int, year: int):
+        """
+        Fetches the archived NYT articles for a given month and year.
+
+        Args:
+            month (int): The month for which to fetch articles.
+            year (int): The year for which to fetch articles.
+
+        Returns:
+            list: A list of archived NYT articles for the specified month and year.
+        """
+        params = {"api-key": self.API_KEY}
+        # Build the endpoint URL for fetching archived articles
+        url = f"{BASE_URL_ARCHIVE}/{year}/{month}.json"
+
+        # Generate an output file name based on the month and year
+        output_file_name = f"data_archive_{month}_{year}.json"
+
+        # Send the HTTP GET request and get the JSON response
+        response = requests.get(url, params=params).json()
+        docs = response['response'].get('docs', [])
+
+        # If docs are present, save them to the output file
         if docs:
-            with open(output_file_name, 'a', encoding='utf-8') as f:
+            with open(output_file_name, 'w', encoding='utf-8') as f:
                 json.dump(docs, f, ensure_ascii=False, indent=4)
 
-        hits = response['meta']['hits']
-        print("Number of hits : ", hits)
-        # TODO: complete function
+        return docs
 
-    def request_by_keyword(self, kw: str, out_f: str, b_date: str = None, e_date: str = None):
+    def request_by_keyword(self, keyword: str, output_file: str, start_date: str = None, end_date: str = None):
         """
-        Requests the data from Search API with keywords
-        :param kw: str, keyword for the query
-        :param out_f: str, output file name
-        :param b_date: str, published date in format yyyymmdd (begin)
-        :param e_date: str, published date in format yyyymmdd (end)
-        :return: list of json
-        """
+        Fetches NYT articles based on a keyword, with optional start and end dates.
 
-        search_params = {"q": kw,
-                         "api-key": {self.API_KEY},
-                         "begin_date": b_date,
-                         "end_date": e_date}
+        Args:
+            keyword (str): The search keyword.
+            output_file (str): The base name for the output file.
+            start_date (str, optional): The start date for the search in 'yyyyMMdd' format.
+            end_date (str, optional): The end date for the search in 'yyyyMMdd' format.
+
+        Returns:
+            list: A list of NYT articles that match the keyword search.
+        """
+        search_params = {
+            "q": keyword,
+            "api-key": self.API_KEY,
+            "begin_date": start_date,
+            "end_date": end_date
+        }
+
+        # Send the initial request to get the total number of hits
         r = requests.get(BASE_URL_KW, params=search_params)
         response = r.json()['response']
-
-        # extract number of results / hits
         hits = response['meta']['hits']
-        print("Number of hits : ", hits)
+        print("Number of hits:", hits)
 
-        # compute number of pages (10 results per page)
-        pages = int(math.ceil(hits / 10))
-        print("Number of pages : ", pages)
+        # Determine the number of pages (10 results per page)
+        num_pages = int(math.ceil(hits / 10))
+        print("Number of pages:", num_pages)
 
         list_docs = []
 
-        # output file name is composed of out_f and the current datetime
-        with open(out_f + '_' + str(b_date) + '.json', 'a', encoding='utf-8') as f:
-            for i in range(pages):
-                print("Current page " + str(i))
+        # Iterate through all pages to fetch the documents
+        with open(f"{output_file}_{start_date}.json", 'w', encoding='utf-8') as f:
+            for i in range(num_pages):
+                print(f"Fetching page {i}")
                 search_params['page'] = i
                 r = requests.get(BASE_URL_KW, params=search_params)
                 response = r.json()['response']
-                docs = response['docs']
-                list_docs.extend(docs)
-                if docs:
-                    for j in docs:
-                        json.dump(j, f, ensure_ascii=False, indent=4)
 
-                # according to FAQ :You should sleep 12 seconds between calls to avoid hitting the per minute rate limit
+                # Get the documents from the current page
+                docs = response.get('docs', [])
+                list_docs.extend(docs)
+
+                # Write each document to the output file
+                for doc in docs:
+                    json.dump(doc, f, ensure_ascii=False, indent=4)
+
+                # According to NYT FAQ, sleep 12 seconds between requests to avoid rate limits
                 time.sleep(12)
+
         return list_docs
 
 
 if __name__ == "__main__":
     nyt_c = NYTConnector()
     # nyt_c.request_times_newswire('all', 'u.s.')
-    # nyt_c.request_archive('9', '1900')
-    nyt_c.request_most_popular()
+    nyt_c.request_archive('9', '2000')
+    # nyt_c.request_most_popular(30)
     # nyt_c.request_by_keyword('Presidential Election of 2024', 'data_us_election', '190000901', '19000930')
