@@ -38,3 +38,7 @@ DataViz :
 Spécificité :
 * Agilité et flexibilité pour le stockage de données hétérogèness
 * Système offrant une excellente scalabilité ;
+
+# UML (draft)
+![image](https://github.com/Linenlp/nyt_news/assets/40054464/cd619b43-eccb-47bb-8a95-e0dcc893e832)
+
