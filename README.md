@@ -1,6 +1,6 @@
 # Projet Data Engineer - API New York Times News
 ## Pré-requis
-Python 3.10 ??
+Python 3.11
 
 ## Objectifs
 Réalisation d'une API qui offre une perspective dynamique sur les élections américaines.
