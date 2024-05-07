@@ -28,7 +28,7 @@ Organisation
 * stockage dans une collection : élément qui contient le même ensemble de documents.
 * Compatible avec le format JSON et BJSON
 
-* Recherche
+Recherche
 * les champs dans un document peuvent être indexés
 * stockage et la récupération de données robustes dans divers types d'applications.
 
