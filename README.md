@@ -14,5 +14,4 @@ Dans un paysage politique en perpétuelle évolution, nous souhaitons mettre en 
 | Comparaison historique | Examiner comment le climat médiatique actuel se compare à celui des trois dernières élections. Détection de la polarité dans les archives. | headline - **API Archive** | Neutre - Négatif - Positif |  SEN : Sentiment analysis of Entities in News headlines :https://zenodo.org/records/5211931 |
 
 ## Architecture
-
-![architecture_nyt](https://github.com/Linenlp/nyt_news/assets/40054464/565805cd-5438-4b1e-81a0-7cc36ecf3711)
+![architecture_nyt (1)](https://github.com/Linenlp/nyt_news/assets/40054464/da52c303-0766-487d-af10-9d94b81dc4fe)
