@@ -10,7 +10,7 @@ Dans un paysage politique en perpétuelle évolution, nous souhaitons mettre en 
 | Fonctionnalités | Objectif |  Input | Output | Dataset|
 | :-------------- |:---------|:-------|:-------|:-------|
 |Analyse de sentiment : classification en polarité | Discerner les tendances émotionnelles dʼun article via lʼanalyse de son titre. Aperçu rapide de qui attire l'attention et comment | headline - **API Times NewsWire** | Neutre - Négatif - Positif | SEN : Sentiment analysis of Entities in News headlines :https://zenodo.org/records/5211931 |
-|Recommandation de livres | Analyse des préférences du lecture et recommandation dʼun best-sellers du New York Times qui correspond le mieux aux intérêts politiques de lʼutilisateur selon les articles lus. |  Article à retrouver depuis lʼ**API Search**. **Web scraping Amazon** | Recommandation dʼun livre dans lʼ**API books** | 
+|Recommandation de livres | Analyse des préférences du lecture et recommandation dʼun best-sellers du New York Times qui correspond le mieux aux intérêts politiques de lʼutilisateur selon les articles lus. |  Article à retrouver depuis lʼ**API Search**. **Web scraping Amazon** | livre dans lʼ**API books** | 
 | Comparaison historique | Examiner comment le climat médiatique actuel se compare à celui des trois dernières élections. Détection de la polarité dans les archives. | headline - **API Archive** | Neutre - Négatif - Positif |  SEN : Sentiment analysis of Entities in News headlines :https://zenodo.org/records/5211931 |
 
 ## Architecture
