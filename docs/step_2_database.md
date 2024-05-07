@@ -9,7 +9,7 @@ Organisation
 * stockage dans des index
 * Compatible avec le format JSON et API REST.
 
-* Recherche
+Recherche
 * Excellente capacité et qualité d’indexation
 * Excelle dans la recherche plein texte
 
