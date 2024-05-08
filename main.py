@@ -244,6 +244,7 @@ class NYTConnector:
 if __name__ == "__main__":
     nyt_c = NYTConnector()
     # nyt_c.request_times_newswire('all', 'u.s.')
-    nyt_c.request_archive('9', '2000')
+    # nyt_c.request_archive('9', '2000')
+    nyt_c.request_weelkly_nonfiction_bestsellers_books('05', '08', '2020')
     # nyt_c.request_most_popular(30)
     # nyt_c.request_by_keyword('Presidential Election of 2024', 'data_us_election', '190000901', '19000930')

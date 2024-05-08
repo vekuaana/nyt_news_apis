@@ -166,3 +166,4 @@ cython_debug/
 *.html
 docs/*
 !docs/*.md
+output/*
