@@ -8,9 +8,9 @@ Pour stocker les données récoltées il est nécessaire de se tourner vers des 
 * est-ce qu'on peut traiter des données en temps réel avec des BDD SQL ? cf [UML SQL + NoSQL](#V2)
 * que doit on délivrer à la fin du projet ? Une simple API ? Une application web front-end qui communique avec l'API ?
 * où créer la BDD ?
-    *  est-il possible de déployer la mêmme BDD (avec le même contenu) via docker ?
-    *  Doit on partir de la même base avec Docker et l'instancier puis la peupler chacune sur nos machines ?
-    *  Créer une VM sur Amazon Cloud ?
+    *  est-il possible de déployer la même BDD (avec le même contenu) via docker ?
+    *  peut-on partir de la même base avec Docker et l'instancier puis la peupler chacune sur nos machines ?
+    *  créer une VM sur Amazon Cloud ?
 
 ## ElasticSearch : moteur de recherche spécialisé plein texte
 
