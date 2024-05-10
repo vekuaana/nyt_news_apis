@@ -76,3 +76,23 @@ Spécificité :
 * web_url : *Str*
 * lead_paragraph : *Str*
 * headline : *Str*
+* pub_date: *Date
+* byline:	*Str*
+* section_name: *Str*
+* document_type: *Str*
+* keywords: *Str[]*
+
+### Article Search API
+* uri:	*Int*
+* abstract:	*Str*
+* web_url : *Str*
+* lead_paragraph : *Str*
+* headline : *Str*
+* pub_date: *Date
+* byline:	*Str*
+* news_desk: *Str*
+* section_name: *Str*
+* subsection_name: *Str*
+* type_of_material: *Str*
+* keywords: *Str[]*
+* snippet: *Str*
