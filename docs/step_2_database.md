@@ -40,7 +40,11 @@ Spécificité :
 * Système offrant une excellente scalabilité ;
 
 ## UML (draft)
+### V1
 ![nyt_uml (1)](https://github.com/Linenlp/nyt_news/assets/40054464/c5e8b1af-86ec-47a0-930a-c331c489c47e)
+
+### V2 
+![Flux de données UML](https://github.com/Linenlp/nyt_news/assets/62116551/d07ad78e-1961-4171-ad21-1f14e6694ffb)
 
 ## Liste des variables à garder
 ### Books
