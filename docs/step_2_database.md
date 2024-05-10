@@ -47,7 +47,7 @@ Spécificité :
 * book_uri:	*Str*
 * title:	*Str*
 * author:	*Str*
-* buy_links: *Document[]*
+* buy_links: *Document[{name, url}]*
 * resume_amazon:	*Str*
 * description:	*Str*
 
@@ -65,6 +65,6 @@ Spécificité :
 * main_candidat:	*Str*
 
 ### Election
-* date	*Date*
-* candidates	*Document[]*
-* winner	*Document*
+* date:	*Date*
+* candidates:	*Document[{first_name, last_name, party}]*
+* winner:	*Document{first_name, last_name, party}
