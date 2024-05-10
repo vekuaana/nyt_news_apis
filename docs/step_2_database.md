@@ -46,29 +46,33 @@ Spécificité :
 ### V2 
 ![Flux de données UML](https://github.com/Linenlp/nyt_news/assets/62116551/d07ad78e-1961-4171-ad21-1f14e6694ffb)
 
-## Liste des variables à garder
-### Books
+## API NYT : Liste des clés à extraire
+### Books API
 * book_uri:	*Str*
 * title:	*Str*
 * author:	*Str*
 * buy_links: *Document[{name, url}]*
-* resume_amazon:	*Str*
 * description:	*Str*
+* genre:  *Str*
+* publisher: *Str*
 
-### Article
+### Times Wire API
 * uri:	*Int*
 * title:	*Str*
+* section: *Str*
+* subsection: *Str*
+* url: *Str*
 * abstract:	*Str*
-* lead_paragraph:	*Str*
-* election_id:	*Int*
 * per_facet:	*Str[]*
+* des_facet:	*Str[]*
+* org_facet:	*Str[]*
 * pub_date: *Date*
-* polarity:	*Str*
-* recommended_book:	*Int[]*
 * byline:	*Str*
-* main_candidat:	*Str*
+* material_type_facet: *Str*
 
-### Election
-* date:	*Date*
-* candidates:	*Document[{first_name, last_name, party}]*
-* winner:	*Document{first_name, last_name, party}
+### Archive API
+* uri:	*Int*
+* abstract:	*Str*
+* web_url : *Str*
+* lead_paragraph : *Str*
+* headline : *Str*
