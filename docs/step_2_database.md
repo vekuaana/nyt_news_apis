@@ -11,6 +11,7 @@ Pour stocker les données récoltées il est nécessaire de se tourner vers des 
     *  est-il possible de déployer la même BDD (avec le même contenu) via docker ?
     *  peut-on partir de la même base avec Docker et l'instancier puis la peupler chacune sur nos machines ?
     *  créer une VM sur Amazon Cloud ?
+* ElasticSearch vs MongoDB : quelle est la plus utilisée en entreprise ?
 
 ## ElasticSearch : moteur de recherche spécialisé plein texte
 
