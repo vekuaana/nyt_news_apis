@@ -88,7 +88,7 @@ Spécificité :
 * web_url : *Str*
 * lead_paragraph : *Str*
 * headline : *Str*
-* pub_date: *Date
+* pub_date: *Date*
 * byline:	*Str*
 * news_desk: *Str*
 * section_name: *Str*
