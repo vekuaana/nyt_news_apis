@@ -39,6 +39,32 @@ Spécificité :
 * Agilité et flexibilité pour le stockage de données hétérogèness
 * Système offrant une excellente scalabilité ;
 
-# UML (draft)
-![image](https://github.com/Linenlp/nyt_news/assets/40054464/cd619b43-eccb-47bb-8a95-e0dcc893e832)
+## UML (draft)
+![nyt_uml (1)](https://github.com/Linenlp/nyt_news/assets/40054464/c5e8b1af-86ec-47a0-930a-c331c489c47e)
 
+## Liste des variables à garder
+### Books
+* book_uri:	*Str*
+* title:	*Str*
+* author:	*Str*
+* buy_links: *Document[]*
+* resume_amazon:	*Str*
+* description:	*Str*
+
+### Article
+* uri:	*Int*
+* title:	*Str*
+* abstract:	*Str*
+* lead_paragraph:	*Str*
+* election_id:	*Int*
+* per_facet:	*Str[]*
+* pub_date: *Date*
+* polarity:	*Str*
+* recommended_book:	*Int[]*
+* byline:	*Str*
+* main_candidat:	*Str*
+
+### Election
+* date	*Date*
+* candidates	*Document[]*
+* winner	*Document*
