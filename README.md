@@ -15,3 +15,6 @@ Dans un paysage politique en perpétuelle évolution, nous souhaitons mettre en 
 
 ## Architecture (draft)
 ![architecture_nyt (1)](https://github.com/Linenlp/nyt_news/assets/40054464/da52c303-0766-487d-af10-9d94b81dc4fe)
+
+## Cas d'utilisation 
+[Cas d'utilisations.pdf](https://github.com/Linenlp/nyt_news/files/15298036/Cas.d.utilisations.pdf)
