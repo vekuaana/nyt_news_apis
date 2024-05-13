@@ -5,6 +5,7 @@ Pour stocker les données récoltées il est nécessaire de se tourner vers des 
 ## Question pour Dan (13/05/2024)
 * quel est l'intérêt de réaliser un UML pour des BDD NoSQL dont la particularité est qu'elles sont schemaless ?
 * est-il possible de faire un lien entre deux index/collection ? cf [UML full NoSQL](#V1)
+    * est-ce qu'il vaut mieux utiliser une base SQL ?
 * est-ce qu'on peut traiter des données en temps réel avec des BDD SQL ? cf [UML SQL + NoSQL](#V2)
 * que doit on délivrer à la fin du projet ? Une simple API ? Une application web front-end qui communique avec l'API ?
 * où créer la BDD ?
