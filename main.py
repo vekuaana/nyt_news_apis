@@ -34,13 +34,19 @@ class NYTConnector:
         cfg.read('api.cfg')
         self.API_KEY = cfg.get('KEYS', 'key_nyt_news')
 
-    def request_times_newswire(self, source: str, section: str):
+    def request_times_newswire(self,
+                               source: str = 'all',
+                               section: str = 'u.s.',
+                               subsection: str = '2024 Elections',
+                               per_facet: list = ["Biden, Joseph R Jr", "Trump, Donald J"]):
         """
         Fetches data from the NYT Newswire API for a given source and section.
 
         Args:
             source (str): The source of the news (e.g., 'all', 'nyt', 'inyt').
             section (str): The news section (e.g., 'science', 'sport', 'u.s.').
+            subsection (str): The news subsection (e.g., 'Politics', '2024 Elections).
+            per_facet (list): The list of main candidates for the 2024 us elections
 
         Returns:
             dict: A JSON response containing the newswire data.
@@ -65,8 +71,10 @@ class NYTConnector:
 
         # If results exist, save them to the output file
         if results:
+            filtered_results = [doc for doc in results if doc["subsection"] == subsection
+                                or (set(doc["per_facet"]).intersection(set(per_facet)))]
             with open(output_file_name, 'w', encoding='utf-8') as f:
-                json.dump(results, f, ensure_ascii=False, indent=4)
+                json.dump(filtered_results, f, ensure_ascii=False, indent=4)
 
         return results
 
@@ -149,6 +157,7 @@ class NYTConnector:
         Returns:
             list: A list of NYT articles that match the keyword search.
         """
+
         search_params = {
             "q": keyword,
             "api-key": self.API_KEY,
@@ -180,11 +189,9 @@ class NYTConnector:
                 docs = response.get('docs', [])
                 list_docs.extend(docs)
 
-                for doc in docs:
-                    json.dump(doc, f, ensure_ascii=False, indent=4)
-
                 # According to NYT FAQ, sleep 12 seconds between requests to avoid rate limits
                 time.sleep(12)
+            json.dump(list_docs, f, ensure_ascii=False, indent=4)
 
         return list_docs
 
@@ -243,8 +250,8 @@ class NYTConnector:
 
 if __name__ == "__main__":
     nyt_c = NYTConnector()
-    # nyt_c.request_times_newswire('all', 'u.s.')
+    res = nyt_c.request_times_newswire('all', 'u.s.')
     # nyt_c.request_archive('9', '2000')
-    nyt_c.request_weelkly_nonfiction_bestsellers_books('05', '08', '2020')
+    # nyt_c.request_weelkly_nonfiction_bestsellers_books('05', '08', '2020')
     # nyt_c.request_most_popular(30)
-    # nyt_c.request_by_keyword('Presidential Election of 2024', 'data_us_election', '190000901', '19000930')
+    # nyt_c.request_by_keyword('Presidential Election of 2024', 'data_us_election', '20240508', '20240512')
