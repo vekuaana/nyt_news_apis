@@ -21,6 +21,8 @@ Spécificité :
 
 ## UML
 
+<img width="693" alt="Screenshot 2024-05-15 at 11 55 47" src="https://github.com/Linenlp/nyt_news/assets/62116551/03305a21-c93d-4346-b196-faebf725820f">
+
 
 ## API NYT : Liste des clés à extraire
 ### Books API
