@@ -1,7 +1,7 @@
 # Les bases de données
 
 Les données récupérées des différents API sont renvoyées au format json. Les API utilisent un style d’achitecture RESTful orientée ressources.
-Pour stocker les données récoltées, nous utiliserons des BDD NoSQL.
+Pour stocker les données récoltées, nous utiliserons des BDD NoSQL sur MongoDB.
 
 
 ## MongoDB : BBD NoSQL pour le stockage de gros volumes de données
@@ -20,7 +20,11 @@ Spécificité :
 * Facilite le déploiment ;
 
 ## UML
-
+L'architecture est composée de 3 collections de données hébergées sur MongoDB:
+* La base de données Book reprenant les informations sur les bestsellers du NYT.
+* La base de données USA election articles reprenant les articles liés aux élections américaines. Elle est composée de données provenant des API Archive et Times wire ainsi que des données sorties du model d'analyse de sentiments (main_candidate, polarity) et du modèle de recommandation de livres (recommended_books).
+* La base de données Election reprenant les informations liées aux différentes élections américaines.
+  
 <img width="693" alt="Screenshot 2024-05-15 at 11 55 47" src="https://github.com/Linenlp/nyt_news/assets/62116551/03305a21-c93d-4346-b196-faebf725820f">
 
 
