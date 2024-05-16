@@ -2,6 +2,18 @@
 ## Pré-requis
 Python 3.11
 
+## Installation
+
+Modifier les fichiers  **.env.example** et **api.cfg** avec les informations d'authentification. Renommer **.env.example** en >> **.env**
+```bash
+├── nyt_news
+│   ├── api.cfg
+├── .env.example
+```
+Lancer la commande suivante :
+```console
+docker-compose up -d
+```
 ## Objectifs
 Réalisation d'une API qui offre une perspective dynamique sur les élections américaines.
 Dans un paysage politique en perpétuelle évolution, nous souhaitons mettre en évidence l'importance de rester informé et de comprendre les nuances des médias.

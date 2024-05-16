@@ -1,0 +1,45 @@
+id,date_dernier_tour,candidat1,candidat2,parti_candidat1,parti_candidat2,gagnant
+1,02/11/1952,Winfield Scott. ,Franklin Pierce ,démocrate,whig,Franklin Pierce 
+2,04/11/1956,John Charles Frémont,James Buchanan ,républicain,démocrate,James Buchanan 
+3,06/11/1960,Abraham Lincoln ,Stephen Arnold Douglas,républicain,démocrate,Abraham Lincoln 
+4,08/11/1964,Abraham Lincoln ,George McClellan,union nationale,démocrate,Abraham Lincoln 
+5,03/11/1968,Ulysses S. Grant,Horatio Seymour,républicain,démocrate,Ulysses S. Grant
+6,05/11/1972,Ulysses S. Grant,Horace Greeley,républicain,républicain libéral,Ulysses S. Grant
+7,07/11/1976, Rutherford B. Hayes,Samuel Jones Tilden,républicain,démocrate,Rutherford B. Hayes
+8,02/11/1980,James A. Garfield,Winfield Scott Hancock,républicain,démocrate,James A. Garfield
+9,04/11/1984,Grover Cleveland,James Blaine,démocrate,républicain,Grover Cleveland
+10,06/11/1988,Benjamin Harrison,Grover Cleveland,républicain,démocrate,Benjamin Harrison
+11,08/11/1992,Grover Cleveland,Benjamin Harrison,démocrate,républicain,Grover Cleveland
+12,03/11/1996,William McKinley,William Jennings Bryan,républicain,démocrate,William McKinley
+13,06/11/1900,William McKinley,William Jennings Bryan,républicain,démocrate,William McKinley
+14,08/11/1904,Theodore Roosevelt,Alton Parker,républicain,démocrate,Theodore Roosevelt
+15,03/11/1908,William Howard Taft,William Jennings Bryan,républicain,démocrate,William Howard Taft
+16,05/11/1912,Woodrow Wilson,Theodore Roosevelt,démocrate,progressiste,Woodrow Wilson
+17,07/11/1916,Woodrow Wilson,Charles Evans Hughes,démocrate,républicain,Woodrow Wilson
+18,02/11/1920,Warren G. Harding,James Middleton Cox,républicain,démocrate,Warren G. Harding
+19,04/11/1924,Calvin Coolidge,John W. Davis,républicain,démocrate,Calvin Coolidge
+20,06/11/1928,Herbert Hoover,Al Smith,républicain,démocrate,Herbert Hoover
+21,08/11/1932,Franklin Delano Roosevelt,Herbert Hoover,démocrate,républicain,Franklin Delano Roosevelt
+22,03/11/1936,Franklin Delano Roosevelt,Alf Landon,démocrate,républicain,Franklin Delano Roosevelt
+23,05/11/1940,Franklin Delano Roosevelt,Wendell Willkie,démocrate,républicain,Franklin Delano Roosevelt
+24,07/11/1944,Franklin Delano Roosevelt,Thomas Dewey,démocrate,républicain,Franklin Delano Roosevelt
+25,02/11/1948,Harry S. Truman,Thomas Dewey,démocrate,républicain,Harry S. Truman
+26,04/11/1952,Dwight D. Eisenhower,Adlai Stevenson,républicain,démocrate,Dwight D. Eisenhower
+27,06/11/1956,Dwight D. Eisenhower,Adlai Stevenson,républicain,démocrate,Dwight D. Eisenhower
+28,08/11/1960,John Fitzgerald Kennedy,Richard Nixon,démocrate,républicain,John Fitzgerald Kennedy
+29,03/11/1964,Lyndon B. Johnson,Barry Goldwater,démocrate,républicain,Lyndon B. Johnson
+30,05/11/1968,Richard Nixon,Hubert Humphrey,républicain,démocrate,Richard Nixon
+31,07/11/1972,Richard Nixon,George McGovern,républicain,démocrate,Richard Nixon
+32,02/11/1976,Jimmy Carter,Gerald Ford,démocrate,républicain,Jimmy Carter
+33,04/11/1980,Ronald Reagan,Jimmy Carter,républicain,démocrate,Ronald Reagan
+34,06/11/1984,Ronald Reagan,Walter Mondale,républicain,démocrate,Ronald Reagan
+35,08/11/1988,George H. W. Bush,Michael Dukakis,républicain,démocrate,George H. W. Bush
+36,03/11/1992,Bill Clinton,George H. W. Bush,démocrate,républicain,Bill Clinton
+37,05/11/1996,Bill Clinton,Bob Dole,démocrate,républicain,Bill Clinton
+38,07/11/2000,George W. Bush,Al Gore,républicain,démocrate,George W. Bush
+39,02/11/2004,George W. Bush,John Kerry,républicain,démocrate,George W. Bush
+40,04/11/2008,Barack Obama,John McCain,démocrate,républicain,Barack Obama
+41,06/11/2012,Barack Obama,Mitt Romney,démocrate,républicain,Barack Obama
+42,08/11/2016,Donald Trump,Hillary Clinton,républicain,démocrate,Donald Trump
+43,03/11/2020,Joe Biden,Donald Trump,démocrate,républicain,Joe Biden
+44,05/11/2024,Joe Biden,Donald Trump,démocrate,républicain,

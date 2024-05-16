@@ -167,9 +167,4 @@ cython_debug/
 docs/*
 !docs/*.md
 output/*
-.env*
-mongodb/data_mongo
-!/mongobd/data_mongo/elections_americaines_from_1851.csv
-!/mongobd/data_mongo/US Presidential Election Results - ResultsByCandidate.csv
-!/mongobd/data_mongo/US Presidential Election Results - Winners.csv
-!/mongobd/data_mongo/US Presidential Election Results - ResultsByTurnout.csv
+docker_mongo
