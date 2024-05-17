@@ -78,3 +78,33 @@ L'architecture est composée de 3 collections de données hébergées sur MongoD
 * type_of_material: *Str*
 * keywords: *Str[]*
 * snippet: *Str*
+
+## Question pour Dan
+### Point du 21/05/2024
+* as tu des ressources sur les bonnes pratiques en ce qui concerne l'arborescence du projet, le nom des fichiers, la composition des conteneurs Docker ?
+* sans utilisation d'un cloud provider, est-ce une bonne pratique de stoker les données de la BDD, les modèles dans les voumes des conteneurs associés ?
+* un docker-compose suffit-il comme orchestrateur ou en faut-il plusieurs ?
+  
+### Point du 13/05/2024
+* quel est l'intérêt de réaliser un UML pour des BDD NoSQL dont la particularité est qu'elles sont schemaless ?
+    * <ins>réponse</ins> : représenter simplement les collections avec les attributs et avoir ainsi une idée de l'architecture du SGBD. Il est aussi possible de fixer un schéma sur une BDD Mongo avec *jsonSchema*
+* est-il possible de faire un lien entre deux index/collection ? cf [UML full NoSQL](#V1)
+    * <ins>réponse</ins>: il est possible de faire des liens en récupérant les infos dans des dataframes pandas
+* est-ce qu'on peut traiter des données en temps réel avec des BDD SQL ? cf [UML SQL + NoSQL](#V2)
+    * <ins>réponse</ins>: oui c'est possible même si ce n'est pas le plus optimal. En cas de surcharge de la machine, on peut passer le traitement en batch 
+* que doit on délivrer à la fin du projet ? Une simple API ? Une application web front-end qui communique avec l'API ?
+    * <ins>réponse</ins> :
+        * documentation de l'API
+        * dashboard de monitoring des algo de ML
+        * bonus : front avec des tableaux etc. 
+* où créer la BDD ?
+    *  est-il possible de déployer la même BDD (avec le même contenu) via docker ?
+    *  peut-on partir de la même base avec Docker et l'instancier puis la peupler chacune sur nos machines ?
+    *  créer une VM sur Amazon Cloud ?
+    *  <ins>réponse</ins> : tout est possible
+* ElasticSearch vs MongoDB : quelle est la plus utilisée en entreprise ?
+    * <ins>réponse</ins>: MongoDb est plus populaire en France
+        * se déploie plus facilement
+        * version Cloud
+        * syntaxe plus simple
+        * mise à jour fréquente       
