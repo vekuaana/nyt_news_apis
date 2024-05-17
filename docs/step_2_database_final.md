@@ -84,6 +84,7 @@ L'architecture est composée de 3 collections de données hébergées sur MongoD
 * as tu des ressources sur les bonnes pratiques en ce qui concerne l'arborescence du projet, le nom des fichiers, la composition des conteneurs Docker ?
 * sans utilisation d'un cloud provider, est-ce une bonne pratique de stoker les données de la BDD, les modèles dans les voumes des conteneurs associés ?
 * un docker-compose suffit-il comme orchestrateur ou en faut-il plusieurs ?
+* peut on stocker le jeu de données d'entrainement dans la même bdd ? (mais dans une collection distincte)
   
 ### Point du 13/05/2024
 * quel est l'intérêt de réaliser un UML pour des BDD NoSQL dont la particularité est qu'elles sont schemaless ?
