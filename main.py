@@ -6,6 +6,7 @@ import time
 import json
 import math
 import datetime
+from datetime import datetime
 import re
 from pprint import pprint
 
@@ -75,43 +76,6 @@ class NYTConnector:
                                 or (set(doc["per_facet"]).intersection(set(per_facet)))]
             with open(output_file_name, 'w', encoding='utf-8') as f:
                 json.dump(filtered_results, f, ensure_ascii=False, indent=4)
-
-        return results
-
-    def request_most_popular(self, period_of_time: int):
-        """
-        Fetches the most popular NYT articles for a given time period.
-
-        Args:
-            period_of_time (int): The number of days for which to fetch popular articles.
-
-        Returns:
-            list: A list of the most popular articles.
-        """
-        params = {"api-key": self.API_KEY}
-        # Build the endpoint URL for fetching the most popular articles
-        url = f"{BASE_URL_MOST_POPULAR}/viewed/{period_of_time}.json"
-
-        # Get the current date and the date from "period_of_time" days ago
-        now = datetime.datetime.now()
-        days_before = now - datetime.timedelta(days=period_of_time)
-
-        # Create a clean output file name based on the time period
-        start_date_str = CLEAN_FILE_NAME_REGEX.sub('', str(days_before))
-        end_date_str = CLEAN_FILE_NAME_REGEX.sub('', str(now))
-        output_file_name = f"data_most_popular_{start_date_str}_{end_date_str}.json"
-
-        # Send the HTTP GET request and get the JSON response
-        response = requests.get(url, params=params).json()
-        num_results = response.get('num_results', 0)
-        print("Number of results:", num_results)
-
-        results = response.get('results', [])
-
-        # If results exist, save them to the output file
-        if results:
-            with open(output_file_name, 'w', encoding='utf-8') as f:
-                json.dump(results, f, ensure_ascii=False, indent=4)
 
         return results
 
@@ -219,64 +183,34 @@ class NYTConnector:
 
         return response
     
-    def request_weelkly_nonfiction_bestsellers_books(self, day: str, month: str, year: str):
+    def request_bestsellers(self, list_name, start_date, end_date):
         """
-        Fetches a list of the NYT Best Sellers Nonfictional Books for a given week, month and year.
+        This function retrieves the unique bestsellers books of the NYT of a specific list over a specified period and 
+        save it in a JSON file. 
 
-        Args:
-            day (str): The week for which to fetch the list.
-            month (str): The month for which to fetch the list.
-            year (str): The year for which to fetch the list.
-
-        Returns:
-            dict: A list of all NYT Best Sellers Nonfictional List for a given week, month and year.
-        """
-        params = {"api-key": self.API_KEY}
-        # Build the endpoint URL for fetching the book list. 
-        url = f"{BASE_URL_BOOKS}/lists/{year}-{month}-{day}/combined-print-and-e-book-nonfiction.json"
-
-        # Generate an output file name based on the week, month and year
-        output_file_name = f"data_nonfiction_bestsellers_{year}-{month}-{day}.json"
-
-        # Send the HTTP GET request and get the JSON response
-        response = requests.get(url, params=params).json()
-
-        # If response, save them to the output file
-        if response:
-            with open(output_file_name, 'w', encoding='utf-8') as f:
-                json.dump(response, f, ensure_ascii=False, indent=4)
-
-        return response
-    
-    def request_all_nonfiction_bestsellers_books(self, start_date = '2011-02-13'):
-        """
-        This function retrieves all the unique best sellers books from the list 'combined-print-and-e-book-nonfiction list' 
-        from a strarting date and save it in a JSON file. The list of books is published each week from 2011-02-13 until today.
-    
         Args : 
-            next_published_date : The starting date for the retrieval of books. The default value for next_published_date is '2011-02-13' because 
-                                  it is the date when the first list of 'combined-print-and-e-book-nonfiction list' was published in the NYT. 
+            list_name : The name of the list to be fetch. 
+            start_date : The starting date for the retrieval of books.
+            end_date : The end date for the retrieval of books.
 
         Retruns: 
             A list of the published dates the loop when through. 
-            A list of NYT nonfictional best sellers from the starting date until today.
+            A list of NYT best sellers from the starting date until the end date.
 
         """
-
-        # Load API key from config file
-        cfg = configparser.ConfigParser()
-        cfg.read('api.cfg')
-        API_KEY = cfg.get('KEYS', 'key_nyt_news')
+        date_format = '%Y-%m-%d'
+        end_date_obj = datetime.strptime(end_date, date_format)
+        next_published_date = start_date # Inital date to start fetching the books.
+        next_published_date_obj = datetime.strptime(start_date, date_format) # Inital date to start fetching the books.
 
         unique_titles = [] # List of unique book titles
-        next_published_date = start_date # Inital date to start fetching the books.
         published_dates = [] # List of the published date the loop went through.
         books = [] # List to store books
 
-        while next_published_date:
+        while next_published_date_obj <= end_date_obj:
 
             # Build the endpoint URL for fetching the book list. 
-            url = f"{BASE_URL_BOOKS}/lists/{next_published_date}/combined-print-and-e-book-nonfiction.json"
+            url = f"{BASE_URL_BOOKS}/lists/{next_published_date}/{list_name}.json"
 
             counter_request = 1 # Initial number of requests.
             total_request_iteration = 1 # Initial number of requests iterations of the same list
@@ -285,7 +219,7 @@ class NYTConnector:
             while counter_request <= total_request_iteration:
 
                 # Set request parameters
-                params = {"api-key": API_KEY, "offset" : str(offset)}
+                params = {"api-key": self.API_KEY, "offset" : str(offset)}
 
                 # Send the HTTP GET request and get the JSON response
                 response = requests.get(url, params=params).json()
@@ -330,9 +264,11 @@ class NYTConnector:
             if next_published_date:
                 published_dates.append(next_published_date)
 
+            next_published_date_obj = datetime.strptime(next_published_date, date_format)
+
         # If books were retrieved, save the list to the output file
-        end_date = published_dates[-1]
-        output_file_name = f"all_nonfiction_bestsellers_from_{start_date}_to_{end_date}.json"
+        last_published_date = published_dates[-2]
+        output_file_name = f"bestsellers_{list_name}_from_{start_date}_to_{last_published_date}.json"
 
         if books:
             with open(output_file_name, 'w', encoding='utf-8') as f:
@@ -340,10 +276,12 @@ class NYTConnector:
 
         return published_dates, books
 
+
 if __name__ == "__main__":
     nyt_c = NYTConnector()
-    res = nyt_c.request_times_newswire('all', 'u.s.')
+    # res = nyt_c.request_times_newswire('all', 'u.s.')
     # nyt_c.request_archive('9', '2000')
     # nyt_c.request_weelkly_nonfiction_bestsellers_books('05', '08', '2020')
     # nyt_c.request_most_popular(30)
     # nyt_c.request_by_keyword('Presidential Election of 2024', 'data_us_election', '20240508', '20240512')
+    # nyt_c.request_bestsellers_list()
