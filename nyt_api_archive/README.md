@@ -1,23 +1,4 @@
-Structure: 
-nyt_api_archive/
-├── config/
-│   ├── nyt_api.cfg
-│   ├── election_candidates.csv
-│   └── api_description.yaml
-├── csv_service/
-│   ├── __init__.py
-│   └── csv_reader.py
-├── db_service/
-│   ├── __init__.py
-│   └── mongodb_connector.py
-├── fetcher_service/
-│   ├── __init__.py
-│   └── nyt_article_fetcher.py
-├── main.py
-├── requirements.txt
-└── setup.py
-
-Les élections américaines à travers les articles du New-York Times
+#Les élections américaines à travers les articles du New-York Times
 
 Nous utilisons l'API Archive du New-York Times pour créer une base de donnée qui reprendra tous les articles sur les candidats finalistes et leurs partis de chaque élection américaine depuis 1852. 
 La période considérée sera du 1er janvier de l'année électorale jusqu'au jour du scrutin (novembre).
