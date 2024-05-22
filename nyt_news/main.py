@@ -7,7 +7,7 @@ import json
 import math
 import datetime
 import re
-from pprint import pprint
+from nyt_news.config import api_nyt_path
 
 # Base URLs for NYT APIs
 BASE_URL = "https://api.nytimes.com/svc/"
@@ -31,7 +31,7 @@ class NYTConnector:
         Initializes the NYTConnector by reading the API key from a configuration file.
         """
         cfg = configparser.ConfigParser()
-        cfg.read('api.cfg')
+        cfg.read(api_nyt_path)
         self.API_KEY = cfg.get('KEYS', 'key_nyt_news')
 
     def request_times_newswire(self,
