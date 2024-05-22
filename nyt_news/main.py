@@ -74,6 +74,7 @@ class NYTConnector:
 
         return filtered_results
 
+
     def request_archive(self, month: int, year: int):
         """
         Fetches the archived NYT articles for a given month and year.
@@ -232,8 +233,7 @@ class NYTConnector:
                     # if the title is not in the list of unique title, add the book to the books list
                     if title not in unique_titles:
                         applebooks_url = None  # Handle the case when no apple links are provided
-                        buy_links = book.get('buy_links',
-                                             [])  # Get the 'buy_links' list or an empty list if not present
+                        buy_links = book.get('buy_links', [])  # Get the 'buy_links' list or an empty list if not present
                         for link in buy_links:
                             if link.get('name') == 'Apple Books':
                                 applebooks_url = link.get('url')
@@ -256,8 +256,7 @@ class NYTConnector:
                 # According to NYT FAQ, sleep 12 seconds between requests to avoid rate limits
                 time.sleep(12)
 
-            next_published_date = response['results'][
-                'next_published_date']  # Get the publication date of the next list
+            next_published_date = response['results']['next_published_date']  # Get the publication date of the next list
             if next_published_date:
                 published_dates.append(next_published_date)
 
@@ -276,9 +275,9 @@ class NYTConnector:
 
 if __name__ == "__main__":
     nyt_c = NYTConnector()
-    res = nyt_c.request_times_newswire('all', 'u.s.')
+    # res = nyt_c.request_times_newswire('all', 'u.s.')
     # nyt_c.request_archive('9', '2000')
     # nyt_c.request_weelkly_nonfiction_bestsellers_books('05', '08', '2020')
     # nyt_c.request_most_popular(30)
     # nyt_c.request_by_keyword('Presidential Election of 2024', 'data_us_election', '20240508', '20240512')
-
+    # nyt_c.request_bestsellers_list()
