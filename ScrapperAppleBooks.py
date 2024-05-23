@@ -38,43 +38,30 @@ class AppleBooksScraper:
             book_location = self.soup.find('h1', class_="product-header__title book-header__title")
             book_name = book_location.text.strip() if book_location else "N/A"
 
+            # Extract book's genre
+            genre_location = self.soup.find('div', class_="book-badge__caption")
+            genre_name = genre_location.text.strip() if genre_location else "N/A"
+
             # Extract summary
             summary_location = self.soup.find('div', class_="we-truncate--multi-line")
             summary_text = summary_location.text.strip() if summary_location else "N/A"
 
-            return book_name, author_name, summary_text
-        return "N/A", "N/A", "N/A"  # Return a default tuple if soup is None
-
-    def book_informations_dataset(self, book_name, author_name, summary_text):
-        """ 
-        Creates a .csv file and stores the collected data in it.
-        args: book_name, author_name, summary_text
-        """
-        today = str(datetime.date.today())  # Convert date to string
-        header = ['Title', 'Author', 'Summary', 'Date']
-        data = [book_name, author_name, summary_text, today]
-
-        # Open the CSV file in the current directory
-        csv_file_path = os.path.join(os.getcwd(), 'AppleBooksScraperDataset.csv')
-
-        # Append data to the CSV file
-        with open(csv_file_path, 'a', newline='', encoding='UTF8') as file:
-            writer = csv.writer(file)
-            if os.path.getsize(csv_file_path) == 0:
-                writer.writerow(header)
-            writer.writerow(data)
+            return book_name, author_name, genre_name, summary_text
+        return "N/A", "N/A", "N/A", "N/A"  # Return a default tuple if soup is None
 
 if __name__ == "__main__":
     scraper = AppleBooksScraper()
     scraper.open_apple_books_link(url='https://goto.applebooks.apple/9780593237465?at=10lIEQ')
-    book_name, author_name, summary_text = scraper.extract_book_information()
+    book_name, author_name, genre_name, summary_text = scraper.extract_book_information()
 
     # Save as a dictionary
     data = {
         'Title': book_name,
         'Author': author_name,
+        'Genre': genre_name,
         'Summary': summary_text,
         'Date': str(datetime.date.today()) 
          }
     
     pprint.pprint(data)
+
