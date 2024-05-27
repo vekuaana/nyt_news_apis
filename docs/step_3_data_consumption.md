@@ -1,7 +1,7 @@
 # Consommation de la donnée
 Cette étape consiste à consommer la donnée pour répondre à deux objkectifs :
 - classer en polarité les articles des archives et les articles en temps réel
-- recommander un livre en focntion d'une requête utilisateur
+- recommander un livre en fonction d'une requête utilisateur
 
 ## Questions pour Dan
 ### Point du 28/05/2024
