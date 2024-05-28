@@ -64,13 +64,18 @@ def main():
         return {k: round(v, 4) for k, v in result.items()}
 
     # load data
-    data = load_and_prepare_data(data_args.input_dir, data_args.input_file, data_args.text_column_name, data_args.label_column_name)
+    data = load_and_prepare_data(data_args.input_dir,
+                                 data_args.input_file,
+                                 data_args.text_column_name,
+                                 data_args.label_column_name,
+                                 data_args.extract_from_mongodb)
+
     tokenized_data = data.map(preprocess_function, batched=True)
 
     model = AutoModelForSeq2SeqLM.from_pretrained(model_args.model_name_or_path)
     model.to(device)
     data_collator = DataCollatorForSeq2Seq(tokenizer=tokenizer, model=model)
-    print(training_args)
+
     trainer = Seq2SeqTrainer(
         model=model,
         args=training_args,

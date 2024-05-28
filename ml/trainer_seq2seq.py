@@ -3,12 +3,18 @@
 import os
 import pandas as pd
 
+from dotenv import load_dotenv, find_dotenv
 from typing import Optional, Union
 from dataclasses import dataclass, field
 from datasets import Dataset, DatasetDict
 
 from sklearn.model_selection import train_test_split
 
+from pymongo import MongoClient
+from pymongo.errors import OperationFailure, ServerSelectionTimeoutError
+
+
+load_dotenv(find_dotenv())
 
 @dataclass
 class ModelArguments:
@@ -25,7 +31,7 @@ class ModelArguments:
     skip_special_tokens: bool = field(
         default=True,
         metadata={
-            "help": "Wheter to skip special tokens when decoding."
+            "help": "Whether to skip special tokens when decoding."
         }
     )
     max_new_tokens: bool = field(
@@ -45,6 +51,10 @@ class DataTrainingArguments:
     input_dir: Optional[str] = field(
         default=None,
         metadata={"help": "The path to input data directory."},
+    )
+    extract_from_mongodb: Optional[bool] = field(
+        default=False,
+        metadata={"help": "Whether to use MongoDB dataset"},
     )
     text_column_name: Optional[str] = field(
         default='text', metadata={"help": "The column name of text to input in the csv file."}
@@ -105,7 +115,61 @@ class DataTrainingArguments:
     )
 
 
-def load_and_prepare_data(data_dir: str, path: str, text_col: str, label_col: str) -> DatasetDict:
+def get_db(host):
+    """
+        Connect to the MongoDB instance and return the database object.
+
+        Args:
+            host (str): 'localhost' or 'mongodb' (container name)
+
+        Returns:
+            mongodb: The database object if the connection is successful.
+        """
+
+    try:
+        client = MongoClient(host=host,
+                             port=27017,
+                             username=os.getenv('USER1'),
+                             password=os.getenv('PASSWORD1'),
+                             authSource=os.getenv('MONGO_INITDB_DATABASE'))
+
+        client.server_info()
+        mongodb = client[os.getenv('MONGO_INITDB_DATABASE')]
+        return mongodb
+    except OperationFailure as of:
+        print(of)
+
+
+def read_data_from_mongo(collection, query={}, no_id=True):
+    """ Read from Mongo and Store into DataFrame """
+
+    def extract_data(db):
+        # Make a query to the specific DB and Collection
+        cursor = db[collection].find(query)
+
+        # Expand the cursor and construct the DataFrame
+        df = pd.DataFrame(list(cursor))
+
+        # Delete the _id
+        if no_id:
+            del df['_id']
+
+        return df
+    try:
+        # Attempt to connect to MongoDB within a container environment
+        db_nyt_news = get_db('mongodb')
+        return extract_data(db_nyt_news)
+    except ServerSelectionTimeoutError:
+        # Handle the case where the connection times out if we try to connect outside the container
+        print("Try to connect outside the container with localhost")
+        db_nyt_news = get_db('localhost')
+        return extract_data(db_nyt_news)
+    except OperationFailure as of:
+        print(of)
+        return None
+
+
+def load_and_prepare_data(data_dir: str, path: str, text_col: str, label_col: str, use_mongodb: bool) -> DatasetDict:
     """
     Load and prepare dataset for training  (train), validation (dev), and testing (test).
 
@@ -114,11 +178,15 @@ def load_and_prepare_data(data_dir: str, path: str, text_col: str, label_col: st
         path (str): filename of the dataset.
         text_col (str): name of the column containing the text data.
         label_col (str): name of the column containing the labels.
+        use_mongodb (bool): whether to use the MongoDB dataset
 
     Returns:
         DatasetDict: A dictionary containing the train, dev and test datasets.
     """
-    df = pd.read_csv(data_dir + os.sep + path, sep=',', encoding='utf-8')
+    if not use_mongodb:
+        df = pd.read_csv(data_dir + os.sep + path, sep=',', encoding='utf-8')
+    else:
+        df = read_data_from_mongo('polarity_dataset')
     df = df[df[label_col] != 'UNK']
     df["text"] = df[text_col]
     df[label_col] = [x.lower() for x in df[label_col]]
