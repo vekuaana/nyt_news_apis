@@ -170,3 +170,5 @@ output/*
 docker_mongo
 ml/mlruns/*
 ml/trainer_*/*
+.env
+summary_embeddings.pkl
