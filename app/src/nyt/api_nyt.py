@@ -10,6 +10,8 @@ from datetime import datetime
 import re
 from app.src.config import api_nyt_path
 
+from app.src import ScrapperAppleBooks as sc
+
 # Base URLs for NYT APIs
 BASE_URL = "https://api.nytimes.com/svc/"
 BASE_URL_NEWSWIRE = BASE_URL + "news/v3/content"
@@ -271,6 +273,33 @@ class NYTConnector:
                 json.dump(books, f, ensure_ascii=False, indent=4)
 
         return published_dates, books
+    
+    def add_books_genre_and_abstract(self, books_list):
+        """
+        This function adds the book's abstract and the books's genre to the books list by scraping data from AppleBook.
+        
+        Args: 
+        - books_list: a list of books. Each book must contain their AppleBook url. 
+        
+        Return: 
+        - A list of books with their genre and abstract. 
+        """
+        scraper = sc.AppleBooksScraper()
+        book_count = 0
+
+        for book in books_list:
+            url = book['buy_links']
+            scraper.open_apple_books_link(url)
+            book_name, author_name, genre_name, summary_text = scraper.extract_book_information()
+            book['genre'] = genre_name
+            book['abstract'] = summary_text
+            book_count += 1
+        
+        output_file_name = f"bestsellers_with_abstract_and_genre_{book_count}"
+        with open(output_file_name, 'w', encoding='utf-8') as f:
+                json.dump(books_list, f, ensure_ascii=False, indent=4)
+
+        return books_list
 
 
 if __name__ == "__main__":
@@ -281,3 +310,11 @@ if __name__ == "__main__":
     # nyt_c.request_most_popular(30)
     # nyt_c.request_by_keyword('Presidential Election of 2024', 'data_us_election', '20240508', '20240512')
     # nyt_c.request_bestsellers_list()
+
+    file_paths = "data/merged_nonfiction_bestsellers.json"
+    with open(file_paths, 'r') as file:
+            data = json.load(file)
+
+    new_list = nyt_c.add_books_genre_and_abstract(data)
+
+
