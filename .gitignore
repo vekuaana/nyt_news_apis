@@ -168,4 +168,5 @@ docs/*
 !docs/*.md
 output/*
 docker_mongo
-ml_runs/*
+ml/mlruns/*
+ml/trainer_*/*
