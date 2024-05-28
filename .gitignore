@@ -167,3 +167,4 @@ cython_debug/
 docs/*
 !docs/*.md
 output/*
+docker_mongo/*
