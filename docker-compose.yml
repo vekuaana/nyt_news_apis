@@ -11,7 +11,7 @@ services:
         ports:
           - 27017:27017
         env_file:
-          - path: .env
+          - .env
         environment:
           - MONGO_INITDB_ROOT_USERNAME=${MONGO_INITDB_ROOT_USERNAME}
           - MONGO_INITDB_ROOT_PASSWORD=${MONGO_INITDB_ROOT_PASSWORD}
@@ -24,7 +24,7 @@ services:
         image: mongo-express:1.0.0-20
         restart: on-failure
         env_file:
-          - path: .env
+          - .env
         depends_on:
           - mongodb
         networks: 
