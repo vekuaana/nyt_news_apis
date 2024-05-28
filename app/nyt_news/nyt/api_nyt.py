@@ -8,9 +8,9 @@ import math
 import datetime
 from datetime import datetime
 import re
-from app.src.config import api_nyt_path
+from nyt_news.config import api_nyt_path
 
-from app.src import ScrapperAppleBooks as sc
+from nyt_news import ScrapperAppleBooks as sc
 
 # Base URLs for NYT APIs
 BASE_URL = "https://api.nytimes.com/svc/"
@@ -55,7 +55,7 @@ class NYTConnector:
             dict: A JSON response containing the newswire data.
         """
 
-        params = {"app-key": self.API_KEY}
+        params = {"api-key": self.API_KEY}
 
         # Construct the endpoint with the source and section
         url = f"{BASE_URL_NEWSWIRE}/{source}/{section}.json"
@@ -88,7 +88,7 @@ class NYTConnector:
         Returns:
             list: A list of archived NYT articles for the specified month and year.
         """
-        params = {"app-key": self.API_KEY}
+        params = {"api-key": self.API_KEY}
         # Build the endpoint URL for fetching archived articles
         url = f"{BASE_URL_ARCHIVE}/{year}/{month}.json"
 
@@ -122,7 +122,7 @@ class NYTConnector:
 
         search_params = {
             "q": keyword,
-            "app-key": self.API_KEY,
+            "api-key": self.API_KEY,
             "begin_date": start_date,
             "end_date": end_date
         }
@@ -164,7 +164,7 @@ class NYTConnector:
         Returns:
             A dict containing all NYT Best Sellers lists and their informations.
         """
-        params = {"app-key": self.API_KEY}
+        params = {"api-key": self.API_KEY}
         # Build the endpoint URL for fetching book lists
         url = f"{BASE_URL_BOOKS}/lists/names.json"
 
@@ -217,7 +217,7 @@ class NYTConnector:
             while counter_request <= total_request_iteration:
 
                 # Set request parameters
-                params = {"app-key": self.API_KEY, "offset": str(offset)}
+                params = {"api-key": self.API_KEY, "offset": str(offset)}
 
                 # Send the HTTP GET request and get the JSON response
                 response = requests.get(url, params=params).json()

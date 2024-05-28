@@ -169,3 +169,4 @@ docs/*
 output/*
 docker_mongo
 ml_runs/*
+.env
