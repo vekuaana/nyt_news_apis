@@ -172,3 +172,4 @@ ml/mlruns/*
 ml/trainer_*/*
 .env
 summary_embeddings.pkl
+api.cfg
