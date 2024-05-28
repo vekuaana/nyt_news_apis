@@ -5,8 +5,8 @@ services:
         volumes:
           - ./docker_mongo:/data/db
           - ./data:/data/db/data
-          - .env:/data/db/.env
-          - ./init_db.sh:/docker-entrypoint-initdb.d/init_db.sh:ro
+          - ./mongodb/env:/data/db/.env
+          - ./mongodb/init_db.sh:/docker-entrypoint-initdb.d/init_db.sh:ro
 
         ports:
           - 27017:27017
@@ -41,11 +41,13 @@ services:
         volumes: 
           - ./docker_mongo:/data/db
 
-    etl:
-      container_name: etl
+    app:
+      container_name: app
       restart: on-failure
       command: python -u nyt_news/mongodb/injection.py
-      build: .
+      build:
+        context: ./app
+        dockerfile: Dockerfile
       depends_on:
         - mongodb
       networks:

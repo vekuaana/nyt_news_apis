@@ -7,7 +7,7 @@ Python 3.11
 Modifier les fichiers  **.env.example** et **api.cfg** avec les informations d'authentification. Renommer **.env.example** en >> **.env**
 ```bash
 ├── nyt_news
-│   ├── api.cfg
+│   ├── app.cfg
 ├── .env.example
 ```
 Lancer la commande suivante :

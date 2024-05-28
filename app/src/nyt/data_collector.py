@@ -5,7 +5,7 @@ from dataclasses import dataclass
 from dataclasses_json import dataclass_json
 from typing import Optional
 
-from nyt_news.main import NYTConnector
+from app.src.nyt.api_nyt import NYTConnector
 
 
 @dataclass_json

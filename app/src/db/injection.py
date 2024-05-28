@@ -3,7 +3,7 @@ import os
 from pymongo import MongoClient
 from pymongo.errors import OperationFailure, ServerSelectionTimeoutError
 from dotenv import load_dotenv, find_dotenv
-from nyt_news.data_collector import ETL
+from app.src.nyt.data_collector import ETL
 
 load_dotenv(find_dotenv())
 
