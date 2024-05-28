@@ -168,5 +168,6 @@ docs/*
 !docs/*.md
 output/*
 docker_mongo
-ml_runs/*
+mlruns/*
 .env
+api.cfg
