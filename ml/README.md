@@ -15,11 +15,44 @@ Pour répondre à la problématique nous nous sommes inspirés des travaux propo
 Nous avons donc opté pour différentes variantes du modèle (T5)[https://research.google/blog/exploring-transfer-learning-with-t5-the-text-to-text-transfer-transformer] de Google.T5 repose sur une architecture Transformer. Il traite toutes les tâches de NLP comme un problème de Text2Text (modèle Encoder-Decoder) en testant les limites du Trasnfer Learning appliqués à diverses tâches du TAL.
 Notre problématique sera donc formalisée en input de l'encoder.
 
-### Training
+### Les données d'entrainement
+
+Le dataset utilisé pour le fine-tuning est le dataset (SEN : Sentiment analysis of Entities in News headlines)[https://zenodo.org/records/5211931]. C'est un ensemble de titres d'actualité politique qui ont été annotés par deux groupes d'annotateurs humains : un groupe de chercheurs et via l'Amazon Mechanical Turk service . Il est composé de 3819 titres d'actualité politique étiquetés provenant de plusieurs grands médias en ligne en anglais et en polonais. Pour notre utilisation nous avons conservé uniquement els données en anglais et non abérantes ce qui réduit le dataset à 1102 entrées.
+La taille du dataset a aussi joué sur la décision d'utilisrt des modèles déjà pré-entrainés afin d'obtenir des résultats satisfaisants.
+
+Il est constitué de 3 colonnes :
+* headline : titre de l'article
+* entity : entité pour laquelle on attribue une polarité
+* majority_label : polarité
+
+  
+Répartition des labels dans le dataset
+
+| Label    | Count |
+| -------- | ------- |
+| Negative  | 337    |
+| Neutral | 588   |
+| Positive  | 177 |
+
+
+### Entrainement et évaluation
 
 Deux modèles sont fine tunés :
 * Text2Text Generation avec le modèle (T5 base)(https://huggingface.co/google-t5/t5-base/) : modèle de base embaruqant 220 millions de paramèteres
-* Text2Text with Conditional Generation avec le modèle (Flan T5-base)[https://huggingface.co/google/flan-t5-base : Il possède le même nombre de paramètres que T5 mais il a déjà été "fine-tune" sur 1 000 tâches
+```python
+python sesq2seq_ml_polarity.py args_seq2seq_ml.json
+```
+
+* Text2Text with Conditional Generation avec le modèle (Flan T5-base)[https://huggingface.co/google/flan-t5-base : Il possède le même nombre de paramètres que T5 mais il a déjà été "fine-tune" sur 1 000 tâches et plus de langues.
 ```python
 python conditional_generation_polarity.py args_conditional_generation.json
 ```
+
+La métrique d'évaluation choisie est la f1. Elle est particulièrement utilisée pour les problèmes utilisant des données déséquilibrées ce qui est notre acs avec une sur représentation de la classe "Neutral". Notre problématique n'étant pas binaire (3 classes) il a fallu adapter la f1 en utilisant la variante macro où la f1 est la moyenne arithmétique des f1 de chaque classe. La  macro accorde autant d’importance à chacune des classes ce qui permet de faire face aux données déséquilibrées.
+
+### Prediction
+A modifier après intégration de FastAPI
+```python
+python predict.py
+```
+Note : Les temps d'exécution sont similaires lors de l'inférence pour uen phrase en input sur cpu et gpu 
