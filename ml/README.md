@@ -15,6 +15,14 @@ Pour répondre à la problématique nous nous sommes inspirés des travaux propo
 Nous avons donc opté pour différentes variantes du modèle [T5](https://research.google/blog/exploring-transfer-learning-with-t5-the-text-to-text-transfer-transformer) de Google.T5 repose sur une architecture Transformer. Il traite toutes les tâches de NLP comme un problème de Text2Text (modèle Encoder-Decoder) en testant les limites du Trasnfer Learning appliqués à diverses tâches du TAL.
 Notre problématique sera donc formalisée en input de l'encoder.
 
+### Pré-requis
+
+Environnement virtuel Python 3.11 (conda ou venv)
+
+```
+pip install -r requirements.txt
+```
+
 ### Les données d'entrainement
 
 Le dataset utilisé pour le fine-tuning est le dataset [SEN : Sentiment analysis of Entities in News headlines](https://zenodo.org/records/5211931). C'est un ensemble de titres d'actualité politique qui ont été annotés par deux groupes d'annotateurs humains : un groupe de chercheurs et via l'Amazon Mechanical Turk service . Il est composé de 3819 titres d'actualité politique provenant de plusieurs grands médias en ligne en anglais et en polonais. Pour notre cas d'usage nous avons conservé uniquement les données en anglais et non abérantes ce qui réduit le dataset à 1102 entrées.  
