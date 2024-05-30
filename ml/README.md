@@ -25,7 +25,7 @@ pip install -r requirements.txt
 
 ### Les données d'entrainement
 
-Le dataset utilisé pour le fine-tuning est le dataset [SEN : Sentiment analysis of Entities in News headlines](https://zenodo.org/records/5211931). C'est un ensemble de titres d'actualité politique qui ont été annotés par deux groupes d'annotateurs humains : un groupe de chercheurs et via l'Amazon Mechanical Turk service . Il est composé de 3819 titres d'actualité politique provenant de plusieurs grands médias en ligne en anglais et en polonais. Pour notre cas d'usage nous avons conservé uniquement les données en anglais et non abérantes ce qui réduit le dataset à 1102 entrées.  
+Le dataset utilisé pour le fine-tuning est le dataset [SEN : Sentiment analysis of Entities in News headlines](https://zenodo.org/records/5211931). C'est un ensemble de titres d'actualité politique qui ont été annotés par deux groupes d'annotateurs humains : un groupe de chercheurs et via l'Amazon Mechanical Turk service . Il est composé de 3819 titres d'actualité politique provenant de plusieurs grands médias en ligne en anglais et en polonais. Pour notre cas d'usage nous avons conservé uniquement les données en anglais et non abérantes ce qui réduit le dataset à 2464 entrées.  
 La taille réduite du dataset a donc aussi joué sur la décision d'utiliser des modèles déjà pré-entrainés afin d'obtenir des résultats satisfaisants.
 
 Il est constitué de 3 colonnes :
@@ -38,9 +38,9 @@ Répartition des labels dans le dataset
 
 | Label    | Count |
 | -------- | ------- |
-| Negative  | 337    |
-| Neutral | 588   |
-| Positive  | 177 |
+| Negative  | 923    |
+| Neutral | 1097   |
+| Positive  | 444 |
 
 
 ### Entrainement
@@ -57,7 +57,7 @@ python conditional_generation_polarity.py args_conditional_generation.json
 ```
 
 ### Evaluation
-La métrique d'évaluation choisie est la f1. Elle est particulièrement utilisée pour les problèmes utilisant des données déséquilibrées ce qui est notre cas avec une sur représentation de la classe "Neutral". Notre problématique n'étant pas binaire (3 classes) il a fallu adapter la f1 en utilisant la variante macro (f1_macro = moyenne arithmétique des f1 de chaque classe). La  macro accorde autant d’importance à chacune des classes ce qui permet de faire face aux données déséquilibrées.
+La métrique d'évaluation choisie est la f1. Elle est particulièrement utilisée pour les problèmes utilisant des données déséquilibrées ce qui est notre cas avec une sous représentation de la classe "Positive". Notre problématique n'étant pas binaire (3 classes) il a fallu adapter la f1 en utilisant la variante macro (f1_macro = moyenne arithmétique des f1 de chaque classe). La  macro accorde autant d’importance à chacune des classes ce qui permet de faire face aux données déséquilibrées.
 
 | Model    | F1 Dev | F1 Test |
 | -------- | ------- | -- |
