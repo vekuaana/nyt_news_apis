@@ -16,6 +16,7 @@ from pymongo.errors import OperationFailure, ServerSelectionTimeoutError
 
 load_dotenv(find_dotenv())
 
+
 @dataclass
 class ModelArguments:
 
@@ -144,13 +145,9 @@ def read_data_from_mongo(collection, query={}, no_id=True):
     """ Read from Mongo and Store into DataFrame """
 
     def extract_data(db):
-        # Make a query to the specific DB and Collection
         cursor = db[collection].find(query)
-
-        # Expand the cursor and construct the DataFrame
         df = pd.DataFrame(list(cursor))
 
-        # Delete the _id
         if no_id:
             del df['_id']
 
@@ -186,7 +183,11 @@ def load_and_prepare_data(data_dir: str, path: str, text_col: str, label_col: st
     if not use_mongodb:
         df = pd.read_csv(data_dir + os.sep + path, sep=',', encoding='utf-8')
     else:
-        df = read_data_from_mongo('polarity_dataset')
+        try:
+            df = read_data_from_mongo('polarity_dataset')
+        except ServerSelectionTimeoutError:
+            df = pd.read_csv(data_dir + os.sep + path, sep=',', encoding='utf-8')
+
     df = df[df[label_col] != 'UNK']
     df["text"] = df[text_col]
     df[label_col] = [x.lower() for x in df[label_col]]

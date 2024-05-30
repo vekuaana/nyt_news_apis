@@ -14,7 +14,6 @@ from transformers import T5Tokenizer, T5ForConditionalGeneration
 from trainer_seq2seq import ModelArguments, DataTrainingArguments, load_and_prepare_data
 
 # base on https://www.dialog-21.ru/media/5916/moloshnikoviplusetal113.pdf
-# exemple qui focntionne en changeant Sanders par Biden : Is this text about Sanders is 'neutral', 'positive' or 'negative' ? text :  Buttigieg soars, Biden slips, Sanders still on top in newest New Hampshire poll
 # mlflow server --host 0.0.0.0 --port 8080
 
 os.environ["MLFLOW_EXPERIMENT_NAME"] = "polarity-classification"
@@ -35,7 +34,7 @@ def main():
     label2id = {'negative': 0, 'neutral': 1, 'positive': 2}
     id2label = {0: 'negative', 1: 'neutral', 2: 'positive'}
 
-    tokenizer = T5Tokenizer.from_pretrained(model_args.tokenizer_name if model_args.tokenizer_name else model_args.model_name_or_path)
+    tokenizer = T5Tokenizer.from_pretrained(model_args.tokenizer_name if model_args.tokenizer_name else model_args.model_name_or_path, add_prefix_space=True)
 
     f1_score = evaluate.load("f1")
 

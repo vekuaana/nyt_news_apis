@@ -4,7 +4,6 @@ import sys
 
 import torch
 import os
-import pandas as pd
 import numpy as np
 import evaluate
 import mlflow
@@ -12,11 +11,10 @@ import mlflow
 from transformers import DataCollatorForSeq2Seq, HfArgumentParser
 from transformers import AutoTokenizer
 from transformers import AutoModelForSeq2SeqLM, Seq2SeqTrainingArguments, Seq2SeqTrainer, set_seed
-from transformers import pipeline
+
 
 from trainer_seq2seq import ModelArguments, DataTrainingArguments, load_and_prepare_data
 # base on https://www.dialog-21.ru/media/5916/moloshnikoviplusetal113.pdf
-# exemple qui focntionne en changeant Sanders par Biden : Is this text about Sanders is 'neutral', 'positive' or 'negative' ? text :  Buttigieg soars, Biden slips, Sanders still on top in newest New Hampshire poll
 
 os.environ["MLFLOW_EXPERIMENT_NAME"] = "polarity-classification"
 os.environ["MLFLOW_FLATTEN_PARAMS"] = "1"
