@@ -60,7 +60,7 @@ python conditional_generation_polarity.py args_conditional_generation.json
 La métrique d'évaluation choisie est la f1. Elle est particulièrement utilisée pour les problèmes utilisant des données déséquilibrées ce qui est notre cas avec une sur représentation de la classe "Neutral". Notre problématique n'étant pas binaire (3 classes) il a fallu adapter la f1 en utilisant la variante macro (f1_macro = moyenne arithmétique des f1 de chaque classe). La  macro accorde autant d’importance à chacune des classes ce qui permet de faire face aux données déséquilibrées.
 
 | Model    | F1 Dev | F1 Test |
-| -------- | ------- |
+| -------- | ------- | -- |
 | Baseline T5 Flan-base | 0.38 | 0.44 |
 | Best T5 Flan-base fine-tune  | | |
 | Best T5-base fine-tune || |
