@@ -51,7 +51,7 @@ Deux modèles sont fine tunés :
 python sesq2seq_ml_polarity.py args_seq2seq_ml.json
 ```
 
-* Text2Text with Conditional Generation avec le modèle [Flan T5-base](https://huggingface.co/google/flan-t5-base) : Il possède le même nombre de paramètres que T5 mais il a déjà été "fine-tune" sur 1 000 tâches et plus de langues.
+* Text2Text with Conditional Generation avec le modèle [Flan T5-base](https://huggingface.co/google/flan-t5-base) : Il possède le même nombre de paramètres que T5 mais il a déjà été "fine-tune" sur 1 000 tâches et plus de langues. Méthode d'entrainement basée sur le prompting.
 ```python
 python conditional_generation_polarity.py args_conditional_generation.json
 ```
@@ -59,12 +59,14 @@ python conditional_generation_polarity.py args_conditional_generation.json
 ### Evaluation
 La métrique d'évaluation choisie est la f1. Elle est particulièrement utilisée pour les problèmes utilisant des données déséquilibrées ce qui est notre cas avec une sur représentation de la classe "Neutral". Notre problématique n'étant pas binaire (3 classes) il a fallu adapter la f1 en utilisant la variante macro (f1_macro = moyenne arithmétique des f1 de chaque classe). La  macro accorde autant d’importance à chacune des classes ce qui permet de faire face aux données déséquilibrées.
 
-| Model    | F1 |
+| Model    | F1 Dev | F1 Test |
 | -------- | ------- |
-| Baseline T5Flan-base |     |
-| Baseline  T5-base|     |
-| T5Flan-base FINE TUNE  |     |
-| T5-base FINE TUNE  |     |
+| Baseline T5 Flan-base | 0.38 | 0.44 |
+| Best T5 Flan-base fine-tune  | | |
+| Best T5-base fine-tune || |
+
+Note : pas de score Baseline pour T5 car il n'a été pré-entrainé que sur les tâches de 'summarization', 'translation_en_to_de', 'translation_en_to_fr' et 'translation_en_to_ro'
+
 ### Prediction
 /!\  A modifier après intégration de FastAPI  
 
