@@ -66,8 +66,31 @@ La métrique d'évaluation choisie est la f1. Elle est particulièrement utilis�
 | T5Flan-base FINE TUNE  |     |
 | T5-base FINE TUNE  |     |
 ### Prediction
-A modifier après intégration de FastAPI
-```python
-python predict.py
+/!\  A modifier après intégration de FastAPI  
+
+La fonction prend deux arguemnts :
+* --text : titre de l'article d'actualité du NYT entre deux guillemets
+* --year : année de parution de l'article au format yyyy
+* --verbose (optionnel) : affiche des informations sur les opérations effectuées
+
+Exemple :
 ```
+python predict.py --text "Buttigieg soars, Biden slips, Sanders still on top in newest New Hampshire poll" --year 2024 --verbose
+```
+
+Output :
+```
+Titre : Buttigieg soars, Biden slips, Sanders still on top in newest New Hampshire poll
+
+Model : trainer_seq2seq
+Entity : Biden
+Prediction : negative
+[{'entity': 'Biden', 'prediction': 'negative'}, {'entity': 'Trump', 'prediction': None}]
+
+Model : trainer_flan
+Entity : Biden
+Prediction : neutral
+[{'entity': 'Biden', 'prediction': 'neutral'}, {'entity': 'Trump', 'prediction': None}]
+```
+
 Note : Les temps d'exécution sont similaires lors de l'inférence pour uen phrase en input sur cpu et gpu 
