@@ -20,10 +20,11 @@ Spécificité :
 * Facilite le déploiment ;
 
 ## UML
-L'architecture est composée de 3 collections de données hébergées sur MongoDB:
+L'architecture est composée de 4 collections de données hébergées sur MongoDB:
 * La collection Book reprenant les informations sur les bestsellers du NYT.
 * La collection USA election articles reprenant les articles liés aux élections américaines. Elle est composée de données provenant des API Archive et Times wire ainsi que des données sorties du model d'analyse de sentiments (main_candidate, polarity) et du modèle de recommandation de livres (recommended_books).
 * La collection Election reprenant les informations liées aux différentes élections américaines.
+* La collection Polarity_dataset contient les données pour l'entrainement du modèle de ML pour l'analyse de sentiment
   
 <img width="1000" alt="Screenshot 2024-05-15 at 11 55 47" src=https://github.com/Linenlp/nyt_news/assets/40054464/98041af3-717b-4554-8466-22f07b2680bf>
 
