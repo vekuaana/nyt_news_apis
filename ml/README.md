@@ -88,7 +88,7 @@ python predict.py --text "Buttigieg soars, Biden slips, Sanders still on top in 
 
 Output :
 ```
-Titre : Biden Reacts to Trump’s Guilty Verdict
+Titre : Biden Goes After Trump’s Felon Status at Connecticut Fund-Raiser
 
 Model : trainer_seq2seq
 Prediction : negative
