@@ -2,11 +2,11 @@
         "election_id": 1,
         "election_year": "1852",
         "candidate": [{
-                "name": "Winfield Scott. ",
+                "name": "Winfield Scott",
                 "political_party": "democrat",
                 "winner_loser": "loser"
             }, {
-                "name": "Franklin Pierce ",
+                "name": "Franklin Pierce",
                 "political_party": "whig",
                 "winner_loser": "winner"
             }
@@ -28,7 +28,7 @@
         "election_id": 3,
         "election_year": "1860",
         "candidate": [{
-                "name": "Abraham Lincoln ",
+                "name": "Abraham Lincoln",
                 "political_party": "republican",
                 "winner_loser": "winner"
             }, {
@@ -41,7 +41,7 @@
         "election_id": 4,
         "election_year": "1864",
         "candidate": [{
-                "name": "Abraham Lincoln ",
+                "name": "Abraham Lincoln",
                 "political_party": "national union",
                 "winner_loser": "winner"
             }, {
