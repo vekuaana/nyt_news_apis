@@ -7,6 +7,7 @@ Cette étape consiste à consommer la donnée pour répondre à deux objectifs :
 ### Point du 04/06/2024
 * Quelles sont les bonnes pratiques pour stocker les modèles ? git-lfs? ne pas stocker le modèle dans github mais juste de quoi re-run ? (appel du script pour run dans Dockerfile ?)
 * Est ce normal que le fichier requirements.txt généré par MLFlow ne contienne pas tous les packagers nécessaires au run du modèle ?
+* Est ce qu’on peut créer notre propre dataset en utilisant l’outil Vader?(https://www.nltk.org/howto/sentiment.html)
 
 ### Point du 28/05/2024
 * Comment avoir accès à la BDD MongoDB qui est sur la VM depuis son propre poste en local ? (La BDD a été créée dans un conteneur)
