@@ -9,7 +9,7 @@ Cette étape consiste à consommer la donnée pour répondre à deux objectifs :
 
 La problématique combine à la fois l'analyse des entités et l'analyse des sentiments. L'objectif est de déterminer pour une entité donnée le sentiment (positif, négatif ou neutre) qui lui est associé dans un contexte précis.
 Pour répondre à la problématique nous nous sommes inspirés des travaux proposés lors de la [shared task RuSentNE](https://codalab.lisn.upsaclay.fr/competitions/9538). Voici les propositions que nous avons retenues pour créer notre propre modèle :
-* l'équipe [sag_m](https://www.dialog-21.ru/media/5916/moloshnikoviplusetal113.pdf) a proposée une solutionj basée dur de la génération de texte à texte (Text2Text Generation) à l'aide du modèle ruT5. L'étape de preprocessing consiste à proposer différentes variantes de la donnée en entrée pour mettre en valeur l'entity pour laquelle on cherche à déterminé la polarité.
+* l'équipe [sag_m](https://www.dialog-21.ru/media/5916/moloshnikoviplusetal113.pdf) a proposée une solution basée dur de la génération de texte à texte (Text2Text Generation) à l'aide du modèle ruT5. L'étape de preprocessing consiste à proposer différentes variantes de la donnée en entrée pour mettre en valeur l'entity pour laquelle on cherche à déterminé la polarité.
 * l'équipe mtsai a mis en place un seuil pour la classe neutre : lorsque la classe neutre est prédite, il faut que la probabilité associée soit supérieure à un seuil sinon la deuxième classe la plus probable est attribuée.
 
 Nous avons donc opté pour différentes variantes du modèle [T5](https://research.google/blog/exploring-transfer-learning-with-t5-the-text-to-text-transfer-transformer) de Google.T5 repose sur une architecture Transformer. Il traite toutes les tâches de NLP comme un problème de Text2Text (modèle Encoder-Decoder) en testant les limites du Trasnfer Learning appliqués à diverses tâches du TAL.
@@ -42,6 +42,9 @@ Répartition des labels dans le dataset
 | Neutral | 1097   |
 | Positive  | 444 |
 
+### Preprocessing 
+* data augmentation : La classe Positive est sous représentée. Nous avons ajouté une étape de data augmentation par bask translation (en-fr-en) en utilisant le  modèle Flan T5. 80 titres ont été ajoutés en rempalçant le nom des entités par des entités articielles.
+* input : Les données en entrée sont contextualisées. On préfixe le texte en entrée avec la tâche, l'entité pour laquelle on cherche à détermienr la polarité du texte et les labels possibles : "Is this text about ENTITY is 'neutral', 'positive' or 'negative' ? text : TEXT"
 
 ### Entrainement
 
@@ -62,8 +65,8 @@ La métrique d'évaluation choisie est la f1. Elle est particulièrement utilis�
 | Model    | F1 Dev | F1 Test |
 | -------- | ------- | -- |
 | Baseline T5 Flan-base | 0.38 | 0.44 |
-| Best T5 Flan-base fine-tune  | | |
-| Best T5-base fine-tune || |
+| Best T5 Flan-base fine-tune | 0.64| 0.69|
+| Best T5-base fine-tune | 0.62| 0.69|
 
 Note : pas de score Baseline pour T5 car il n'a été pré-entrainé que sur les tâches de 'summarization', 'translation_en_to_de', 'translation_en_to_fr' et 'translation_en_to_ro'
 
@@ -82,17 +85,15 @@ python predict.py --text "Buttigieg soars, Biden slips, Sanders still on top in 
 
 Output :
 ```
-Titre : Buttigieg soars, Biden slips, Sanders still on top in newest New Hampshire poll
+Titre : Biden Reacts to Trump’s Guilty Verdict
 
 Model : trainer_seq2seq
-Entity : Biden
 Prediction : negative
-[{'entity': 'Biden', 'prediction': 'negative'}, {'entity': 'Trump', 'prediction': None}]
+[{'entity': 'Biden', 'prediction': 'neutral'}, {'entity': 'Trump', 'prediction': 'negative'}]
 
 Model : trainer_flan
-Entity : Biden
 Prediction : neutral
-[{'entity': 'Biden', 'prediction': 'neutral'}, {'entity': 'Trump', 'prediction': None}]
+[{'entity': 'Biden', 'prediction': 'neutral'}, {'entity': 'Trump', 'prediction': 'negative'}]
 ```
 
 Note : Les temps d'exécution sont similaires lors de l'inférence pour uen phrase en input sur cpu et gpu 
