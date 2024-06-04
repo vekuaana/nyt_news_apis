@@ -4,9 +4,10 @@ from datetime import datetime
 from dataclasses import dataclass
 from dataclasses_json import dataclass_json
 from typing import Optional
+from pymongo.errors import OperationFailure, ServerSelectionTimeoutError
 
 from nyt_news.nyt.api_nyt import NYTConnector
-
+from nyt_news.db.connection import MongoDBConnection
 
 @dataclass_json
 @dataclass
@@ -34,6 +35,15 @@ class ETL(NYTConnector):
     def __init__(self):
         self.nyt_newswire_counter = 1
         super().__init__()
+        try:
+            # Attempt to connect to MongoDB within a container environment
+            self.db = MongoDBConnection('mongodb').conn_db
+        except ServerSelectionTimeoutError:
+            # Handle the case where the connection times out if we try to connect outside the container
+            print("Try to connect outside the container with localhost")
+            self.db = MongoDBConnection('localhost').conn_db
+        except OperationFailure as of:
+            print(of)
 
     def extract_nyt_newswire_article(self):
         """
@@ -46,6 +56,10 @@ class ETL(NYTConnector):
         list_json = []
 
         for doc in res:
+            election = self.db['election'].find_one({'election_year': datetime.fromisoformat(doc['published_date']).strftime("%Y")})
+            election_id = election['election_id']
+            entities = [x["name"].split()[-1] for x in election['candidate']]
+            main_candidate = [x for x in entities if x in [x.split(',')[0] for x in doc['per_facet']]]
             data = Article(abstract=doc['abstract'],
                            headline=doc['title'],
                            keywords=doc['per_facet'] + doc['org_facet'] + doc['des_facet'],
@@ -55,7 +69,8 @@ class ETL(NYTConnector):
                            byline=doc['byline'],
                            web_url=doc['url'],
                            uri=doc['uri'],
-                           main_candidate="pending")
+                           main_candidate=''.join(main_candidate),
+                           election_id=election_id)
 
             list_json.append(data.to_dict())
         return list_json

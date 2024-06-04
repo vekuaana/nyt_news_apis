@@ -4,33 +4,7 @@ from pymongo import MongoClient
 from pymongo.errors import OperationFailure, ServerSelectionTimeoutError
 from dotenv import load_dotenv, find_dotenv
 from nyt_news.nyt.data_collector import ETL
-
-load_dotenv(find_dotenv())
-
-
-def get_db(host):
-    """
-        Connect to the MongoDB instance and return the database object.
-
-        Args:
-            host (str): 'localhost' or 'mongodb' (container name)
-
-        Returns:
-            mongodb: The database object if the connection is successful.
-        """
-
-    try:
-        client = MongoClient(host=host,
-                             port=27017,
-                             username=os.getenv('USER1'),
-                             password=os.getenv('PASSWORD1'),
-                             authSource=os.getenv('MONGO_INITDB_DATABASE'))
-
-        client.server_info()
-        mongodb = client[os.getenv('MONGO_INITDB_DATABASE')]
-        return mongodb
-    except OperationFailure as of:
-        print(of)
+from nyt_news.db.connection import MongoDBConnection
 
 
 class Injector:
@@ -38,11 +12,11 @@ class Injector:
         self.etl = ETL()
         try:
             # Attempt to connect to MongoDB within a container environment
-            self.db = get_db('mongodb')
+            self.db = MongoDBConnection('mongodb').conn_db
         except ServerSelectionTimeoutError:
             # Handle the case where the connection times out if we try to connect outside the container
             print("Try to connect outside the container with localhost")
-            self.db = get_db('localhost')
+            self.db = MongoDBConnection('localhost').conn_db
         except OperationFailure as of:
             print(of)
 
