@@ -68,11 +68,11 @@ La métrique d'évaluation choisie est la f1. Elle est particulièrement utilis�
 | Model    | F1 Dev | F1 Test |
 | -------- | ------- | -- |
 | Baseline T5 Flan-base | 0.38 | 0.44 |
-| Best T5 Flan-base fine-tune | 0.64| 0.69|
+| **Best T5 Flan-base fine-tune** | **0.64**| **0.69**|
 | Best T5-base fine-tune | 0.62| 0.69|
 
-Note : pas de score Baseline pour T5 car il n'a été pré-entrainé que sur les tâches de 'summarization', 'translation_en_to_de', 'translation_en_to_fr' et 'translation_en_to_ro'
-
+Note 1 : pas de score Baseline pour T5 car il n'a été pré-entrainé que sur les tâches de 'summarization', 'translation_en_to_de', 'translation_en_to_fr' et 'translation_en_to_ro'
+Note 2 : modèle implémenté en gras dans le tableau
 ### Prediction
 /!\  A modifier après intégration de FastAPI  
 
