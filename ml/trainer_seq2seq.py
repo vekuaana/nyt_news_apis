@@ -1,6 +1,8 @@
 # coding:utf-8
 
 import os
+import re
+import random
 import pandas as pd
 
 from dotenv import load_dotenv, find_dotenv
@@ -8,7 +10,10 @@ from typing import Optional, Union
 from dataclasses import dataclass, field
 from datasets import Dataset, DatasetDict
 
+from transformers import T5ForConditionalGeneration, AutoTokenizer
+
 from sklearn.model_selection import train_test_split
+from sklearn.utils import shuffle
 
 from pymongo import MongoClient
 from pymongo.errors import OperationFailure, ServerSelectionTimeoutError
@@ -56,6 +61,10 @@ class DataTrainingArguments:
     extract_from_mongodb: Optional[bool] = field(
         default=False,
         metadata={"help": "Whether to use MongoDB dataset"},
+    )
+    add_data_augmentation: Optional[bool] = field(
+        default=False,
+        metadata={"help": "Whether to apply data augmentation"},
     )
     text_column_name: Optional[str] = field(
         default='text', metadata={"help": "The column name of text to input in the csv file."}
@@ -116,9 +125,9 @@ class DataTrainingArguments:
     )
 
 
-def get_db(host):
+def get_db(host: str):
     """
-        Connect to the MongoDB instance and return the database object.
+    Connect to the MongoDB instance and return the database object.
 
         Args:
             host (str): 'localhost' or 'mongodb' (container name)
@@ -141,8 +150,15 @@ def get_db(host):
         print(of)
 
 
-def read_data_from_mongo(collection, query={}, no_id=True):
-    """ Read from Mongo and Store into DataFrame """
+def read_data_from_mongo(collection: str, query={}, no_id: bool = True):
+    """
+    Read from MongoDB and store the result into df
+
+    Args:
+        collection (str): name of the MongoDB collection
+        query (Dict[str, Any]): the MongoDB query to execute
+        no_id (bool): Whether to exclude the '_id' field from df
+    """
 
     def extract_data(db):
         cursor = db[collection].find(query)
@@ -166,7 +182,13 @@ def read_data_from_mongo(collection, query={}, no_id=True):
         return None
 
 
-def load_and_prepare_data(data_dir: str, path: str, text_col: str, label_col: str, use_mongodb: bool) -> DatasetDict:
+def load_and_prepare_data(data_dir: str,
+                          path: str,
+                          text_col: str,
+                          label_col: str,
+                          use_mongodb: bool,
+                          add_data_augmentation: bool,
+                          task: str = 'text2text') -> DatasetDict:
     """
     Load and prepare dataset for training  (train), validation (dev), and testing (test).
 
@@ -176,24 +198,32 @@ def load_and_prepare_data(data_dir: str, path: str, text_col: str, label_col: st
         text_col (str): name of the column containing the text data.
         label_col (str): name of the column containing the labels.
         use_mongodb (bool): whether to use the MongoDB dataset
+        add_data_augmentation (bool): whether to add data augmentation for positive text
+        task (str): two values -> 'sequence_classification' or 'text2text'. If 'sequence_classification', convert labels to ids
 
     Returns:
         DatasetDict: A dictionary containing the train, dev and test datasets.
     """
     if not use_mongodb:
         df = pd.read_csv(data_dir + os.sep + path, sep=',', encoding='utf-8')
+
     else:
         try:
             df = read_data_from_mongo('polarity_dataset')
         except ServerSelectionTimeoutError:
             df = pd.read_csv(data_dir + os.sep + path, sep=',', encoding='utf-8')
 
-    df = df[df[label_col] != 'UNK']
     df["text"] = df[text_col]
     df[label_col] = [x.lower() for x in df[label_col]]
 
-    train_temp, test = train_test_split(df, test_size=0.2, random_state=15)
-    train, dev = train_test_split(train_temp, test_size=0.2, random_state=15)
+    if task == "sequence_classification":
+        df['labels'] = [0 if x == 'negative' else 1 if x == 'neutral' else 2 for x in df[label_col]]
+
+    train, test_tmp = train_test_split(df, test_size=0.2, random_state=78)
+    test, dev = train_test_split(test_tmp, test_size=0.5, random_state=72)
+
+    if add_data_augmentation:
+        train = apply_data_augmentation(train, label_col)
 
     train_dataset = Dataset.from_pandas(train)
     dev_dataset = Dataset.from_pandas(dev)
@@ -205,3 +235,59 @@ def load_and_prepare_data(data_dir: str, path: str, text_col: str, label_col: st
     datasets['dev'] = dev_dataset
 
     return datasets
+
+
+def apply_data_augmentation(df: pd.DataFrame, col: str) -> pd.DataFrame:
+    """
+    Apply data augmentation by back-translating on positive examples.
+    Replace entities with random names.
+
+    Args:
+        df (DataFrame): The train DataFrame containing the data.
+        col (str): The column name to filter positive examples.
+
+    Returns:
+        DataFrame: The augmented DataFrame.
+    """
+    back_translator = BackTranslator()
+    positive_examples = df[df[col] == 'positive']
+    shuffled_examples = shuffle(positive_examples, random_state=5).head(80)
+
+    shuffled_examples['text'] = shuffled_examples['text'].apply(back_translator.back_translate)
+
+    shuffled_examples['entity_present'] = shuffled_examples.apply(
+        lambda row: row['entity'] in row['text'], axis=1
+    )
+    valid_examples = shuffled_examples[shuffled_examples['entity_present']].copy()
+
+    names = ["Smith", "Davis", "Garcia", "Lopez", "Anderson", "Ramirez", "CampBell", "Mitchell"]
+    valid_examples['old_entity'] = valid_examples['entity']
+    valid_examples['entity'] = valid_examples['entity'].apply(lambda x: random.choice(names))
+    valid_examples['text'] = valid_examples.apply(
+        lambda row: re.sub(re.escape(row['old_entity']), row['entity'], row['text']),
+        axis=1
+    )
+
+    valid_examples.drop(columns=['entity_present', 'old_entity'], inplace=True)
+    augmented_df = shuffle(pd.concat([df, valid_examples], ignore_index=True))
+
+    return augmented_df
+
+
+class BackTranslator:
+    def __init__(self):
+        self.tokenizer = AutoTokenizer.from_pretrained("google/flan-t5-base")
+        self.model = T5ForConditionalGeneration.from_pretrained("google/flan-t5-base", max_length=200)
+
+    def translate(self, text: str, source_lang: str, target_lang: str) -> str:
+        input_text = f"translate from {source_lang} to {target_lang}: {text}"
+        input_ids = self.tokenizer(input_text, return_tensors="pt")
+        outputs = self.model.generate(**input_ids)
+        translated_text = self.tokenizer.decode(outputs[0], skip_special_tokens=True)
+        return translated_text
+
+    def back_translate(self, text: str) -> str:
+        french_text = self.translate(text, "English", "French")
+        back_translated_text = self.translate(french_text, "French", "English")
+        return back_translated_text
+

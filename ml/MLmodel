@@ -1,0 +1,21 @@
+artifact_path: checkpoint-500
+flavors:
+  python_function:
+    artifacts:
+      model_path:
+        path: artifacts\checkpoint-500
+        uri: trainer_flan\checkpoint-500
+    cloudpickle_version: 3.0.0
+    code: null
+    env:
+      conda: conda.yaml
+      virtualenv: python_env.yaml
+    loader_module: mlflow.pyfunc.model
+    python_model: python_model.pkl
+    python_version: 3.11.9
+    streamable: false
+mlflow_version: 2.13.0
+model_size_bytes: 2972049049
+model_uuid: 6be764cfcc1d4c8ea6f8458af2d561aa
+run_id: f8b3630697834cf6bee959d0f0bca4f4
+utc_time_created: '2024-06-04 11:18:24.051535'
