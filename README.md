@@ -2,6 +2,18 @@
 ## Pré-requis
 Python 3.11
 
+## Installation
+
+Modifier les fichiers  **.env.example** et **api.cfg** avec les informations d'authentification. Renommer **.env.example** en >> **.env**
+```bash
+├── nyt_news
+│   ├── app.cfg
+├── .env.example
+```
+Lancer la commande suivante :
+```console
+docker-compose up -d
+```
 ## Objectifs
 Réalisation d'une API qui offre une perspective dynamique sur les élections américaines.
 Dans un paysage politique en perpétuelle évolution, nous souhaitons mettre en évidence l'importance de rester informé et de comprendre les nuances des médias.
@@ -14,7 +26,8 @@ Dans un paysage politique en perpétuelle évolution, nous souhaitons mettre en 
 | Comparaison historique | Examiner comment le climat médiatique actuel se compare à celui des trois dernières élections. Détection de la polarité dans les archives. | headline - **API Archive** | Neutre - Négatif - Positif |  SEN : Sentiment analysis of Entities in News headlines :https://zenodo.org/records/5211931 |
 
 ## Architecture (draft)
-![architecture_nyt (1)](https://github.com/Linenlp/nyt_news/assets/40054464/da52c303-0766-487d-af10-9d94b81dc4fe)
+![architecture_nyt](https://github.com/Linenlp/nyt_news/assets/40054464/2c75def2-3ea3-453c-baa5-8a5ea578b510)
+
 
 ## Cas d'utilisations 
 <img width="1530" alt="Capture d’écran 2024-05-13 à 19 23 06" src="https://github.com/Linenlp/nyt_news/assets/168664836/875c1ff9-5b40-4fe5-ab7c-646e890b8de4">

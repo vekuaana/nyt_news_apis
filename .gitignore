@@ -120,7 +120,7 @@ celerybeat.pid
 *.sage.py
 
 # Environments
-.env
+mongodb/.env
 .venv
 env/
 venv/
@@ -167,4 +167,7 @@ cython_debug/
 docs/*
 !docs/*.md
 output/*
-docker_mongo/*
+docker_mongo
+mlruns/*
+.env
+api.cfg

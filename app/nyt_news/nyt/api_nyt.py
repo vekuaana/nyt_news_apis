@@ -8,8 +8,9 @@ import math
 import datetime
 from datetime import datetime
 import re
-from pprint import pprint
-import ScrapperAppleBooks as sc
+from nyt_news.config import api_nyt_path
+
+from nyt_news import ScrapperAppleBooks as sc
 
 # Base URLs for NYT APIs
 BASE_URL = "https://api.nytimes.com/svc/"
@@ -33,7 +34,7 @@ class NYTConnector:
         Initializes the NYTConnector by reading the API key from a configuration file.
         """
         cfg = configparser.ConfigParser()
-        cfg.read('api.cfg')
+        cfg.read(api_nyt_path)
         self.API_KEY = cfg.get('KEYS', 'key_nyt_news')
 
     def request_times_newswire(self,
@@ -59,11 +60,6 @@ class NYTConnector:
         # Construct the endpoint with the source and section
         url = f"{BASE_URL_NEWSWIRE}/{source}/{section}.json"
 
-        # Generate an output file name for saving the data
-        now = datetime.datetime.now()  # Get the current time
-        section_clean = CLEAN_FILE_NAME_REGEX.sub('', section)
-        output_file_name = f"data_news_wire_{section_clean}_{now.strftime('%Y%m%d%H%M%S')}.json"
-
         # Send the HTTP GET request to the API and get the JSON response
         response = requests.get(url, params=params).json()
         num_results = response.get('num_results', 0)
@@ -71,14 +67,15 @@ class NYTConnector:
 
         results = response.get('results', [])
 
-        # If results exist, save them to the output file
+        # If results exist, filter with subsection and person entity
+        filtered_results = []
         if results:
             filtered_results = [doc for doc in results if doc["subsection"] == subsection
                                 or (set(doc["per_facet"]).intersection(set(per_facet)))]
-            with open(output_file_name, 'w', encoding='utf-8') as f:
-                json.dump(filtered_results, f, ensure_ascii=False, indent=4)
+            print("Number of filtered results:", len(filtered_results))
 
-        return results
+        return filtered_results
+
 
     def request_archive(self, month: int, year: int):
         """
@@ -183,44 +180,44 @@ class NYTConnector:
                 json.dump(response, f, ensure_ascii=False, indent=4)
 
         return response
-    
+
     def request_bestsellers(self, list_name, start_date, end_date):
         """
-        This function retrieves the unique bestsellers books of the NYT of a specific list over a specified period and 
-        save it in a JSON file. 
+        This function retrieves the unique bestsellers books of the NYT of a specific list over a specified period and
+        save it in a JSON file.
 
-        Args : 
-            list_name : The name of the list to be fetch. 
+        Args :
+            list_name : The name of the list to be fetch.
             start_date : The starting date for the retrieval of books.
             end_date : The end date for the retrieval of books.
 
-        Retruns: 
-            A list of the published dates the loop when through. 
+        Retruns:
+            A list of the published dates the loop when through.
             A list of NYT best sellers from the starting date until the end date.
 
         """
         date_format = '%Y-%m-%d'
         end_date_obj = datetime.strptime(end_date, date_format)
-        next_published_date = start_date # Inital date to start fetching the books.
-        next_published_date_obj = datetime.strptime(start_date, date_format) # Inital date to start fetching the books.
+        next_published_date = start_date  # Inital date to start fetching the books.
+        next_published_date_obj = datetime.strptime(start_date, date_format)  # Inital date to start fetching the books.
 
-        unique_titles = [] # List of unique book titles
-        published_dates = [] # List of the published date the loop went through.
-        books = [] # List to store books
+        unique_titles = []  # List of unique book titles
+        published_dates = []  # List of the published date the loop went through.
+        books = []  # List to store books
 
         while next_published_date_obj <= end_date_obj:
 
-            # Build the endpoint URL for fetching the book list. 
+            # Build the endpoint URL for fetching the book list.
             url = f"{BASE_URL_BOOKS}/lists/{next_published_date}/{list_name}.json"
 
-            counter_request = 1 # Initial number of requests.
-            total_request_iteration = 1 # Initial number of requests iterations of the same list
-            offset = 0 # Start reading the book list from the first book in the list
+            counter_request = 1  # Initial number of requests.
+            total_request_iteration = 1  # Initial number of requests iterations of the same list
+            offset = 0  # Start reading the book list from the first book in the list
 
             while counter_request <= total_request_iteration:
 
                 # Set request parameters
-                params = {"api-key": self.API_KEY, "offset" : str(offset)}
+                params = {"api-key": self.API_KEY, "offset": str(offset)}
 
                 # Send the HTTP GET request and get the JSON response
                 response = requests.get(url, params=params).json()
@@ -232,36 +229,36 @@ class NYTConnector:
                 books_list = response['results']['books']
 
                 for book in books_list:
-                    
+
                     title = book["title"]
 
                     # if the title is not in the list of unique title, add the book to the books list
                     if title not in unique_titles:
-                        applebooks_url = None # Handle the case when no apple links are provided
+                        applebooks_url = None  # Handle the case when no apple links are provided
                         buy_links = book.get('buy_links', [])  # Get the 'buy_links' list or an empty list if not present
                         for link in buy_links:
                             if link.get('name') == 'Apple Books':
                                 applebooks_url = link.get('url')
 
                         new_book = {
-                                        "title": book["title"],
-                                        "author": book["author"],
-                                        "publisher": book["publisher"],
-                                        "book_uri": book["book_uri"],
-                                        "buy_links": applebooks_url
-                                    }
-                        
+                            "title": book["title"],
+                            "author": book["author"],
+                            "publisher": book["publisher"],
+                            "book_uri": book["book_uri"],
+                            "buy_links": applebooks_url
+                        }
+
                         books.append(new_book)
                         unique_titles.append(title)
 
-                total_request_iteration = math.ceil(num_books/20) # The total number of request calls needed
-                counter_request += 1 # Increase the request counter
-                offset += 20 # Add 20 to the offset to query the next 20 books
+                total_request_iteration = math.ceil(num_books / 20)  # The total number of request calls needed
+                counter_request += 1  # Increase the request counter
+                offset += 20  # Add 20 to the offset to query the next 20 books
 
                 # According to NYT FAQ, sleep 12 seconds between requests to avoid rate limits
                 time.sleep(12)
-                
-            next_published_date = response['results']['next_published_date'] # Get the publication date of the next list 
+
+            next_published_date = response['results']['next_published_date']  # Get the publication date of the next list
             if next_published_date:
                 published_dates.append(next_published_date)
 
@@ -314,10 +311,10 @@ if __name__ == "__main__":
     # nyt_c.request_by_keyword('Presidential Election of 2024', 'data_us_election', '20240508', '20240512')
     # nyt_c.request_bestsellers_list()
 
-file_paths = "data/merged_nonfiction_bestsellers.json"
-with open(file_paths, 'r') as file:
-        data = json.load(file)
+    file_paths = "data/merged_nonfiction_bestsellers.json"
+    with open(file_paths, 'r') as file:
+            data = json.load(file)
 
-new_list = nyt_c.add_books_genre_and_abstract(data)
+    new_list = nyt_c.add_books_genre_and_abstract(data)
 
 
