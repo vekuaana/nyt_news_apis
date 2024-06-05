@@ -83,7 +83,7 @@ La fonction prend deux arguemnts :
 
 Exemple :
 ```
-python predict.py --text "Buttigieg soars, Biden slips, Sanders still on top in newest New Hampshire poll" --year 2024 --verbose
+python predict.py --text "Biden Goes After Trump’s Felon Status at Connecticut Fund-Raiser" --year 2024 --verbose
 ```
 
 Output :
