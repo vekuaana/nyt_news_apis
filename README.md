@@ -9,6 +9,9 @@ Modifier les fichiers  **.env.example** et **api.cfg** avec les informations d'a
 ├── nyt_news
 │   ├── api.cfg
 ├── .env.example
+├── ml
+    ├── polarity
+        ├── .env.example
 ```
 Lancer la commande suivante :
 ```console
