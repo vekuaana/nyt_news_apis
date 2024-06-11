@@ -1,7 +1,4 @@
-import base64
-import pandas as pd
 from pydantic import BaseModel
-from typing import List
 from fastapi import Depends, FastAPI, HTTPException, Request
 from typing import Optional
 from datetime import datetime
@@ -10,7 +7,6 @@ from predict_polarity import Polarity
 
 app = FastAPI()
 
-
 model = None
 
 
@@ -18,9 +14,6 @@ model = None
 def get_model():
     global model
     model = Polarity("flan_seq2seq_model")
-
-
-app = FastAPI()
 
 
 class Article(BaseModel):
