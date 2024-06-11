@@ -23,6 +23,15 @@ Environnement virtuel Python 3.11 (conda ou venv)
 pip install -r requirements.txt
 ```
 
+Modifier le fichier .env.example avec les informations d'authentification. Renommer .env.example en >> .env.
+
+```bash
+
+├── ml
+    ├── polarity
+        ├── .env.example
+```
+
 ### Les données d'entrainement
 
 Le dataset utilisé pour le fine-tuning est le dataset [SEN : Sentiment analysis of Entities in News headlines](https://zenodo.org/records/5211931). C'est un ensemble de titres d'actualité politique qui ont été annotés par deux groupes d'annotateurs humains : un groupe de chercheurs et via l'Amazon Mechanical Turk service . Il est composé de 3819 titres d'actualité politique provenant de plusieurs grands médias en ligne en anglais et en polonais. Pour notre cas d'usage nous avons conservé uniquement les données en anglais et non abérantes ce qui réduit le dataset à 2464 entrées.  
