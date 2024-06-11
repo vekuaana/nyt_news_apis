@@ -4,10 +4,10 @@ Python 3.11
 
 ## Installation
 
-Modifier les fichiers  **.env.example** et **api.cfg** avec les informations d'authentification. Renommer **.env.example** en >> **.env**
+Modifier les fichiers  **.env.example** et **api.cfg** avec les informations d'authentification. Renommer **.env.example** en >> **.env** et **api.example.cfg** en >> **api.cfg**.
 ```bash
 ├── nyt_news
-│   ├── app.cfg
+│   ├── api.cfg
 ├── .env.example
 ```
 Lancer la commande suivante :
