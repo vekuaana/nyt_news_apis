@@ -1,9 +1,0 @@
-name: seq2seq_model
-
-conda_env: conda.yaml
-
-entry_points:
-  main:
-    parameters:
-      json_file: {type: str, default: args_seq2seq_ml.json}
-    command: "python3 seq2seq_ml_polarity.py {json_file}"

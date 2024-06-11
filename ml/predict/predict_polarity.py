@@ -1,5 +1,6 @@
 from transformers import pipeline, T5Tokenizer
 import re
+import os
 
 
 class Polarity:
@@ -11,7 +12,7 @@ class Polarity:
                 model_name (str): name of the model to use for text generation.
                 device (str): device between 'cuda' and 'cpu'
         """
-        self.model = pipeline("text2text-generation", model=model_name, max_new_tokens=1, device=device)
+        self.model = pipeline("text2text-generation", model='..' + os.sep + 'models' + os.sep + model_name, max_new_tokens=1, device=device)
         # TODO : to complete
         self.entities = [{"date": 2024,
                          "candidates": ["Biden", "Trump"]},
@@ -104,12 +105,11 @@ if __name__ == '__main__':
     args = parser.parse_args()
 
     device = 'cpu'
-    models = ["flan_seq2seq_model", "trainer_seq2seq"]
+    model = "flan_seq2seq_model"
     if args.verbose:
         print("Titre :", args.text)
-    for m in models:
-        if args.verbose:
-            print("\nModel :", m)
-        get_polarity = Polarity(m, device)
-        if args.verbose:
-            print(get_polarity.predict(args.text, args.year, args.verbose))
+    if args.verbose:
+        print("\nModel :", model)
+    get_polarity = Polarity(model, device)
+    if args.verbose:
+        print(get_polarity.predict(args.text, args.year, args.verbose))

@@ -1,0 +1,9 @@
+name: flan_seq2seq_model
+
+conda_env: conda.yaml
+
+entry_points:
+  main:
+    parameters:
+      json_file: {type: str, default: args_conditional_generation.json}
+    command: "python3 conditional_generation_polarity.py {json_file}"

@@ -1,26 +1,25 @@
 # coding:utf-8
-
 import sys
+
 import torch
 import os
 import numpy as np
 import evaluate
 import mlflow
-
 from sklearn.metrics import classification_report
 
-from transformers import DataCollatorForSeq2Seq, HfArgumentParser
-from transformers import AutoTokenizer
-from transformers import AutoModelForSeq2SeqLM, Seq2SeqTrainingArguments, Seq2SeqTrainer, set_seed
-from transformers import EarlyStoppingCallback
+from transformers import DataCollatorForSeq2Seq, HfArgumentParser, EarlyStoppingCallback
+from transformers import Seq2SeqTrainingArguments, Seq2SeqTrainer, set_seed
+from transformers import T5Tokenizer, T5ForConditionalGeneration
 
 from trainer_seq2seq import ModelArguments, DataTrainingArguments, load_and_prepare_data
+
+# mlflow server --host 0.0.0.0 --port 8080
 
 os.environ["MLFLOW_EXPERIMENT_NAME"] = "polarity_classif"
 os.environ["MLFLOW_FLATTEN_PARAMS"] = "1"
 os.environ["MLFLOW_TRACKING_URI"]=""
 os.environ["HF_MLFLOW_LOG_ARTIFACTS"]="1"
-
 
 def main():
     parser = HfArgumentParser((ModelArguments, DataTrainingArguments, Seq2SeqTrainingArguments ))
@@ -32,26 +31,29 @@ def main():
         device = "cuda"
     else:
         device = "cpu"
-
     label2id = {'negative': 0, 'neutral': 1, 'positive': 2}
+    id2label = {0: 'negative', 1: 'neutral', 2: 'positive'}
 
-    tokenizer = AutoTokenizer.from_pretrained(model_args.tokenizer_name if model_args.tokenizer_name else model_args.model_name_or_path)
+    tokenizer = T5Tokenizer.from_pretrained(model_args.tokenizer_name if model_args.tokenizer_name else model_args.model_name_or_path)
+
     f1_score = evaluate.load("f1")
 
     def preprocess_function(examples):
-        inputs = ["Is this text about " + entity + " is 'neutral', 'positive' or 'negative'  : " + doc for
-                  doc, entity in list(zip(examples['text'], examples['entity']))]
+        inputs = ["Is this text about " + entity + " is 'neutral', 'positive' or 'negative' ? text : " + doc for
+                  doc, entity in list(zip(examples[data_args.text_column_name], examples['entity']))]
         model_inputs = tokenizer(inputs, max_length=200, truncation=True)
-        labels = tokenizer(text_target=examples[data_args.label_column_name], max_length=10, truncation=True)
+        labels = tokenizer(text_target=examples[data_args.label_column_name], max_length=8, truncation=True)
         model_inputs["labels"] = labels["input_ids"]
         return model_inputs
 
     def compute_metrics(eval_pred):
+
         preds, labels = eval_pred
-        decoded_preds = tokenizer.batch_decode(preds, skip_special_tokens=model_args.skip_special_tokens)
         labels = np.where(labels != -100, labels, tokenizer.pad_token_id)
 
+        decoded_preds = tokenizer.batch_decode(preds, skip_special_tokens=model_args.skip_special_tokens)
         decoded_labels = tokenizer.batch_decode(labels, skip_special_tokens=model_args.skip_special_tokens)
+
         id_decoded_preds = [label2id[x] if x in label2id else 1 for x in decoded_preds]
         id_decoded_labels = [label2id[x] if x in label2id else 1 for x in decoded_labels]
         result = f1_score.compute(predictions=id_decoded_preds, references=id_decoded_labels, average='macro')
@@ -68,11 +70,10 @@ def main():
 
     tokenized_data = data.map(preprocess_function, batched=True)
 
-    model = AutoModelForSeq2SeqLM.from_pretrained(model_args.model_name_or_path)
+    model = T5ForConditionalGeneration.from_pretrained(model_args.model_name_or_path)
     model.to(device)
 
     data_collator = DataCollatorForSeq2Seq(tokenizer=tokenizer, model=model)
-
     trainer = Seq2SeqTrainer(
         model=model,
         args=training_args,
@@ -81,13 +82,13 @@ def main():
         tokenizer=tokenizer,
         data_collator=data_collator,
         compute_metrics=compute_metrics,
-        callbacks=[EarlyStoppingCallback(early_stopping_patience=3)]
+        callbacks=[EarlyStoppingCallback(early_stopping_patience=1)]
     )
 
     if training_args.do_train:
         train_results = trainer.train()
         mlflow.end_run()
-        trainer.save_model(training_args.output_dir)
+        trainer.save_model('..' + os.sep + 'models' + os.sep + training_args.output_dir)
         metrics = train_results.metrics
         trainer.log_metrics("train", metrics)
         trainer.save_metrics("train", metrics)
@@ -114,14 +115,13 @@ def main():
         if trainer.is_world_process_zero():
             with open(test_predictions_file, "w") as writer:
                 print("---- Predict results ----")
-                writer.write("index\ttext\tentity\tgold\tprediction\n")
+                writer.write("index\ttext\tgold\tprediction\n")
                 for index, item in enumerate(dec_preds):
                     g = dec_labels[index]
-                    entity = tokenized_data['test'][index]['entity']
-                    text = tokenized_data['test'][index][data_args.text_column_name]
+                    text = tokenized_data['test'][index]['text']
                     if g!=item:
-                        print(f"{index}\t{text}\t{entity}\t{g}\t{item}\n")
-                    writer.write(f"{index}\t{text}\t{entity}\t{g}\t{item}\n")
+                        print(f"{index}\t{text}\t{g}\t{item}\n")
+                    writer.write(f"{index}\t{text}\t{g}\t{item}\n")
 
 
 if __name__ == '__main__':

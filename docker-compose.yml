@@ -53,6 +53,29 @@ services:
       networks:
         - mongo-compose-network
 
+    polarity:
+      container_name: polarity_trainer
+      build:
+        context: ./ml/polarity
+        dockerfile: Dockerfile
+      depends_on:
+        - mongodb
+      networks:
+        - mongo-compose-network
+      volumes:
+        - ./ml/models:/models
+
+    prediction:
+      container_name: predict
+      build:
+        context: ./ml/predict
+        dockerfile: Dockerfile
+      networks:
+        - mongo-compose-network
+      ports:
+        - '8003:8083'
+      volumes:
+        - ./ml/models:/models
 
 networks:
   mongo-compose-network:

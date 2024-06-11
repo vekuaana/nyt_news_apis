@@ -90,10 +90,6 @@ Output :
 ```
 Titre : Biden Goes After Trump’s Felon Status at Connecticut Fund-Raiser
 
-Model : trainer_seq2seq
-Prediction : negative
-[{'entity': 'Biden', 'prediction': 'neutral'}, {'entity': 'Trump', 'prediction': 'negative'}]
-
 Model : trainer_flan
 Prediction : neutral
 [{'entity': 'Biden', 'prediction': 'neutral'}, {'entity': 'Trump', 'prediction': 'negative'}]
