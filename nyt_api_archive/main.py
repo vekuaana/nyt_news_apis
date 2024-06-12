@@ -2,11 +2,21 @@ from configparser import ConfigParser
 from datetime import datetime
 import time
 import requests
+import logging
 from csv_service.csv_reader import CSVReader
 from db_service.mongodb_connector import MongoDBConnector
 from fetcher_service.nyt_article_fetcher import NYTArticleFetcher
 
 def main():
+    # Configurer la journalisation
+    logging.basicConfig(level=logging.INFO, 
+                        format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+                        handlers=[
+                            logging.FileHandler("nyt_archive_fetcher.log"),
+                            logging.StreamHandler()
+                        ])
+    logger = logging.getLogger(__name__)
+
     # Charger la configuration
     config = ConfigParser()
     config.read('config/nyt_api.cfg')
@@ -30,35 +40,35 @@ def main():
         candidates = info['candidates']
         start_date = datetime.strptime(f"{year}-01-01", '%Y-%m-%d')
         end_date = datetime.strptime(info['election_date'], '%Y-%m-%d')
-        print(f"Traitement de l'année {year} avec {len(candidates)} candidats")
+        logger.info(f"Traitement de l'année {year} avec {len(candidates)} candidats")
 
         for month in range(1, 13):
             current_date = datetime(int(year), month, 1)
             if start_date <= current_date <= end_date:
                 if query_counter['count'] >= 500:
-                    print("Limite de requêtes API journalière atteinte.")
+                    logger.warning("Limite de requêtes API journalière atteinte.")
                     return
 
                 try:
                     articles = nyt_fetcher.fetch_articles(int(year), month)
                     filtered_articles = NYTArticleFetcher.filter_articles(articles, candidates)
-                    print(f"Articles filtrés pour {year}-{month}: {len(filtered_articles)}")
+                    logger.info(f"Articles filtrés pour {year}-{month}: {len(filtered_articles)}")
 
                     for article in filtered_articles:
                         article_data = NYTArticleFetcher.extract_fields(article)
                         mongo_connector.insert_article(article_data)
-                        print(f"Article inséré pour {year}-{month}: {article_data.get('headline_main', 'No Headline')}")
+                        logger.info(f"Article inséré pour {year}-{month}: {article_data.get('headline_main', 'No Headline')}")
 
                     time.sleep(12)
                     query_counter['count'] += 1
 
                 except requests.exceptions.RequestException as e:
-                    print(f"Erreur de requête pour {year}-{month}: {e}")
+                    logger.error(f"Erreur de requête pour {year}-{month}: {e}")
                     if e.response.status_code == 429:
-                        print("Trop de requêtes. Pause de 60 secondes.")
+                        logger.warning("Trop de requêtes. Pause de 60 secondes.")
                         time.sleep(60)
                 except Exception as e:
-                    print(f"Erreur inattendue pour {year}-{month}: {e}")
+                    logger.exception(f"Erreur inattendue pour {year}-{month}: {e}")
 
 if __name__ == "__main__":
     main()
