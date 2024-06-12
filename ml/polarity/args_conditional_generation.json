@@ -19,7 +19,7 @@
   "eval_strategy": "steps",
   "eval_steps": 100,
   "seed": 12,
-  "input_dir": "./../../data",
+  "input_dir": "./data",
   "input_file": "merge_SEN.csv",
   "no_cuda": false,
   "predict_with_generate": true,
