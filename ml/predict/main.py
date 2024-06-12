@@ -26,8 +26,8 @@ class Article(BaseModel):
     byline: list
     web_url: str
     uri: str
-    main_candidate: int
-    polarity: Optional[str] = None
+    main_candidate: list
+    polarity: Optional[list] = None
     recommended_book: Optional[int] = None
     election_id: Optional[int] = None
     lead_paragraph: Optional[int] = None
@@ -35,8 +35,6 @@ class Article(BaseModel):
 
 @app.post("/polarity")
 def get_polarity(article: Article):
-    """
-    """
     title = article.headline
     year = article.pub_date.strftime("%Y")
 

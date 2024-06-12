@@ -73,7 +73,7 @@ services:
       networks:
         - mongo-compose-network
       ports:
-        - '8003:8083'
+        - '8003:8003'
       volumes:
         - ./ml/models:/models
 

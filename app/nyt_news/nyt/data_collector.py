@@ -1,4 +1,6 @@
 # coding:utf-8
+import requests
+import json
 
 from datetime import datetime
 from dataclasses import dataclass
@@ -21,8 +23,8 @@ class Article:
     byline: list
     web_url: str
     uri: str
-    main_candidate: int
-    polarity: Optional[str] = None
+    main_candidate: list
+    polarity: Optional[list] = None
     recommended_book: Optional[int] = None
     election_id: Optional[int] = None
     lead_paragraph: Optional[int] = None
@@ -34,6 +36,7 @@ class ETL(NYTConnector):
     """
     def __init__(self):
         self.nyt_newswire_counter = 1
+        self.polarity_url = "http://localhost:8003/polarity"
         super().__init__()
         try:
             # Attempt to connect to MongoDB within a container environment
@@ -72,6 +75,14 @@ class ETL(NYTConnector):
                            main_candidate=''.join(main_candidate),
                            election_id=election_id)
 
+            request_body = json.dumps(data)
+
+            # Construct the endpoint with the source and section
+
+
+            # Send the HTTP GET request to the API and get the JSON response
+            res = requests.post(self.polarity_url, data=request_body).json()
+            data.polarity = res['response']
             list_json.append(data.to_dict())
         return list_json
 

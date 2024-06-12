@@ -1,7 +1,7 @@
 FROM python:3.11-slim
 RUN python -m pip install --upgrade pip
 WORKDIR /predict
-ADD . /predict
+ADD . /predict/.
 RUN pip install -r requirements.txt
 
 EXPOSE 8003
