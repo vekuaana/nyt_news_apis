@@ -26,19 +26,16 @@ class NYTArticleFetcher:
         Extrait les clés-valeurs déterminées au préalable.
         """
         return {
-            'uri': article.get('uri'),
             'abstract': article.get('abstract'),
-            'web_url': article.get('web_url'),
-            'snippet': article.get('snippet'),
-            'lead_paragraph': article.get('lead_paragraph'),
             'headline_main': article.get('headline', {}).get('main'),
-            'headline_kicker': article.get('headline', {}).get('kicker'),
+            'lead_paragraph': article.get('lead_paragraph'),
+            'keywords': [keyword.get('value') for keyword in article.get('keywords', []) if keyword.get('value') is not None],
             'pub_date': article.get('pub_date'),
             'document_type': article.get('document_type'),
             'section_name': article.get('section_name'),
-            'subsection_name': article.get('subsection_name'),
             'byline': article.get('byline', {}).get('original'),
-            'keywords': [keyword.get('value') for keyword in article.get('keywords', []) if keyword.get('value') is not None]
+            'web_url': article.get('web_url'),
+            'uri': article.get('uri')
         }
 
     @staticmethod
@@ -51,13 +48,12 @@ class NYTArticleFetcher:
             abstract = article.get('abstract', '') or ''
             lead_paragraph = article.get('lead_paragraph', '') or ''
             headline = article.get('headline', {}).get('main', '') or ''
-            kicker = article.get('headline', {}).get('kicker', '') or ''
 
             for candidate in candidates:
                 name = candidate['name']
                 party = candidate['party']
-                if (name and (name in headline or name in lead_paragraph or name in abstract or name in kicker)) or \
-                   (party and (party in headline or party in lead_paragraph or party in abstract or party in kicker)):
+                if (name and (name in headline or name in lead_paragraph or name in abstract)) or \
+                   (party and (party in headline or party in lead_paragraph or party in abstract)):
                     filtered_articles.append(article)
                     break
         return filtered_articles
