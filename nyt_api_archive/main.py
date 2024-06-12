@@ -46,8 +46,6 @@ def main():
 
                     for article in filtered_articles:
                         article_data = NYTArticleFetcher.extract_fields(article)
-                        article_data['election_year'] = int(year)
-                        article_data['election_date'] = end_date
                         mongo_connector.insert_article(article_data)
                         print(f"Article inséré pour {year}-{month}: {article_data.get('headline_main', 'No Headline')}")
 
