@@ -1,4 +1,5 @@
 from pymongo import MongoClient
+import logging
 from typing import Dict, Any
 
 class MongoDBConnector:
@@ -9,15 +10,20 @@ class MongoDBConnector:
         self.client = MongoClient(uri)
         self.db = self.client[db_name]
         self.collection = self.db[collection_name]
+        self.logger = logging.getLogger(__name__)
         self._check_connection()
 
     def _check_connection(self):
         try:
             self.client.admin.command('ping')
-            print("Connexion à MongoDB réussie")
+            self.logger.info("Connexion à MongoDB réussie")
         except Exception as e:
-            print(f"Erreur de connexion à MongoDB: {e}")
+            self.logger.error(f"Erreur de connexion à MongoDB: {e}")
             exit()
 
     def insert_article(self, article_data: Dict[str, Any]):
-        self.collection.insert_one(article_data)
+        try:
+            self.collection.insert_one(article_data)
+            self.logger.info(f"Article inséré: {article_data.get('headline_main', 'No Headline')}")
+        except Exception as e:
+            self.logger.error(f"Erreur lors de l'insertion de l'article: {e}")
