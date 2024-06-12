@@ -44,7 +44,11 @@ class ETL(NYTConnector):
         except ServerSelectionTimeoutError:
             # Handle the case where the connection times out if we try to connect outside the container
             print("Try to connect outside the container with localhost")
-            self.db = MongoDBConnection('localhost').conn_db
+            try:
+                self.db = MongoDBConnection('localhost').conn_db
+            except ServerSelectionTimeoutError as sste:
+                print("Unable to connect to database. Make sure the tunnel is still active.")
+                print(sste)
         except OperationFailure as of:
             print(of)
 
@@ -69,22 +73,26 @@ class ETL(NYTConnector):
                            pub_date=datetime.fromisoformat(doc['published_date']).strftime("%Y-%m-%d %H:%M:%S"),
                            document_type=doc['item_type'],
                            section_name=doc['section'],
-                           byline=doc['byline'],
+                           byline=[doc['byline']],
                            web_url=doc['url'],
                            uri=doc['uri'],
-                           main_candidate=''.join(main_candidate),
+                           main_candidate=main_candidate,
                            election_id=election_id)
 
-            request_body = json.dumps(data)
+            # get polarity
+            request_body = json.dumps(data.to_dict())
+            res = requests.post(self.polarity_url, data=request_body)
 
-            # Construct the endpoint with the source and section
+            if res.status_code == 200:
+                res_json = res.json()
+                data.polarity = res_json['response']
+                list_json.append(data.to_dict())
+            else:
+                raise DataError(f"Something went wrong in Article : {res.json()}")
 
-
-            # Send the HTTP GET request to the API and get the JSON response
-            res = requests.post(self.polarity_url, data=request_body).json()
-            data.polarity = res['response']
-            list_json.append(data.to_dict())
         return list_json
 
 
+class DataError(Exception):
+    pass
 
