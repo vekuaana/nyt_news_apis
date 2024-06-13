@@ -5,13 +5,13 @@ services:
         volumes:
           - ./docker_mongo:/data/db
           - ./data:/data/db/data
-          - ./mongodb/.env:/data/db/.env
+          - .env:/data/db/.env
           - ./mongodb/init_db.sh:/docker-entrypoint-initdb.d/init_db.sh:ro
 
         ports:
           - 27017:27017
         env_file:
-          - ./mongodb/.env
+          - .env
         environment:
           - MONGO_INITDB_ROOT_USERNAME=${MONGO_INITDB_ROOT_USERNAME}
           - MONGO_INITDB_ROOT_PASSWORD=${MONGO_INITDB_ROOT_PASSWORD}
@@ -24,10 +24,10 @@ services:
         image: mongo-express:1.0.0-20
         restart: on-failure
         env_file:
-          - ./mongodb/.env
+          - .env
         depends_on:
           - mongodb
-        networks: 
+        networks:
           - mongo-compose-network
         environment:
           - ME_CONFIG_MONGODB_SERVER=mongodb
@@ -38,7 +38,7 @@ services:
           - ME_CONFIG_BASICAUTH_PASSWORD=${MONGOEXPRESS_PASSWORD}
         ports:
           - '8081:8081'
-        volumes: 
+        volumes:
           - ./docker_mongo:/data/db
 
     app:
@@ -53,6 +53,29 @@ services:
       networks:
         - mongo-compose-network
 
+    polarity:
+      container_name: polarity_trainer
+      build:
+        context: ./ml/polarity
+        dockerfile: Dockerfile
+      depends_on:
+        - mongodb
+      networks:
+        - mongo-compose-network
+      volumes:
+        - ./ml/models:/models
+
+    prediction:
+      container_name: predict
+      build:
+        context: ./ml/predict
+        dockerfile: Dockerfile
+      networks:
+        - mongo-compose-network
+      ports:
+        - '8003:8003'
+      volumes:
+        - ./ml/models:/models
 
 networks:
   mongo-compose-network:

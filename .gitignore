@@ -168,6 +168,16 @@ docs/*
 !docs/*.md
 output/*
 docker_mongo
-mlruns/*
+
+# ml polarity
+ml/polarity/mlruns/*
+ml/mlruns/*
+ml/trainer_*/*
 .env
+summary_embeddings.pkl
 api.cfg
+ml/t5classif/*
+seq2seq_model
+ml/polarity/flan_seq2seq_model/*
+ml/models/flan_seq2seq_model/*
+!requirements.txt

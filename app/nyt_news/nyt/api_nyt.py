@@ -8,8 +8,8 @@ import math
 import datetime
 from datetime import datetime
 import re
-from nyt_news.config import api_nyt_path
 
+from nyt_news.config import api_nyt_path
 from nyt_news import ScrapperAppleBooks as sc
 
 # Base URLs for NYT APIs
@@ -304,17 +304,17 @@ class NYTConnector:
 
 if __name__ == "__main__":
     nyt_c = NYTConnector()
-    # res = nyt_c.request_times_newswire('all', 'u.s.')
+    res = nyt_c.request_times_newswire('all', 'u.s.')
     # nyt_c.request_archive('9', '2000')
     # nyt_c.request_weelkly_nonfiction_bestsellers_books('05', '08', '2020')
     # nyt_c.request_most_popular(30)
     # nyt_c.request_by_keyword('Presidential Election of 2024', 'data_us_election', '20240508', '20240512')
     # nyt_c.request_bestsellers_list()
 
-    file_paths = "data/merged_nonfiction_bestsellers.json"
-    with open(file_paths, 'r') as file:
-            data = json.load(file)
-
-    new_list = nyt_c.add_books_genre_and_abstract(data)
+    # file_paths = "data/merged_nonfiction_bestsellers.json"
+    # with open(file_paths, 'r') as file:
+    #         data = json.load(file)
+    #
+    # new_list = nyt_c.add_books_genre_and_abstract(data)
 
 

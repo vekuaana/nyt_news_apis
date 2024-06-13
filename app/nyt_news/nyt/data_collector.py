@@ -1,4 +1,6 @@
 # coding:utf-8
+import requests
+import json
 
 from datetime import datetime
 from dataclasses import dataclass
@@ -21,8 +23,8 @@ class Article:
     byline: list
     web_url: str
     uri: str
-    main_candidate: int
-    polarity: Optional[str] = None
+    main_candidate: list
+    polarity: Optional[list] = None
     recommended_book: Optional[int] = None
     election_id: Optional[int] = None
     lead_paragraph: Optional[int] = None
@@ -34,6 +36,7 @@ class ETL(NYTConnector):
     """
     def __init__(self):
         self.nyt_newswire_counter = 1
+        self.polarity_url = "http://localhost:8003/polarity"
         super().__init__()
         try:
             # Attempt to connect to MongoDB within a container environment
@@ -41,7 +44,11 @@ class ETL(NYTConnector):
         except ServerSelectionTimeoutError:
             # Handle the case where the connection times out if we try to connect outside the container
             print("Try to connect outside the container with localhost")
-            self.db = MongoDBConnection('localhost').conn_db
+            try:
+                self.db = MongoDBConnection('localhost').conn_db
+            except ServerSelectionTimeoutError as sste:
+                print("Unable to connect to database. Make sure the tunnel is still active.")
+                print(sste)
         except OperationFailure as of:
             print(of)
 
@@ -66,14 +73,26 @@ class ETL(NYTConnector):
                            pub_date=datetime.fromisoformat(doc['published_date']).strftime("%Y-%m-%d %H:%M:%S"),
                            document_type=doc['item_type'],
                            section_name=doc['section'],
-                           byline=doc['byline'],
+                           byline=[doc['byline']],
                            web_url=doc['url'],
                            uri=doc['uri'],
-                           main_candidate=''.join(main_candidate),
+                           main_candidate=main_candidate,
                            election_id=election_id)
 
-            list_json.append(data.to_dict())
+            # get polarity
+            request_body = json.dumps(data.to_dict())
+            res = requests.post(self.polarity_url, data=request_body)
+
+            if res.status_code == 200:
+                res_json = res.json()
+                data.polarity = res_json['response']
+                list_json.append(data.to_dict())
+            else:
+                raise DataError(f"Something went wrong in Article : {res.json()}")
+
         return list_json
 
 
+class DataError(Exception):
+    pass
 
