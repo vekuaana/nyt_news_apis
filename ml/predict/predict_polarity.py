@@ -137,7 +137,6 @@ if __name__ == '__main__':
     import argparse
 
     # example : Biden Goes After Trump’s Felon Status at Connecticut Fund-Raiser
-    # example : Biden Denounces ‘Reckless’ G.O.P. Efforts to Discredit Trump Conviction
 
     parser = argparse.ArgumentParser()
     parser.add_argument("-t", "--text", help="headline from NYT")
