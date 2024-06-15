@@ -8,8 +8,8 @@ from dataclasses_json import dataclass_json
 from typing import Optional
 from pymongo.errors import OperationFailure, ServerSelectionTimeoutError
 
-from nyt_news.nyt.api_nyt import NYTConnector
-from nyt_news.db.connection import MongoDBConnection
+from nyt_news.api_nyt import NYTConnector
+from nyt_news.connection_db import MongoDBConnection
 
 @dataclass_json
 @dataclass

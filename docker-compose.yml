@@ -44,7 +44,6 @@ services:
     app:
       container_name: app
       restart: on-failure
-      command: python -u nyt_news/db/injection.py
       build:
         context: ./app
         dockerfile: Dockerfile

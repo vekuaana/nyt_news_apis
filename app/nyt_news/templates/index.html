@@ -1,0 +1,29 @@
+<!DOCTYPE HTML>
+<html>
+	<head>
+		<title>Times News Wire</title>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+		<meta http-equiv="refresh" content="10">
+	</head>
+	<body>
+
+		<!-- Wrapper -->
+			<div id="wrapper" class="divided">
+				<div class="content">
+					{% if not error %}
+					<h1>Title of article is : "{{article.headline}}" </h1>
+					<h2>Abstract : {{article.abstract}}</h2>
+					<h2>{{date}}</h2>
+					<h2>polarity : {{article.polarity}}</h2>
+					<h2>candidats : {{article.main_candidate}}</h2>
+					{% else %}
+					<h1>No NYT Information</h1>
+					<h2>{{date}}</h2>
+					{% endif %}
+				</div>
+			</div>
+
+
+	</body>
+</html>
