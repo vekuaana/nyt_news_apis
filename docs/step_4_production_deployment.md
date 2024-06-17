@@ -17,6 +17,8 @@ Dans ce sprint il faudra réaliser une API du modèle de ML qui devra être "con
 * pourquoi le conteneur d'entrainement du modèle polarity crash sur la VM alors qu'en local ça fonctionne (run sur cpu à chaque fois)
 * impossible de pull sur la VM
   
+  ![image](https://github.com/Linenlp/nyt_news/assets/40054464/3a4ec353-7873-4bd0-8229-956f3936105f)
+
 ### Point du 11/06/2024
 * faut-il faire un conteneur par modèle ? Par exemple la liste des requirements diffère d'un système à l'autre
     * <ins>réponse</ins>: oui c'est mieux de faire un conteneur par modèle car les environnements de développement sont différents et ça permet de relancer l'entrainement que d'un modèle si besoin
