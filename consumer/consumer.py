@@ -13,8 +13,8 @@ app = FastAPI()
 app.mount("/static", StaticFiles(directory="static"), name="static")
 
 templates = Jinja2Templates(directory="templates")
-print("\n\n\n------------------\n\n")
-print("startttttttttttttttttttttttttttt")
+
+
 def replace_value(value: str, arg: str) -> str:
     return value.replace(arg, ' ').title()
 
@@ -24,7 +24,7 @@ templates.env.filters['replace_value'] = replace_value
 
 class Consumer:
     def __init__(self):
-        self.consumer = KafkaConsumer(topics='nyt_data',
+        self.consumer = KafkaConsumer('nyt_data',
                                       bootstrap_servers='kafka1:29092',
                                       value_deserializer=lambda x: loads(x),
                                       group_id='nyt_group',
@@ -56,7 +56,7 @@ class Consumer:
 #         return templates.TemplateResponse('index.html', context)
 
 @app.get("/")
-def index(request: Request):
+async def index(request: Request):
     try:
         nyt_data = consumer.consume_data()
         context = {"request": request, "article": nyt_data, "date": datetime.datetime.now(), "segment": 'dashboard', "parent":'pages'}

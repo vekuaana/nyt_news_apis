@@ -8,8 +8,8 @@ from dataclasses_json import dataclass_json
 from typing import Optional
 from pymongo.errors import OperationFailure, ServerSelectionTimeoutError
 
-from nyt_news.api_nyt import NYTConnector
-from nyt_news.connection_db import MongoDBConnection
+from api_nyt import NYTConnector
+from connection_db import MongoDBConnection
 
 @dataclass_json
 @dataclass
@@ -36,7 +36,7 @@ class ETL(NYTConnector):
     """
     def __init__(self):
         self.nyt_newswire_counter = 1
-        self.polarity_url = "http://localhost:8003/polarity"
+        self.polarity_url = "http://prediction:8005/polarity"
         super().__init__()
         try:
             # Attempt to connect to MongoDB within a container environment
@@ -89,7 +89,6 @@ class ETL(NYTConnector):
                 list_json.append(data.to_dict())
             else:
                 raise DataError(f"Something went wrong in Article : {res.json()}")
-
         return list_json
 
 

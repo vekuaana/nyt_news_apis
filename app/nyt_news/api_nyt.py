@@ -9,8 +9,8 @@ import datetime
 from datetime import datetime
 import re
 
-from nyt_news.config import api_nyt_path
-from nyt_news import ScrapperAppleBooks as sc
+from config import api_nyt_path
+import ScrapperAppleBooks as sc
 
 # Base URLs for NYT APIs
 BASE_URL = "https://api.nytimes.com/svc/"
