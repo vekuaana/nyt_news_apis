@@ -11,6 +11,10 @@ Dans ce sprint il faudra réaliser une API du modèle de ML qui devra être "con
 
 ## Questions pour Dan
 
+### Point du 18/06/2024
+* docker-compose lance un conteneur avec une commande python mais la commande ne fonctionne que manuellement dans le conteneur
+* peut on lancer le producer et consumer dans le même conteneur ? (le lancement des deux commandes ne fonctionnent pas)
+
 ### Point du 11/06/2024
 * faut-il faire un conteneur par modèle ? Par exemple la liste des requirements diffère d'un système à l'autre
     * <ins>réponse</ins>: oui c'est mieux de faire un conteneur par modèle car les environnements de développement sont différents et ça permet de relancer l'entrainement que d'un modèle si besoin
