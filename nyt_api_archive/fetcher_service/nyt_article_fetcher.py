@@ -46,7 +46,7 @@ class NYTArticleFetcher:
             "abstract": article.get("abstract", ""),
             "headline": article.get("headline", {}).get("main", ""),
             "keywords": article.get("keywords", []),
-            "pub_date": datetime.strptime(article.get("pub_date", "1970-01-01T00:00:00Z"), '%Y-%m-%dT%H:%M:%SZ'),
+            "pub_date": article.get("pub_date",""),
             "document_type": article.get("document_type", ""),
             "section_name": article.get("section_name", ""),
             "byline": article.get("byline", {}).get("person", []),
