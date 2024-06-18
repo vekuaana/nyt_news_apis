@@ -7,6 +7,7 @@ pandas==2.2.2
 python-dotenv==1.0.1
 sentencepiece==0.2.0
 transformers==4.41.2
-torch; sys_platform == "linux"
-torch==2.3.0+cu118; sys_platform == "windows"
+-f https://download.pytorch.org/whl/torch_stable.html
+torch==2.3.0+cpu; sys_platform == "linux"
+torch==2.3.0+cpu; sys_platform == "windows"
 typing-extensions==4.11.0

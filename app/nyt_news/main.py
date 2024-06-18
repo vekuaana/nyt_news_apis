@@ -6,13 +6,11 @@ from pymongo.errors import OperationFailure, ServerSelectionTimeoutError
 from connection_db import MongoDBConnection
 from data_collector import ETL
 
-nyt_flag = True
-
 
 class Producer:
     def __init__(self):
-        self.producer = KafkaProducer(bootstrap_servers='localhost:9092',
-                                      value_serializer=lambda x:dumps(x).encode('utf-8'))
+        self.producer = KafkaProducer(bootstrap_servers='kafka1:29092',
+                                      value_serializer=lambda x: dumps(x).encode('utf-8'))
 
     def produce_nyt_data(self,nyt_data):
         self.producer.send('nyt_data', value=nyt_data)
@@ -55,10 +53,7 @@ class Injector:
 
 
 if __name__ == '__main__':
-
     producer = Producer()
     injector = Injector()
     while True:
         injector.inject_news_feed()
-
-

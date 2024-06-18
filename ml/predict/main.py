@@ -40,3 +40,8 @@ def get_polarity(article: Article):
 
     res = model.predict(title, year, False)
     return {"response": res}
+
+
+@app.get("/health")
+def health_check():
+    return {"status": "healthy"}
