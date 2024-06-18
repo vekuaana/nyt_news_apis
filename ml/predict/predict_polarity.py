@@ -4,7 +4,7 @@ import os
 
 
 class Polarity:
-    def __init__(self, model_name: str = "flan_seq2seq_model", device: str = 'cpu'):
+    def __init__(self, model_dir: str = '..' + os.sep + 'models', model_name: str = "flan_seq2seq_model", device: str = 'cpu'):
         """
             Init Polarity class
 
@@ -12,7 +12,7 @@ class Polarity:
                 model_name (str): name of the model to use for text generation.
                 device (str): device between 'cuda' and 'cpu'
         """
-        self.model = pipeline("text2text-generation", model='..' + os.sep + 'models' + os.sep + model_name, max_new_tokens=1, device=device)
+        self.model = pipeline("text2text-generation", model=model_dir + os.sep + model_name, max_new_tokens=1, device=device)
         # TODO : to complete
         self.entities = [{"date": 2024,
                          "candidates": ["Biden", "Trump"]},
