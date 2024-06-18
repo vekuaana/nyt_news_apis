@@ -9,7 +9,7 @@ services:
           - ./mongodb/init_db.sh:/docker-entrypoint-initdb.d/init_db.sh:ro
 
         ports:
-          - 27017:27017
+          - 27017:27018
         env_file:
           - .env
         environment:
@@ -37,7 +37,7 @@ services:
           - ME_CONFIG_BASICAUTH_USERNAME=${MONGOEXPRESS_LOGIN}
           - ME_CONFIG_BASICAUTH_PASSWORD=${MONGOEXPRESS_PASSWORD}
         ports:
-          - '8081:8081'
+          - '8082:8081'
         volumes:
           - ./docker_mongo:/data/db
 
@@ -128,7 +128,7 @@ services:
         - kafka1
         - zookeeper
       ports:
-        - "8080:8080"
+        - "8089:8080"
       environment:
         KAFKA_CLUSTERS_0_NAME: kafka1
         KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: "kafka1:29092"
@@ -150,6 +150,8 @@ services:
           condition: service_healthy
         prediction:
           condition: service_healthy
+      command: >
+        bash -c "python nyt_news/main.py"
       networks:
         - mongo-compose-network
         - kafka
@@ -167,7 +169,7 @@ services:
       networks:
         - kafka
       ports:
-        - "8000:8000"
+        - "8001:8000"
 
     polarity:
       container_name: polarity_trainer

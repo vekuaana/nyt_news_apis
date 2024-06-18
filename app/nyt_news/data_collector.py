@@ -56,9 +56,9 @@ class ETL(NYTConnector):
         """
         Extract articles from the NYT Newswire API.
 
-       Returns:
+        Returns:
            list_json (list): A list of dictionaries representing the articles.
-       """
+        """
         res = self.request_times_newswire('all', 'u.s.')
         list_json = []
 
