@@ -1,9 +1,13 @@
 # Projet Data Engineer - API New York Times News
 ## Pré-requis
-Python 3.11
+Créer un compte sur [NYT Dev](https://developer.nytimes.com/get-started) pour récupérer une clé qui permettra de requêter les API du NYT. Al'étape "*Register apps*",  sélectionner les API suivantes :
+* Archive API
+* Books API
+* Times Wire API
+  
+La clé devra être ajouté au fichier **api.cfg** (voir prochaine étape)
 
 ## Installation
-
 Modifier les fichiers  **.env.example** et **api.cfg** avec les informations d'authentification. Renommer **.env.example** en >> **.env** et **api.example.cfg** en >> **api.cfg**.
 ```bash
 ├── nyt_news
