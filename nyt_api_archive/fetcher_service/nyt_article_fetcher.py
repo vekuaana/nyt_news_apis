@@ -1,5 +1,6 @@
 import requests
 from typing import List, Dict, Any
+from datetime import datetime
 
 class NYTArticleFetcher:
     """
