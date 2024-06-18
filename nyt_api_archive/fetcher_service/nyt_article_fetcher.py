@@ -26,16 +26,20 @@ class NYTArticleFetcher:
         Extrait les clés-valeurs déterminées au préalable.
         """
         return {
-            'abstract': article.get('abstract'),
-            'headline_main': article.get('headline', {}).get('main'),
-            'lead_paragraph': article.get('lead_paragraph'),
-            'keywords': [keyword.get('value') for keyword in article.get('keywords', []) if keyword.get('value') is not None],
-            'pub_date': article.get('pub_date'),
-            'document_type': article.get('document_type'),
-            'section_name': article.get('section_name'),
-            'byline': article.get('byline', {}).get('original'),
-            'web_url': article.get('web_url'),
-            'uri': article.get('uri')
+            "abstract": article.get("abstract", ""),
+            "headline": article.get("headline", {}).get("main", ""),
+            "keywords": article.get("keywords", []),
+            "pub_date": datetime.strptime(article.get("pub_date", "1970-01-01T00:00:00Z"), '%Y-%m-%dT%H:%M:%SZ'),
+            "document_type": article.get("document_type", ""),
+            "section_name": article.get("section_name", ""),
+            "byline": article.get("byline", {}).get("person", []),
+            "web_url": article.get("web_url", ""),
+            "uri": article.get("uri", ""),
+            "main_candidate": article.get("main_candidate", []),
+            "polarity": article.get("polarity", []),
+            "recommended_book": article.get("recommended_book", None),
+            "election_id": article.get("election_id", None),
+            "lead_paragraph": article.get("lead_paragraph", None)
         }
 
     @staticmethod
