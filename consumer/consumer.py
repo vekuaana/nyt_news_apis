@@ -6,17 +6,14 @@ from fastapi.templating import Jinja2Templates
 from fastapi.requests import Request
 import uvicorn
 
-from fastapi.staticfiles import StaticFiles
-
 app = FastAPI()
-app.mount("/static", StaticFiles(directory="static"), name="static")
-
 templates = Jinja2Templates(directory="templates")
 
 
 class Consumer:
     def __init__(self):
         self.consumer = KafkaConsumer('nyt_data',
+                                      bootstrap_servers='kafka1:29092',
                                       value_deserializer=lambda x: loads(x),
                                       group_id='nyt_group',
                                       auto_offset_reset='earliest',
@@ -35,7 +32,7 @@ class Consumer:
 
 
 @app.get("/")
-def index(request: Request):
+async def index(request:Request):
     try:
         nyt_data = consumer.consume_data()
         context = {"request": request, "article": nyt_data, "date": datetime.datetime.now()}
@@ -43,7 +40,7 @@ def index(request: Request):
 
     except ValueError:
 
-        context = {"request": request, "article":'Error', "date":datetime.datetime.now()}
+        context = {"request": request, "article": 'Error', "date":datetime.datetime.now()}
         return templates.TemplateResponse('index.html', context)
 
 

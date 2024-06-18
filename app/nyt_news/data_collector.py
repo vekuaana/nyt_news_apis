@@ -36,7 +36,7 @@ class ETL(NYTConnector):
     """
     def __init__(self):
         self.nyt_newswire_counter = 1
-        self.polarity_url = "http://prediction:8003/polarity"
+        self.polarity_url = "http://prediction:8005/polarity"
         super().__init__()
         try:
             # Attempt to connect to MongoDB within a container environment
@@ -56,9 +56,9 @@ class ETL(NYTConnector):
         """
         Extract articles from the NYT Newswire API.
 
-       Returns:
+        Returns:
            list_json (list): A list of dictionaries representing the articles.
-       """
+        """
         res = self.request_times_newswire('all', 'u.s.')
         list_json = []
 

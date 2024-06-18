@@ -9,7 +9,7 @@ services:
           - ./mongodb/init_db.sh:/docker-entrypoint-initdb.d/init_db.sh:ro
 
         ports:
-          - 27017:27017
+          - 27017:27018
         env_file:
           - .env
         environment:
@@ -37,7 +37,7 @@ services:
           - ME_CONFIG_BASICAUTH_USERNAME=${MONGOEXPRESS_LOGIN}
           - ME_CONFIG_BASICAUTH_PASSWORD=${MONGOEXPRESS_PASSWORD}
         ports:
-          - '8081:8081'
+          - '8082:8081'
         volumes:
           - ./docker_mongo:/data/db
 
@@ -128,7 +128,7 @@ services:
         - kafka1
         - zookeeper
       ports:
-        - "8080:8080"
+        - "8089:8080"
       environment:
         KAFKA_CLUSTERS_0_NAME: kafka1
         KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: "kafka1:29092"
@@ -151,19 +151,31 @@ services:
         prediction:
           condition: service_healthy
       command: >
-        bash -c "python nyt_news/main.py
-        && python nyt_news/consumer.py"
+        bash -c "python nyt_news/main.py"
       networks:
         - mongo-compose-network
         - kafka
+
+    consumer:
+      container_name: consumer
+      restart: on-failure
+      build:
+        context: ./consumer
+        dockerfile: Dockerfile
+      depends_on:
+        kafka1:
+          condition: service_healthy
+      command: python consumer.py
+      networks:
+        - kafka
+      ports:
+        - "8001:8000"
 
     polarity:
       container_name: polarity_trainer
       build:
         context: ./ml/polarity
         dockerfile: Dockerfile
-      depends_on:
-        - mongodb
       networks:
         - mongo-compose-network
       volumes:
@@ -177,16 +189,16 @@ services:
       networks:
         - mongo-compose-network
       ports:
-        - '8003:8003'
+        - '8005:8005'
       volumes:
         - ./ml/models:/models
       healthcheck:
-        test: curl --fail http://localhost:8003/health || exit 1
+        test: curl --fail http://localhost:8005/health || exit 1
         interval: 45s
         timeout: 10s
         retries: 5
 
 networks:
-  kafka:
-    name: kafka
-  mongo-compose-network:
+    kafka:
+      name: kafka
+    mongo-compose-network:

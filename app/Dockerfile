@@ -1,6 +1,6 @@
 FROM python:3.11-slim
-RUN python -m pip install --upgrade pip
-WORKDIR /app
-ADD requirements.txt requirements.txt
+ADD requirements.txt ./
 RUN pip install --no-cache-dir -r requirements.txt
-ADD . .
+WORKDIR /app
+ADD . ./
+CMD ["python", "nyt_news/main.py"]
