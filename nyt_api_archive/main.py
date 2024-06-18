@@ -24,7 +24,7 @@ def main():
     api_key = config['API']['api_key']
     
     # Configurer la connexion à MongoDB
-    mongo_connector = MongoDBConnector('mongodb://localhost:27017/', 'nyt_news', 'usa_election_articles_')
+    mongo_connector = MongoDBConnector('mongodb://localhost:27017/', 'nyt_news', 'usa_election_articles')
 
     # Charger les données des candidats depuis le fichier CSV
     csv_reader = CSVReader('config/election_candidates.csv')
@@ -57,7 +57,7 @@ def main():
                     for article in filtered_articles:
                         article_data = NYTArticleFetcher.extract_fields(article)
                         mongo_connector.insert_article(article_data)
-                        logger.info(f"Article inséré pour {year}-{month}: {article_data.get('headline_main', 'No Headline')}")
+                        logger.info(f"Article inséré pour {year}-{month}: {article_data.get('headline', 'No Headline')}")
 
                     time.sleep(12)
                     query_counter['count'] += 1
