@@ -14,7 +14,7 @@ Dans ce sprint il faudra réaliser une API du modèle de ML qui devra être "con
 ### Point du 18/06/2024
 * docker-compose lance un conteneur avec une commande python mais la commande ne fonctionne que manuellement dans le conteneur
 * peut on lancer le producer et consumer dans le même conteneur ? (le lancement des deux commandes ne fonctionnent pas)
-* pourquoi le conteneur d'entrainement du modèle polarity crash sur la VM alors qu'en local ça fonctionne (run sur cpu à chaque fois)
+* (le conteneur d'entrainement du modèle polarity crash sur la VM alors qu'en local ça fonctionne (run sur cpu à chaque fois))
 * impossible de pull sur la VM
   
   ![image](https://github.com/Linenlp/nyt_news/assets/40054464/3a4ec353-7873-4bd0-8229-956f3936105f)
