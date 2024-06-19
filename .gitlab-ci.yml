@@ -3,10 +3,10 @@ image:
   entrypoint: ["/bin/sh", "-c"]
 
 stages:
-  - test
   - build
   - push
-  - deploy
+  - test
+#  - deploy
 
 
 before_script:
@@ -18,53 +18,56 @@ after_script:
 .do_testing:
   stage: test
   allow_failure: false
+  image: $CI_REGISTRY_IMAGE/$IMAGE_NAME:$CI_COMMIT_SHORT_SHA
   script:
-    - python3 -m pip install --upgrade pip
-    - pip install -r requirements.txt
-    - pip install pytest
-    - python3 -m pytest
+    - python -m pytest
 
+#.do_testing:
+#  stage: test
+#  allow_failure: false
+#  script:
+#    - echo "$CI_REGISTRY_IMAGE"
+#    - echo $CI_REGISTRY
+#    - cd ml/predict/
+#    - ls
+#    - if [ -d "env_predict/bin/activate" ]; then rm -Rf $WORKING_DIR; fi
+#    - docker pull $CI_REGISTRY_IMAGE/$IMAGE_NAME:$CI_COMMIT_SHORT_SHA
+#    - docker run $CI_REGISTRY_IMAGE/$IMAGE_NAME:$CI_COMMIT_SHORT_SHA
+#    - docker exec -it $IMAGE_NAME bash -c "pytest -v
+    -
 test:predict:
-  before_script:
-    - echo "$CI_REGISTRY_IMAGE"
-    - echo $CI_REGISTRY
-    - cd ml/predict/
-    - ls
-    - if [ -d "env_predict/bin/activate" ]; then rm -Rf $WORKING_DIR; fi
-    - python3.9 -m venv env_predict
-    - source env_predict/bin/activate
   variables:
     IMAGE_NAME: nyt_news-prediction
   extends: .do_testing
 
-#build:
-#  stage: build
-#  before_script:
-#    - echo "$CI_REGISTRY_IMAGE"
-#    - echo $CI_REGISTRY
-#  script:
-#    - docker-compose build --pull
-#
-#
-#.template: &push_image
-#  needs: ["build"]
-#  before_script:
-#    - echo "$CI_REGISTRY_IMAGE"
-#    # Tag the container image from latest to the commit ref
-#    - docker tag "$CI_REGISTRY_IMAGE/$IMAGE_NAME:latest" "$CI_REGISTRY_IMAGE/$IMAGE_NAME:$CI_COMMIT_SHORT_SHA"
-#  script:
-#    # Push the container image
-#    - docker push "$CI_REGISTRY_IMAGE/$IMAGE_NAME:$CI_COMMIT_SHORT_SHA"
-#    # If we are building a tag, push the `latest` container image tag too
+build:
+  stage: build
+  before_script:
+    - echo "$CI_REGISTRY_IMAGE"
+    - echo $CI_REGISTRY
+  script:
+    - docker-compose build --pull
+
+
+.template: &push_image
+  needs: ["build"]
+  before_script:
+    - echo "$CI_REGISTRY_IMAGE"
+    # Tag the container image from latest to the commit ref
+    - docker tag "$CI_REGISTRY_IMAGE/$IMAGE_NAME:latest" "$CI_REGISTRY_IMAGE/$IMAGE_NAME:$CI_COMMIT_SHORT_SHA"
+  script:
+    # Push the container image
+    - docker push "$CI_REGISTRY_IMAGE/$IMAGE_NAME:$CI_COMMIT_SHORT_SHA"
+    # If we are building a tag, push the `latest` container image tag too
 #    - if [ ! -z "$CI_COMMIT_TAG" ]; then docker push "$CI_REGISTRY_IMAGE/$IMAGE_NAME:latest"; fi
-#
-#push:predict:
-#  <<: *push_image
-#  stage: push
-#  variables:
-#    IMAGE_NAME: nyt_news-prediction
-#
-#
+
+push:predict:
+  <<: *push_image
+  stage: push
+  variables:
+    IMAGE_NAME: nyt_news-prediction
+
+
 #deploy:
 #  stage: deploy
 #  script:
