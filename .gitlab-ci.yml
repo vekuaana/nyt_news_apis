@@ -56,7 +56,7 @@ build:
     - echo MONGOEXPRESS_LOGIN=$MONGOEXPRESS_LOGIN >> .env
     - echo USER1=$USER1 >> .env
     - echo PASSWORD1=$PASSWORD1 >> .env
-    - ls
+    - ls -a
   script:
     - docker-compose build --pull
 
