@@ -15,35 +15,6 @@ from nltk.stem import PorterStemmer
 from sklearn.metrics.pairwise import cosine_similarity
 from sklearn.feature_extraction.text import TfidfVectorizer
 
-### A remplacer par la connextion API pour accéder à un article 
-article = {
-            "_id": {
-                "$oid": "664c81164444e18089255a0c"
-            },
-            "uri": "nyt://article/cc29805e-55c9-5902-a308-50be425e9b99",
-            "abstract": "Despite right-wing bluster to the contrary, there really is a war on women, and the Republicans are the aggressors.",
-            "web_url": "https://takingnote.blogs.nytimes.com/2012/04/13/wars-imagined-and-real/",
-            "snippet": "Despite right-wing bluster to the contrary, there really is a war on women, and the Republicans are the aggressors.",
-            "lead_paragraph": "Politicians are always declaring a “war” on something. Often the conflict is entirely in their imaginations– like the War on Christmas and the War on Religion. Sometimes it’s a label designed to lend a sense of urgency to a problem they are not going to fix – like the War on Poverty and the War on Drugs.",
-            "headline_main": "Wars: Imagined and Real",
-            "headline_kicker": "Taking Note",
-            "pub_date": "2012-04-13T17:02:30+0000",
-            "document_type": "article",
-            "section_name": "Opinion",
-            "subsection_name": "null",
-            "byline": "By Andrew Rosenthal",
-            "keywords": [
-                "Presidential Election of 2012",
-                "Women's Rights",
-                "Romney, Ann",
-                "Rosen, Hilary"
-            ],
-            "election_year": 2012,
-            "election_date": {
-                "$date": "2012-11-06T00:00:00.000Z"
-            }
-            }
-
 def text_cleaning(text): 
     # Remove #1 from, for exemple, #1 NATIONAL BESTSELLER
     remove_hastag1 = re.sub(r'\#\d', '', text)
@@ -127,7 +98,6 @@ with open(file_paths, 'r') as file:
         data = json.load(file)
 book = pd.DataFrame(data)
 
-################# Preprocessing books #################
 # Remove N/A category and select 'Politics & Current Events'
 book = book[(book['genre'] != 'N/A') & (book['genre'] == 'Politics & Current Events')]
 book = book.reset_index(drop=True)
@@ -141,7 +111,7 @@ for index, abstract in enumerate(book['abstract']):
     string = ' '.join([str(item)for item in abstract_preprocessed])
     book.iloc[index, col_index] = string
 
-################# Preprocessing article #################
+################# A Remplacer par un article reçu via l'api #################
 article = {
             "_id": {
                 "$oid": "664c81164444e18089255a0c"
@@ -170,9 +140,10 @@ article = {
             }
             }
 
+#preprocessing article
 article_preprocessed_abstract = preprocessing_abstract(article['abstract'])
 article_preprocessed_abstract = ' '.join([str(item)for item in article_preprocessed_abstract])
 
+# get top 5 books
 top_5_books = get_top_5_books_to_article(book, article_preprocessed_abstract)
-
 print(top_5_books)
