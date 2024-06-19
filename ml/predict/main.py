@@ -13,7 +13,7 @@ model = None
 @app.on_event("startup")
 def get_model():
     global model
-    model = Polarity("flan_seq2seq_model")
+    model = Polarity(model_name="flan_seq2seq_model")
 
 
 class Article(BaseModel):

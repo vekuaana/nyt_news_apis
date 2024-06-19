@@ -5,7 +5,10 @@ from kafka import KafkaProducer
 from pymongo.errors import OperationFailure, ServerSelectionTimeoutError
 from connection_db import MongoDBConnection
 from data_collector import ETL
+import logging
 
+logging.basicConfig(level=logging.INFO)
+logging.basicConfig(format="%(levelname)s | %(asctime)s | %(message)s")
 
 class Producer:
     def __init__(self):
@@ -24,10 +27,10 @@ class Injector:
             self.db = MongoDBConnection('mongodb').conn_db
         except ServerSelectionTimeoutError:
             # Handle the case where the connection times out if we try to connect outside the container
-            print("Try to connect outside the container with localhost")
+            logging.info("Try to connect outside the container with localhost")
             self.db = MongoDBConnection('localhost').conn_db
         except OperationFailure as of:
-            print(of)
+            logging.error(of)
 
     def inject_news_feed(self):
         """
@@ -39,17 +42,17 @@ class Injector:
             for new in news:
                 # Check if the article already exists in the collection
                 if not self.db['usa_election_articles'].find_one({'uri': new['uri']}):
-                    print("new article")
-                    print(new)
+                    logging.info("new article")
+                    logging.info(new)
                     producer.produce_nyt_data(new)
                     self.db['usa_election_articles'].insert_one(new)
 
                 else:
-                    print("already in db")
+                    logging.info("already in db")
             producer.producer.flush()
             time.sleep(1200)
         except Exception as e:
-            print(f"Error producing message: {e}")
+            logging.error(f"Error producing message: {e}")
 
 
 if __name__ == '__main__':

@@ -150,6 +150,6 @@ if __name__ == '__main__':
         print("Titre :", args.text)
     if args.verbose:
         print("\nModel :", model)
-    get_polarity = Polarity(model, device)
+    get_polarity = Polarity(model_name=model, device=device)
     if args.verbose:
         print(get_polarity.predict(args.text, args.year, args.verbose))
