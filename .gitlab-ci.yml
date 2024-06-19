@@ -1,5 +1,5 @@
 image:
-  name: "python:3.11-alpine"
+  name: "docker:latest"
   entrypoint: ["/bin/sh", "-c"]
 
 stages:
@@ -34,7 +34,7 @@ after_script:
 #    - docker pull $CI_REGISTRY_IMAGE/$IMAGE_NAME:$CI_COMMIT_SHORT_SHA
 #    - docker run $CI_REGISTRY_IMAGE/$IMAGE_NAME:$CI_COMMIT_SHORT_SHA
 #    - docker exec -it $IMAGE_NAME bash -c "pytest -v
-    
+
 test:predict:
   variables:
     IMAGE_NAME: nyt_news-prediction
