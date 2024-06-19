@@ -1,5 +1,5 @@
 image:
-  name: "docker:latest"
+  name: "docker/compose:latest"
   entrypoint: ["/bin/sh", "-c"]
 
 services:
