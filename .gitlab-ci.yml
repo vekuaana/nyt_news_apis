@@ -31,8 +31,8 @@ test:predict:
     - cd ml/predict/
     - ls
     - if [ -d "env_predict/bin/activate" ]; then rm -Rf $WORKING_DIR; fi
-    - python -m venv env_predict
-    - source env_predict/bin/activate
+#    - python -m venv env_predict
+#    - source env_predict/bin/activate
   variables:
     IMAGE_NAME: nyt_news-prediction
   extends: .do_testing
