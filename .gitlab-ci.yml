@@ -28,10 +28,10 @@ test:predict:
   before_script:
     - echo "$CI_REGISTRY_IMAGE"
     - echo $CI_REGISTRY
+    - cd ml/predict/
     - ls
     - if [ -d "env_predict/bin/activate" ]; then rm -Rf $WORKING_DIR; fi
-    - cd ml/predict/
-    - C:\Python\Python311\python.exe -m venv env_predict
+    - python -m venv env_predict
     - source env_predict/bin/activate
   variables:
     IMAGE_NAME: nyt_news-prediction
