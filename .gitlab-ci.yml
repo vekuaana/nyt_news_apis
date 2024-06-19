@@ -16,8 +16,6 @@ after_script:
 - docker logout $CI_REGISTRY
 
 .do_testing:
-  only:
-    - merge_requests
   stage: test
   allow_failure: false
   script:
