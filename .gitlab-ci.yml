@@ -13,7 +13,7 @@ before_script:
 - docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" $CI_REGISTRY
 
 after_script:
-- docker logout $CI_REGISTRY
+- docker logout "$CI_REGISTRY"
 
 .do_testing:
   stage: test
@@ -31,8 +31,8 @@ test:predict:
     - cd ml/predict/
     - ls
     - if [ -d "env_predict/bin/activate" ]; then rm -Rf $WORKING_DIR; fi
-#    - python -m venv env_predict
-#    - source env_predict/bin/activate
+    - python3.9 -m venv env_predict
+    - source env_predict/bin/activate
   variables:
     IMAGE_NAME: nyt_news-prediction
   extends: .do_testing
