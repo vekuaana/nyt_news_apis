@@ -5,11 +5,14 @@ base_url = "http://localhost:8005/"
 
 
 def test_health_check():
-    res = requests.get(base_url + 'health')
-    assert res.json()['status'] == "healthy"
+    # Test health check endpoint
+    response = requests.get(base_url + 'health')
+    assert response.status_code == 200
+    assert response.json()['status'] == "healthy"
 
 
 def test_get_polarity():
+    # Test polarity endpoint
     data = {
         'abstract': 'The new policy is one of the most significant actions to protect immigrants in years. It affects '
                     'about 500,000 people who have been living in the United States for more than a decade.',
