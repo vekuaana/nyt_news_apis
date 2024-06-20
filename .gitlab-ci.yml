@@ -45,6 +45,9 @@ test:predict:
   extends: .do_testing
 
 build:
+  image: docker:stable
+  services:
+    - docker:dind
   stage: build
   before_script:
     - echo "$CI_REGISTRY_IMAGE"
