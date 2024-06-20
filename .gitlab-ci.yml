@@ -27,7 +27,7 @@ build:
   services:
     - docker:dind
   stage: build
-  before_script:
+  script:
     - echo "$CI_REGISTRY_IMAGE"
     - echo $CI_REGISTRY
     - echo MONGO_INITDB_ROOT_USERNAME=$MONGO_INITDB_ROOT_USERNAME >> .env
