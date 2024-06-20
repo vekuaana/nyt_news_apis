@@ -44,6 +44,7 @@ test:predict:
     IMAGE_NAME: nyt_news-prediction
   extends: .do_testing
 
+
 build:
   image: docker:latest
   services:
@@ -60,6 +61,18 @@ build:
     - echo USER1=$USER1 >> .env
     - echo PASSWORD1=$PASSWORD1 >> .env
     - ls -a
+    - cd ml/polarity
+    - echo "$CI_REGISTRY_IMAGE"
+    - echo $CI_REGISTRY
+    - echo MONGO_INITDB_ROOT_USERNAME=$MONGO_INITDB_ROOT_USERNAME >> .env         # Add here!
+    - echo MONGO_INITDB_ROOT_PASSWORD=$MONGO_INITDB_ROOT_PASSWORD >> .env
+    - echo MONGO_INITDB_DATABASE=$MONGO_INITDB_DATABASE >> .env
+    - echo MONGOEXPRESS_PASSWORD=$MONGOEXPRESS_PASSWORD >> .env
+    - echo MONGOEXPRESS_LOGIN=$MONGOEXPRESS_LOGIN >> .env
+    - echo USER1=$USER1 >> .env
+    - echo PASSWORD1=$PASSWORD1 >> .env
+    - cd ../..
+    - pwd
   script:
     - docker compose build
 
