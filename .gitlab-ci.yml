@@ -66,9 +66,13 @@ build:
     - cp .env ./ml/polarity/
   script:
     - docker compose build
+    - docker compose push
 
 
 .template: &push_image
+  image: docker:latest
+  services:
+    - docker:dind
   needs: ["build"]
   before_script:
     - echo "$CI_REGISTRY_IMAGE"
