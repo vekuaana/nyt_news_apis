@@ -61,7 +61,7 @@ build:
     - echo PASSWORD1=$PASSWORD1 >> .env
     - ls -a
   script:
-    - docker compose build
+    - docker-compose build
 
 
 .template: &push_image
