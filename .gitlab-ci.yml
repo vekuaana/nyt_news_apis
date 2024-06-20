@@ -25,9 +25,6 @@ after_script:
 build:
   variables:
     CI_JOB_TIMEOUT: 3000
-  image: docker:latest
-  services:
-    - docker:dind
   stage: build
   before_script:
     - echo "$CI_REGISTRY_IMAGE"
@@ -58,13 +55,14 @@ test:
     - echo $DOCKER_HOST
     - echo $DOCKER_DRIVER
     - docker info
-#    - docker compose up -d
+    - ls -a
+    - docker compose up -d
 #    - docker compose exec web pytest
 #  after_script:
 #    - docker compose down
-#  artifacts:
-#      paths:
-#          - .env
+  artifacts:
+      paths:
+          - .env
 
 #push:
 #  stage: push
