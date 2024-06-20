@@ -69,23 +69,38 @@ build:
     - docker compose push
 
 
-.template: &push_image
+.template: &build_push:
+  variables:
+    CI_JOB_TIMEOUT: 3000
   image: docker:latest
   services:
     - docker:dind
-  needs: ["build"]
+  stage: build
   before_script:
     - echo "$CI_REGISTRY_IMAGE"
-    # Tag the container image from latest to the commit ref
-    - docker tag "$CI_REGISTRY_IMAGE/$IMAGE_NAME:latest" "$CI_REGISTRY_IMAGE/$IMAGE_NAME:$CI_COMMIT_SHORT_SHA"
+    - echo $CI_REGISTRY
+    - echo MONGO_INITDB_ROOT_USERNAME=$MONGO_INITDB_ROOT_USERNAME >> .env
+    - echo MONGO_INITDB_ROOT_PASSWORD=$MONGO_INITDB_ROOT_PASSWORD >> .env
+    - echo MONGO_INITDB_DATABASE=$MONGO_INITDB_DATABASE >> .env
+    - echo MONGOEXPRESS_PASSWORD=$MONGOEXPRESS_PASSWORD >> .env
+    - echo MONGOEXPRESS_LOGIN=$MONGOEXPRESS_LOGIN >> .env
+    - echo USER1=$USER1 >> .env
+    - echo PASSWORD1=$PASSWORD1 >> .env
+    - ls -a
+    - cp .env ./ml/polarity/
+    - ls -a /ml/polarity
   script:
-    # Push the container image
+    - docker compose build
+    - docker compose push
+  after_script:
+    - echo "$CI_REGISTRY_IMAGE"
+    - docker tag "$CI_REGISTRY_IMAGE/$IMAGE_NAME:latest" "$CI_REGISTRY_IMAGE/$IMAGE_NAME:$CI_COMMIT_SHORT_SHA"
     - docker push "$CI_REGISTRY_IMAGE/$IMAGE_NAME:$CI_COMMIT_SHORT_SHA"
     # If we are building a tag, push the `latest` container image tag too
 #    - if [ ! -z "$CI_COMMIT_TAG" ]; then docker push "$CI_REGISTRY_IMAGE/$IMAGE_NAME:latest"; fi
 
 push:predict:
-  <<: *push_image
+  <<: *build_push
   stage: push
   variables:
     IMAGE_NAME: nyt_news-prediction
