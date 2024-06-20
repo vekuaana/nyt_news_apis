@@ -99,7 +99,6 @@ test:predict:
 
 build:predict:
   <<: *build_push
-  stage: push
   variables:
     IMAGE_NAME: nyt_news-prediction
 
