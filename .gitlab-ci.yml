@@ -68,7 +68,7 @@ test:predict:
 #    - docker compose push
 
 
-.template: &build_push:
+.template: &build_push
   variables:
     CI_JOB_TIMEOUT: 3000
   image: docker:latest
