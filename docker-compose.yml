@@ -145,6 +145,7 @@ services:
       build:
         context: ./app
         dockerfile: Dockerfile
+      image: ${CI_REGISTRY_IMAGE}/nyt_news-app:latest
       depends_on:
         kafka1:
           condition: service_healthy
@@ -162,6 +163,7 @@ services:
       build:
         context: ./consumer
         dockerfile: Dockerfile
+      image: ${CI_REGISTRY_IMAGE}/nyt_news-consumer:latest
       depends_on:
         kafka1:
           condition: service_healthy
@@ -176,6 +178,7 @@ services:
       build:
         context: ./ml/polarity
         dockerfile: Dockerfile
+      image: ${CI_REGISTRY_IMAGE}/nyt_news-polarity:latest
       networks:
         - mongo-compose-network
       volumes:
@@ -186,6 +189,7 @@ services:
       build:
         context: ./ml/predict
         dockerfile: Dockerfile
+      image: ${CI_REGISTRY_IMAGE}/nyt_news-prediction:latest
       networks:
         - mongo-compose-network
       ports:

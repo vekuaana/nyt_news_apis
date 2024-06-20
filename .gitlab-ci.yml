@@ -9,6 +9,7 @@ services:
 stages:
   - build
   - test
+#  - push
 #  - deploy
 
 
@@ -36,19 +37,37 @@ build:
     - echo MONGOEXPRESS_LOGIN=$MONGOEXPRESS_LOGIN >> .env
     - echo USER1=$USER1 >> .env
     - echo PASSWORD1=$PASSWORD1 >> .env
+    - echo CI_REGISTRY_IMAGE=$CI_REGISTRY_IMAGE >> .env
     - ls -a
     - cp .env ./ml/polarity/
     - ls -a ./ml/polarity/
-  script:
-    - docker compose build
-
+    - echo $DOCKER_HOST
+    - echo $DOCKER_DRIVER
+    - docker info
+#  script:
+#    - docker compose build
+#
 test:
   script:
-    - docker compose up -d
-    - docker compose exec web pytest
-  after_script:
-    - docker compose down
+    - echo $DOCKER_HOST
+    - echo $DOCKER_DRIVER
+    - docker info
+#    - docker compose up -d
+#    - docker compose exec web pytest
+#  after_script:
+#    - docker compose down
 
+#push:
+#  stage: push
+#  script:
+#    - docker compose push
+#
+#deploy:
+#  stage: deploy
+#  script:
+#    - docker compose up -d
+#  only:
+#    - master
 # --------- previous version ------------------------------
 #
 #.do_testing:
