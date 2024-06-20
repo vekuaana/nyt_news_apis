@@ -40,15 +40,15 @@ build:
     - ls -a
     - cp .env ./ml/polarity/
     - ls -a ./ml/polarity/
-    - echo $DOCKER_HOST
-    - echo $DOCKER_DRIVER
 
   script:
     - docker info
-#    - docker compose build
+    - docker compose build
   artifacts:
       paths:
           - .env
+#  only:
+#    - master
 
 test:
   script:
@@ -57,9 +57,9 @@ test:
     - docker info
     - ls -a
     - docker compose up -d
-#    - docker compose exec web pytest
-#  after_script:
-#    - docker compose down
+    - docker compose exec web pytest
+  after_script:
+    - docker compose down
   artifacts:
       paths:
           - .env
