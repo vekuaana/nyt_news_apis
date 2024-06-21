@@ -4,10 +4,11 @@
 
 Dans ce sprint il faudra réaliser une API du modèle de ML qui devra être "conteneuriser". Les attendus :
 
-* Création d'une API du modèle de Machine Learning ( + BDD si besoin)
+* Création d'une API du modèle de Machine Learning :
+   * conteneur polarity : entrainement du modèle
+   * conteneur predict : exposition via une API (FastAPI) du modèle de polarité et d'un système de recommandation de livres
 * Réaliser des tests unitaires de l'API
 * Conteneuriser cette API et la BDD via Docker
-* Mesurer la dérive des données avec DataDrift
 
 ## Questions pour Dan
 
