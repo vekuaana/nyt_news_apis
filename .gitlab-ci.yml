@@ -50,7 +50,7 @@ build:
 #    - docker compose pull
 
   script:
-    - if [[ "$USE_DOCKER_CACHE" ]]; then echo "Docker cache active"
+    - echo $USE_DOCKER_CACHE
     - docker compose build
   artifacts:
       paths:
