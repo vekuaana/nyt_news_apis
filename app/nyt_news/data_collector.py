@@ -80,16 +80,25 @@ class ETL(NYTConnector):
                            main_candidate=main_candidate,
                            election_id=election_id)
 
-            # get polarity
             request_body = json.dumps(data.to_dict())
-            res = requests.post(self.polarity_url, data=request_body)
-
-            if res.status_code == 200:
-                res_json = res.json()
-                data.polarity = res_json['response']
-                list_json.append(data.to_dict())
+            # get polarity
+            res_polarity = requests.post(self.polarity_url, data=request_body)
+            if res_polarity.status_code == 200:
+                res_polarity_json = res_polarity.json()
+                data.polarity = res_polarity_json['response']
             else:
-                raise DataError(f"Something went wrong in Article : {res.json()}")
+                raise DataError(f"Something went wrong in Article : {res_polarity.json()}")
+            '''
+            # get books 
+            res_books = requests.post(self.books_to_article_url, data=request_body)
+            if res_books.status_code == 200:
+                res_books_json = res_books.json()
+                data.recommended_book = res_books_json['response']
+            else:
+                raise DataError(f"Something went wrong in Article : {res_books.json()}")
+            '''
+            list_json.append(data.to_dict())
+
         return list_json
     
     def books_to_article(self):
