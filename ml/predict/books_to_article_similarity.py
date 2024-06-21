@@ -1,6 +1,5 @@
 import json 
 import pandas as pd 
-import pprint
 import re
 import os
 import multiprocessing as mp
@@ -14,6 +13,38 @@ from nltk.corpus import stopwords
 from nltk.stem import PorterStemmer
 from sklearn.metrics.pairwise import cosine_similarity
 from sklearn.feature_extraction.text import TfidfVectorizer
+
+from connection_db import MongoDBConnection
+from pymongo.errors import OperationFailure, ServerSelectionTimeoutError
+
+def get_books():
+
+    try:
+            # Attempt to connect to MongoDB within a container environment
+            db = MongoDBConnection('mongodb').conn_db
+    except ServerSelectionTimeoutError:
+            # Handle the case where the connection times out if we try to connect outside the container
+            print("Try to connect outside the container with localhost")
+            try:
+                db = MongoDBConnection('localhost').conn_db
+            except ServerSelectionTimeoutError as sste:
+                print("Unable to connect to database. Make sure the tunnel is still active.")
+                print(sste)
+                return sste
+    except OperationFailure as of:
+            print(of)
+            return of
+
+    book = list(db['book'].find())
+    book = pd.DataFrame(book)
+
+    # Remove N/A category and select 'Politics & Current Events'
+    book = book[(book['genre'] != 'N/A') & (book['genre'] == 'Politics & Current Events')]
+    book = book.reset_index(drop=True)
+    book = book.reset_index(drop = False)
+    book['abstract_preprocessed'] = None
+
+    return book
 
 def text_cleaning(text): 
     # Remove #1 from, for exemple, #1 NATIONAL BESTSELLER
@@ -64,86 +95,55 @@ def preprocessing_abstract(abstract):
     abstract_stemming = stemming(abstract_stop_words)
     return abstract_stemming
 
-def get_top_5_books_to_article(book, article_preprocessed_abstract):
-    # Combine all books abstracts with the article's abstract in one dataset
+def get_top_3_books_to_article(abstract):
+
+    book = get_books()
+    col_index = book.columns.get_loc('abstract_preprocessed')
+        # Loop through each abstract, preprocess it, transform list in string, update the DataFrame
+    for index, abstract_book in enumerate(book['abstract']):
+            abstract_preprocessed = preprocessing_abstract(abstract_book)
+            string = ' '.join([str(item)for item in abstract_preprocessed])
+            book.iloc[index, col_index] = string
+
+    article_preprocessed_abstract = preprocessing_abstract(abstract)
+    article_preprocessed_abstract = ' '.join([str(item)for item in article_preprocessed_abstract])
+    article_preprocessed_abstract
+
+        # Combine all books abstracts with the article's abstract in one dataset
     corpus_abstract = pd.DataFrame(book['abstract_preprocessed'])
     corpus_abstract.loc[-1] = article_preprocessed_abstract # add article's abstract at the end of the corpus
     corpus_abstract = corpus_abstract.reset_index(drop=True)
+    corpus_abstract
 
-    # Compute Tdidf
+        # Compute Tdidf
     vectorizer = TfidfVectorizer()
-    tfidf_matrix = vectorizer.fit_transform(corpus_abstract['abstract_preprocessed']) # return a document-term matrix
- 
-    # Computation of Cosine similarity. The higher the cosim value, the more similar the elements are. 
+    tfidf_matrix = vectorizer.fit_transform(corpus_abstract['abstract_preprocessed'])
+
+        # Computation of Cosine similarity. The higher the cosim value, the more similar the elements are. 
     cosim = cosine_similarity(tfidf_matrix, tfidf_matrix)
     cosim = pd.DataFrame(cosim)
     cosim_article = cosim.tail(1)
-    # Select the last row of the cosine matrix which represents the artcile cosine values to each books summary.
+        # Select the last row of the cosine matrix which represents the artcile cosine values to each books summary.
     cosim_article_sort = cosim_article.iloc[-1,:].sort_values(ascending = False)
 
-    top_5_books = cosim_article_sort[1:6]
-    top_5_books = pd.DataFrame(top_5_books)
-    top_5_books.columns = ['cosine']
-    top_5_books = top_5_books.reset_index()
-    top_5_books = pd.merge(book, top_5_books, how='inner', on='index')
+    top_3_books = cosim_article_sort[1:4]
+    top_3_books = pd.DataFrame(top_3_books)
+    top_3_books.columns = ['cosine']
+    top_3_books
+
+    top_3_books = top_3_books.reset_index()
+    top_3_books = pd.merge(book, top_3_books, how='inner', on='index')
     columns = ['title', 'author', 'publisher']
-    top_5_books = top_5_books[columns]
-    top_5_books = top_5_books.to_json(orient='records', lines=False, indent=4)
-    return top_5_books
+    top_3_books = top_3_books[columns]
+    top_3_books = top_3_books.to_json(orient='records', lines=False, indent=4)
+    top_3_books
 
-################# A Remplacer par la connexion à la DB pour accéder à books #################
-os.chdir('/Users/anavekua/Documents/DataScienTest/nyt_news')
-file_paths = "data/bestsellers_with_abstract_and_genre_3350.json"
-with open(file_paths, 'r') as file:
-        data = json.load(file)
-book = pd.DataFrame(data)
+    return top_3_books
 
-# Remove N/A category and select 'Politics & Current Events'
-book = book[(book['genre'] != 'N/A') & (book['genre'] == 'Politics & Current Events')]
-book = book.reset_index(drop=True)
-book = book.reset_index(drop = False)
-book['abstract_preprocessed'] = None
-col_index = book.columns.get_loc('abstract_preprocessed')
 
-# Loop through each abstract, preprocess it, transform list in string, update the DataFrame
-for index, abstract in enumerate(book['abstract']):
-    abstract_preprocessed = preprocessing_abstract(abstract)
-    string = ' '.join([str(item)for item in abstract_preprocessed])
-    book.iloc[index, col_index] = string
+if __name__ == "__main__":
+    abstract = 'President-elect Trump has vowed to cancel the Paris climate accord, jeopardizing what scientists say is a critical 3.6-degree irreversible temperature target. ract = In 1914 a room full of German schoolboys, fresh-faced and idealistic, are goaded by their schoolmaster to troop off to the ‘glorious war’. With the fire and patriotism of youth they sign up. What follows is the moving story of a young ‘unknown soldier’ experiencing the horror and disillusionment of life in the trenches.'
+    books = get_top_3_books_to_article(abstract)
+    print(books)
 
-################# A Remplacer par un article reçu via l'api #################
-article = {
-            "_id": {
-                "$oid": "664c81164444e18089255a0c"
-            },
-            "uri": "nyt://article/cc29805e-55c9-5902-a308-50be425e9b99",
-            "abstract": "Despite right-wing bluster to the contrary, there really is a war on women, and the Republicans are the aggressors.",
-            "web_url": "https://takingnote.blogs.nytimes.com/2012/04/13/wars-imagined-and-real/",
-            "snippet": "Despite right-wing bluster to the contrary, there really is a war on women, and the Republicans are the aggressors.",
-            "lead_paragraph": "Politicians are always declaring a “war” on something. Often the conflict is entirely in their imaginations– like the War on Christmas and the War on Religion. Sometimes it’s a label designed to lend a sense of urgency to a problem they are not going to fix – like the War on Poverty and the War on Drugs.",
-            "headline_main": "Wars: Imagined and Real",
-            "headline_kicker": "Taking Note",
-            "pub_date": "2012-04-13T17:02:30+0000",
-            "document_type": "article",
-            "section_name": "Opinion",
-            "subsection_name": "null",
-            "byline": "By Andrew Rosenthal",
-            "keywords": [
-                "Presidential Election of 2012",
-                "Women's Rights",
-                "Romney, Ann",
-                "Rosen, Hilary"
-            ],
-            "election_year": 2012,
-            "election_date": {
-                "$date": "2012-11-06T00:00:00.000Z"
-            }
-            }
 
-#preprocessing article
-article_preprocessed_abstract = preprocessing_abstract(article['abstract'])
-article_preprocessed_abstract = ' '.join([str(item)for item in article_preprocessed_abstract])
-
-# get top 5 books
-top_5_books = get_top_5_books_to_article(book, article_preprocessed_abstract)
-print(top_5_books)

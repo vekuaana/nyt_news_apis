@@ -5,6 +5,8 @@ from datetime import datetime
 
 from predict_polarity import Polarity
 
+import books_to_article_similarity
+
 app = FastAPI()
 
 model = None
@@ -41,6 +43,11 @@ def get_polarity(article: Article):
     res = model.predict(title, year, False)
     return {"response": res}
 
+@app.post("/books")
+def get_books_to_article(article: Article):
+    abstract = article.abstract
+    res = books_to_article_similarity.get_top_3_books_to_article(abstract)
+    return {"response": res}
 
 @app.get("/health")
 def health_check():
