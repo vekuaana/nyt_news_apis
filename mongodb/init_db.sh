@@ -21,4 +21,4 @@ db.createCollection('polarity_dataset');
 EOF
 mongoimport -d $MONGO_INITDB_DATABASE -c election --authenticationDatabase $MONGO_INITDB_DATABASE --username $USER1 --password $PASSWORD1 --type json --file data/db/data/election.json --jsonArray
 mongoimport -d $MONGO_INITDB_DATABASE -c polarity_dataset --type csv --authenticationDatabase $MONGO_INITDB_DATABASE --username $USER1 --password $PASSWORD1 --file data/db/data/merge_SEN.csv --headerline
-mongoimport -d $MONGO_INITDB_DATABASE -c book --authenticationDatabase $MONGO_INITDB_DATABASE --username $USER1 --password $PASSWORD1 --type json --file data/db/data/merged_nonfiction_bestsellers.json --jsonArray
+mongoimport -d $MONGO_INITDB_DATABASE -c book --authenticationDatabase $MONGO_INITDB_DATABASE --username $USER1 --password $PASSWORD1 --type json --file data/db/data/bestsellers_with_abstract_and_genre_3350.json --jsonArray
