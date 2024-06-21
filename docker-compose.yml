@@ -173,16 +173,16 @@ services:
       ports:
         - "8001:8000"
 
-    polarity:
-      container_name: polarity_trainer
-      build:
-        context: ./ml/polarity
-        dockerfile: Dockerfile
-      image: registry.gitlab.com/nyt_news2/nyt_news/polarity:latest
-      networks:
-        - mongo-compose-network
-      volumes:
-        - ./ml/models:/models
+#    polarity:
+#      container_name: polarity_trainer
+#      build:
+#        context: ./ml/polarity
+#        dockerfile: Dockerfile
+#      image: registry.gitlab.com/nyt_news2/nyt_news/polarity:latest
+#      networks:
+#        - mongo-compose-network
+#      volumes:
+#        - ./ml/models:/models
 
     prediction:
       container_name: predict
