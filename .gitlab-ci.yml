@@ -5,6 +5,9 @@ image:
 services:
   - docker:dind
 
+variables:
+  DOCKER_HOST: tcp://docker:2375/
+
 cache:
   key: $CI_COMMIT_REF_SLUG
 
