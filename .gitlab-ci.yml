@@ -8,8 +8,13 @@ services:
 variables:
   DOCKER_HOST: tcp://docker:2375/
 
+cache:
+  key: $CI_COMMIT_REF_SLUG
+
+
 stages:
   - build
+  - push
   - test
 #  - push
 #  - deploy
@@ -17,6 +22,8 @@ stages:
 
 before_script:
 - docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" $CI_REGISTRY
+  - docker info
+  - docker-compose --version
 
 after_script:
 - docker logout "$CI_REGISTRY"
@@ -40,16 +47,18 @@ build:
     - ls -a
     - cp .env ./ml/polarity/
     - ls -a ./ml/polarity/
+    - docker compose pull "$CI_REGISTRY_IMAGE_PROJECT:latest"
 
   script:
-    - docker info
+    - if [[ "$USE_DOCKER_CACHE" ]]; then echo "Docker cache active"
     - docker compose build
   artifacts:
       paths:
           - .env
-  only:
-    - master
-
+#  cache:
+#    key: build-cache
+#    paths:
+#      - ml/models/
 
 test:
   before_script:
@@ -76,12 +85,16 @@ test:
   artifacts:
       paths:
           - .env
+#  cache:
+#    key: build-cache
+#    paths:
+#      - ml/models/
 
-#push:
-#  stage: push
-#  script:
-#    - docker compose push
-#
+push:
+  stage: push
+  script:
+    - docker compose push
+
 #deploy:
 #  stage: deploy
 #  script:

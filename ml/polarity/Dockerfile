@@ -1,5 +1,4 @@
 FROM python:3.11-slim
-RUN python -m pip install --upgrade pip
 WORKDIR /polarity
 ADD requirements.txt ./
 ADD data/merge_SEN.csv ./data/
