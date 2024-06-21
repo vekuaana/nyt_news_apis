@@ -37,6 +37,7 @@ class ETL(NYTConnector):
     def __init__(self):
         self.nyt_newswire_counter = 1
         self.polarity_url = "http://prediction:8005/polarity"
+        self.books_to_article_url = "http://prediction:8005/books"
         super().__init__()
         try:
             # Attempt to connect to MongoDB within a container environment
@@ -81,18 +82,56 @@ class ETL(NYTConnector):
                            main_candidate=main_candidate,
                            election_id=election_id)
 
-            # get polarity
             request_body = json.dumps(data.to_dict())
-            res = requests.post(self.polarity_url, data=request_body)
-
-            if res.status_code == 200:
-                res_json = res.json()
-                data.polarity = res_json['response']
-                list_json.append(data.to_dict())
+            # get polarity
+            res_polarity = requests.post(self.polarity_url, data=request_body)
+            if res_polarity.status_code == 200:
+                res_polarity_json = res_polarity.json()
+                data.polarity = res_polarity_json['response']
             else:
-                raise DataError(f"Something went wrong in Article : {res.json()}")
-        return list_json
+                raise DataError(f"Something went wrong in Article : {res_polarity.json()}")
+            '''
+            # get books 
+            res_books = requests.post(self.books_to_article_url, data=request_body)
+            if res_books.status_code == 200:
+                res_books_json = res_books.json()
+                data.recommended_book = res_books_json['response']
+            else:
+                raise DataError(f"Something went wrong in Article : {res_books.json()}")
+            '''
+            list_json.append(data.to_dict())
 
+        return list_json
+    
+    def books_to_article(self):
+        doc = self.db['usa_election_articles'].find_one() # A remplacer par un article en input
+        data = Article(abstract=doc['abstract'],
+                        headline=doc['headline_main'],
+                        keywords=doc['keywords'],
+                        pub_date=datetime.fromisoformat(doc['pub_date']).strftime("%Y-%m-%d %H:%M:%S"),
+                        section_name=doc['section_name'],
+                        byline=[doc['byline']],
+                        web_url=doc['web_url'],
+                        uri=doc['uri'],
+                        main_candidate=None,
+                        polarity=None,
+                        recommended_book=None,
+                        election_id=None,
+                        lead_paragraph=None,
+                        document_type=None        
+                        )
+
+        # get books
+        request_body = json.dumps(data.to_dict())
+        res = requests.post(self.books_to_article_url, data=request_body)
+
+        if res.status_code == 200:
+                res_json = res.json()
+                data.recommended_book = res_json['response']
+        else:
+            raise DataError(f"Something went wrong in Article : {res.json()}")
+        return data
+    
 
 class DataError(Exception):
     pass

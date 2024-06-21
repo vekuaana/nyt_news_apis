@@ -50,7 +50,6 @@ build:
 #    - docker compose pull
 
   script:
-    - if [$USE_DOCKER_CACHE]; then echo "yea"; fi
     - docker compose build
     - docker compose push
   artifacts:
