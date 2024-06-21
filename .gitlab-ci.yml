@@ -14,7 +14,6 @@ cache:
 
 stages:
   - build
-  - push
   - test
 #  - push
 #  - deploy
@@ -92,10 +91,10 @@ test:
 #    paths:
 #      - ml/models/
 
-push:
-  stage: push
-  script:
-    - docker compose push
+#push:
+#  stage: push
+#  script:
+#    - docker compose push
 
 #deploy:
 #  stage: deploy
