@@ -52,11 +52,21 @@ build:
 
 
 test:
+  before_script:
+    - echo "$CI_REGISTRY_IMAGE"
+    - echo $CI_REGISTRY
+    - echo MONGO_INITDB_ROOT_USERNAME=$MONGO_INITDB_ROOT_USERNAME >> .env
+    - echo MONGO_INITDB_ROOT_PASSWORD=$MONGO_INITDB_ROOT_PASSWORD >> .env
+    - echo MONGO_INITDB_DATABASE=$MONGO_INITDB_DATABASE >> .env
+    - echo MONGOEXPRESS_PASSWORD=$MONGOEXPRESS_PASSWORD >> .env
+    - echo MONGOEXPRESS_LOGIN=$MONGOEXPRESS_LOGIN >> .env
+    - echo USER1=$USER1 >> .env
+    - echo PASSWORD1=$PASSWORD1 >> .env
+    - echo CI_REGISTRY_IMAGE_PROJECT=CI_REGISTRY_IMAGE_PROJECT >> .env
+    - ls -a
   script:
     - echo $DOCKER_HOST
     - echo $DOCKER_DRIVER
-    - docker info
-    - ls -a
     - cp .env ./ml/polarity/
     - ls -a ./ml/polarity/
     - docker compose up -d
