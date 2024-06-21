@@ -186,6 +186,8 @@ services:
       build:
         context: ./ml/predict
         dockerfile: Dockerfile
+      env_file:
+        - .env   
       networks:
         - mongo-compose-network
       ports:
