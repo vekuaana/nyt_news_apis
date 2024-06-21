@@ -52,6 +52,7 @@ build:
   script:
     - if [$USE_DOCKER_CACHE]; then echo "yea"; fi
     - docker compose build
+    - docker compose push
   artifacts:
       paths:
           - .env
