@@ -20,7 +20,8 @@ stages:
 
 
 before_script:
-  - docker login -u "$CI_REGISTRY_USER" -p "$CI_JOB_TOKEN" $CI_REGISTRY
+#  - docker login -u "$CI_REGISTRY_USER" -p "$CI_JOB_TOKEN" $CI_REGISTRY
+  - docker login -u "$DOCKERHUB_USERNAME" -p "$DOCKERHUB_PWD"
   - docker info
   - docker-compose --version
 
@@ -34,7 +35,7 @@ build:
     CI_JOB_TIMEOUT: 3000
   stage: build
   before_script:
-    - docker login -u "$CI_REGISTRY_USER" -p "$CI_JOB_TOKEN" $CI_REGISTRY
+    - docker login -u "$DOCKERHUB_USERNAME" -p "$DOCKERHUB_PWD"
     - echo "$DOCKER_HOST"
     - echo "$CI_REGISTRY_USER"
     - echo "$CI_REGISTRY_IMAGE"
