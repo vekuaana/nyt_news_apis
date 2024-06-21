@@ -47,7 +47,7 @@ build:
     - ls -a
     - cp .env ./ml/polarity/
     - ls -a ./ml/polarity/
-    - docker compose pull
+#    - docker compose pull
 
   script:
     - if [$USE_DOCKER_CACHE]; then echo "yea"; fi
