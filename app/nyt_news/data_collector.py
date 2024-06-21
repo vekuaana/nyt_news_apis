@@ -67,13 +67,15 @@ class ETL(NYTConnector):
             election_id = election['election_id']
             entities = [x["name"].split()[-1] for x in election['candidate']]
             main_candidate = [x for x in entities if x in [x.split(',')[0] for x in doc['per_facet']]]
+            if isinstance(doc['byline'], str):
+                doc['byline'] = [doc['byline']]
             data = Article(abstract=doc['abstract'],
                            headline=doc['title'],
                            keywords=doc['per_facet'] + doc['org_facet'] + doc['des_facet'],
                            pub_date=datetime.fromisoformat(doc['published_date']).strftime("%Y-%m-%d %H:%M:%S"),
                            document_type=doc['item_type'],
                            section_name=doc['section'],
-                           byline=[doc['byline']],
+                           byline=doc['byline'],
                            web_url=doc['url'],
                            uri=doc['uri'],
                            main_candidate=main_candidate,

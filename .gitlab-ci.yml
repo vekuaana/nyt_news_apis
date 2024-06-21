@@ -47,8 +47,8 @@ build:
   artifacts:
       paths:
           - .env
-#  only:
-#    - master
+  only:
+    - master
 
 
 test:
@@ -57,6 +57,8 @@ test:
     - echo $DOCKER_DRIVER
     - docker info
     - ls -a
+    - cp .env ./ml/polarity/
+    - ls -a ./ml/polarity/
     - docker compose up -d
     - docker compose exec web pytest
   after_script:

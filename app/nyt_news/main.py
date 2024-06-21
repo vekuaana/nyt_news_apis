@@ -1,7 +1,8 @@
 import time
 from json import dumps
-from kafka import KafkaProducer
-
+from kafka import KafkaProducer, KafkaAdminClient
+from kafka.admin import NewTopic
+from kafka.errors import TopicAlreadyExistsError, NoBrokersAvailable
 from pymongo.errors import OperationFailure, ServerSelectionTimeoutError
 from connection_db import MongoDBConnection
 from data_collector import ETL
@@ -10,13 +11,36 @@ import logging
 logging.basicConfig(level=logging.INFO)
 logging.basicConfig(format="%(levelname)s | %(asctime)s | %(message)s")
 
+
 class Producer:
     def __init__(self):
-        self.producer = KafkaProducer(bootstrap_servers='kafka1:29092',
+        self.topic = 'nyt_data'
+        self.bootstrap_servers = 'kafka1:29092'
+        self.check_broker_health_and_topic()
+        self.producer = KafkaProducer(bootstrap_servers=self.bootstrap_servers,
                                       value_serializer=lambda x: dumps(x).encode('utf-8'))
 
+    def check_broker_health_and_topic(self):
+        try:
+            admin_client = KafkaAdminClient(
+                bootstrap_servers=self.bootstrap_servers,
+                client_id='admin_client'
+            )
+            try:
+                topics = admin_client.list_topics()
+                if self.topic not in topics:
+                    logging.info(f"Topic '{self.topic}' does not exist.")
+                topic = NewTopic(name=self.topic, num_partitions=1, replication_factor=1)
+                admin_client.create_topics(new_topics=[topic])
+                logging.info(f"Topic '{self.topic}' has been created.")
+            except TopicAlreadyExistsError:
+                logging.error(f"Topic '{self.topic}' already exists")
+        except NoBrokersAvailable as e:
+            logging.error(f"Error with broker: {e}")
+            raise
+
     def produce_nyt_data(self,nyt_data):
-        self.producer.send('nyt_data', value=nyt_data)
+        self.producer.send(self.topic, value=nyt_data)
 
 
 class Injector:

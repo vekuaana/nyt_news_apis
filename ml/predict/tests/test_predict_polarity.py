@@ -1,4 +1,3 @@
-import pytest
 import os
 from predict_polarity import Polarity
 
