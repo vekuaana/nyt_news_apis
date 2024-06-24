@@ -90,7 +90,7 @@ class ETL(NYTConnector):
                 data.polarity = res_polarity_json['response']
             else:
                 raise DataError(f"Something went wrong in Article : {res_polarity.json()}")
-            '''
+
             # get books 
             res_books = requests.post(self.books_to_article_url, data=request_body)
             if res_books.status_code == 200:
@@ -98,7 +98,7 @@ class ETL(NYTConnector):
                 data.recommended_book = res_books_json['response']
             else:
                 raise DataError(f"Something went wrong in Article : {res_books.json()}")
-            '''
+
             list_json.append(data.to_dict())
 
         return list_json

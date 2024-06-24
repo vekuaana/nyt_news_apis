@@ -5,7 +5,9 @@ import os
 import multiprocessing as mp
 import numpy as np
 import pandas as pd
+import logging
 import nltk
+
 nltk.download('stopwords', quiet=True)
 nltk.download('punkt')
 from nltk.tokenize import word_tokenize
@@ -17,22 +19,27 @@ from sklearn.feature_extraction.text import TfidfVectorizer
 from connection_db import MongoDBConnection
 from pymongo.errors import OperationFailure, ServerSelectionTimeoutError
 
+
+logging.basicConfig(level=logging.INFO)
+
+
 def get_books():
 
     try:
             # Attempt to connect to MongoDB within a container environment
             db = MongoDBConnection('mongodb').conn_db
-    except ServerSelectionTimeoutError:
+    except (ServerSelectionTimeoutError, TypeError):
             # Handle the case where the connection times out if we try to connect outside the container
-            print("Try to connect outside the container with localhost")
+            logging.error("Try to connect outside the container with localhost")
             try:
                 db = MongoDBConnection('localhost').conn_db
             except ServerSelectionTimeoutError as sste:
-                print("Unable to connect to database. Make sure the tunnel is still active.")
-                print(sste)
+                logging.error("Unable to connect to database. Make sure the tunnel is still active.")
+                logging.error(sste)
                 return sste
+
     except OperationFailure as of:
-            print(of)
+            logging.error(of)
             return of
 
     book = list(db['book'].find())
@@ -95,9 +102,9 @@ def preprocessing_abstract(abstract):
     abstract_stemming = stemming(abstract_stop_words)
     return abstract_stemming
 
-def get_top_3_books_to_article(abstract):
+def get_top_3_books_to_article(abstract, book):
 
-    book = get_books()
+    # book = get_books()
     col_index = book.columns.get_loc('abstract_preprocessed')
         # Loop through each abstract, preprocess it, transform list in string, update the DataFrame
     for index, abstract_book in enumerate(book['abstract']):
@@ -143,7 +150,8 @@ def get_top_3_books_to_article(abstract):
 
 if __name__ == "__main__":
     abstract = 'President-elect Trump has vowed to cancel the Paris climate accord, jeopardizing what scientists say is a critical 3.6-degree irreversible temperature target. ract = In 1914 a room full of German schoolboys, fresh-faced and idealistic, are goaded by their schoolmaster to troop off to the ‘glorious war’. With the fire and patriotism of youth they sign up. What follows is the moving story of a young ‘unknown soldier’ experiencing the horror and disillusionment of life in the trenches.'
-    books = get_top_3_books_to_article(abstract)
+    book = get_books()
+    books = get_top_3_books_to_article(abstract, book)
     print(books)
 
 

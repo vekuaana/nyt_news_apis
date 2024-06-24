@@ -5,17 +5,24 @@ from datetime import datetime
 
 from predict_polarity import Polarity
 
-import books_to_article_similarity
+from books_to_article_similarity import get_books, get_top_3_books_to_article
 
 app = FastAPI()
 
 model = None
+book = None
 
 
 @app.on_event("startup")
 def get_model():
     global model
     model = Polarity(model_name="flan_seq2seq_model")
+
+
+@app.on_event("startup")
+def get_books_coll():
+    global book
+    book = get_books()
 
 
 class Article(BaseModel):
@@ -43,12 +50,21 @@ def get_polarity(article: Article):
     res = model.predict(title, year, False)
     return {"response": res}
 
+
 @app.post("/books")
 def get_books_to_article(article: Article):
     abstract = article.abstract
-    res = books_to_article_similarity.get_top_3_books_to_article(abstract)
+    print(abstract)
+    res = get_top_3_books_to_article(abstract, book)
+    print(res)
     return {"response": res}
+
 
 @app.get("/health")
 def health_check():
     return {"status": "healthy"}
+
+
+if __name__ == "__main__":
+    import uvicorn
+    uvicorn.run(app, host="0.0.0.0", port=8010)

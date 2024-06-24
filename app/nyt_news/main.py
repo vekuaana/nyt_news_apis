@@ -34,7 +34,7 @@ class Producer:
                 admin_client.create_topics(new_topics=[topic])
                 logging.info(f"Topic '{self.topic}' has been created.")
             except TopicAlreadyExistsError:
-                logging.error(f"Topic '{self.topic}' already exists")
+                logging.info(f"Topic '{self.topic}' already exists")
         except NoBrokersAvailable as e:
             logging.error(f"Error with broker: {e}")
             raise
