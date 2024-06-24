@@ -1,6 +1,6 @@
 # Consommation de la donnée
 Cette étape consiste à consommer la donnée pour répondre à deux objectifs :
-- classer en polarité les articles des archives et les articles en temps réel
+- classer en polarité les articles des archives et les articles en temps réel : [README détaillé](https://github.com/Linenlp/nyt_news/blob/main/ml/README.md)
 - recommander un livre en fonction d'une requête utilisateur
 
 ## Questions pour Dan
