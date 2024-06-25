@@ -15,7 +15,7 @@ variables:
 
 stages:
   - build
-#  - test
+  - test
 #  - push
 #  - deploy
 
@@ -64,7 +64,6 @@ build:
   artifacts:
       paths:
           - .env
-          - ml/polarity/models/*
           - ml/models/*
 
 
@@ -73,16 +72,16 @@ build:
 #    paths:
 #      - ml/models/
 
-#test:
-#  script:
-#    - docker compose up -d
+test:
+  script:
+    - docker compose up -d
 #    - docker compose exec web pytest
-#  after_script:
+  after_script:
 #    - docker compose down
-#  artifacts:
-#      paths:
-#          - .env
-#          - ml/models/*
+  artifacts:
+      paths:
+          - .env
+          - ml/models/*
 
 #  cache:
 #    key: build-cache
