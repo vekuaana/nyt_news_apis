@@ -48,13 +48,12 @@ build:
     - echo "$CI_PROJECT_DIR"
     - echo "$(docker-compose -f docker-compose.yml ps -q -- polarity)"
 
-
   script:
     - docker compose --profile build build
 #    - ls ./ml/models/
 
   after_script: :
-    - docker cp $(docker-compose -f docker-compose.yml ps -q -- polarity):/polarity/models "$CI_PROJECT_DIR"/ml/models
+    - docker cp $(docker-compose -f docker-compose.yml ps -q -- polarity):/polarity/models $CI_PROJECT_DIR/ml/models
   artifacts:
       paths:
           - .env
