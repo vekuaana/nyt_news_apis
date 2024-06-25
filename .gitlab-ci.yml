@@ -33,6 +33,7 @@ after_script:
 build:
   variables:
     CI_JOB_TIMEOUT: 3000
+    OULA: $(docker-compose -f docker-compose.yml ps -q -- polarity)
   stage: build
   before_script:
     - docker login -u "$DOCKERHUB_USERNAME" -p "$DOCKERHUB_PWD"
@@ -47,6 +48,7 @@ build:
     - ls -a
     - echo "$CI_PROJECT_DIR"
     - echo "$(docker-compose -f docker-compose.yml ps -q -- polarity)"
+    - echo $OULA
 
 
   script:
