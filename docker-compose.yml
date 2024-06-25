@@ -193,6 +193,7 @@ services:
         - mongo-compose-network
       volumes:
         - ./ml/models:/models
+        - .models:/models2
 
 #    prediction:
 #      container_name: predict

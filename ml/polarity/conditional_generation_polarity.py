@@ -22,7 +22,7 @@ os.environ["MLFLOW_TRACKING_URI"]=""
 os.environ["HF_MLFLOW_LOG_ARTIFACTS"]="1"
 
 def main():
-    with open('..' + os.sep + 'models' + os.sep + 'mytest.txt', "w") as writer:
+    with open('models2' + os.sep + 'mytest.txt', "w") as writer:
         writer.write("index\ttext\tgold\tprediction\ncoucouuuuuuuuuuuuuu")
     # parser = HfArgumentParser((ModelArguments, DataTrainingArguments, Seq2SeqTrainingArguments ))
     # model_args, data_args, training_args = parser.parse_json_file(json_file=os.path.abspath(sys.argv[1]))

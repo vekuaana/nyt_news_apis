@@ -46,14 +46,13 @@ build:
     - echo CI_REGISTRY_IMAGE_PROJECT=$CI_REGISTRY_IMAGE_PROJECT >> .env
     - ls -a
     - echo "$CI_PROJECT_DIR"
-    - cd ..
-    - ls -a
+    - echo "$(docker-compose -f docker-compose.yml ps -q -- polarity)"
 
 
   script:
-#    - docker compose --profile build build
+    - docker compose --profile build build
 #    - ls ./ml/models/
-    - echo "$(docker-compose -f docker-compose.yml ps -q -- polarity)"
+
 #  after_script: :
 #    - docker cp $(docker-compose -f docker-compose.yml ps -q -- polarity):/polarity/results ./results
   artifacts:
