@@ -75,7 +75,7 @@ build:
 test:
   script:
     - docker compose up -d
-    - docker compose exec prediction pytest -vv
+    - docker compose exec predict pytest -vv
   after_script:
     - docker compose down
   artifacts:
