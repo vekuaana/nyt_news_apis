@@ -55,7 +55,7 @@ build:
     - docker compose --profile build build
 #    - ls ./ml/models/
 
-  after_script: :
+#  after_script: :
 #    - docker cp $(docker-compose -f docker-compose.yml ps -q -- polarity):/polarity/models $CI_PROJECT_DIR/ml/models
   artifacts:
       paths:
