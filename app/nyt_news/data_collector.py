@@ -27,7 +27,7 @@ class Article:
     polarity: Optional[list] = None
     recommended_book: Optional[int] = None
     election_id: Optional[int] = None
-    lead_paragraph: Optional[int] = None
+    lead_paragraph: Optional[str] = None
 
 
 class ETL(NYTConnector):

@@ -37,9 +37,9 @@ class Article(BaseModel):
     uri: str
     main_candidate: list
     polarity: Optional[list] = None
-    recommended_book: Optional[int] = None
+    recommended_book: Optional[list] = None
     election_id: Optional[int] = None
-    lead_paragraph: Optional[int] = None
+    lead_paragraph: Optional[str] = None
 
 
 @app.post("/polarity")
@@ -54,9 +54,7 @@ def get_polarity(article: Article):
 @app.post("/books")
 def get_books_to_article(article: Article):
     abstract = article.abstract
-    print(abstract)
     res = get_top_3_books_to_article(abstract, book)
-    print(res)
     return {"response": res}
 
 

@@ -21,8 +21,8 @@ class NYTArticleFetcher:
         data = response.json()
         return data.get('response', {}).get('docs', [])
 
-     @staticmethod
-     def parse_date(date_str):
+    @staticmethod
+    def parse_date(date_str):
         # Liste des formats de date possibles
         date_formats = [
             '%Y-%m-%dT%H:%M:%S%z',
@@ -30,7 +30,7 @@ class NYTArticleFetcher:
         ]
         for fmtt in date_formats:
             try:
-                return datetime.strptime(date_str, fmt)
+                return datetime.strptime(date_str, fmtt)
             except ValueError:
                 continue
         raise ValueError(f"Date format for {date_str} not recognized")
