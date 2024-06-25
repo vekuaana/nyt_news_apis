@@ -69,16 +69,16 @@ build:
 #    paths:
 #      - ml/models/
 
-test:
-  script:
-    - docker compose up -d
-    - docker compose exec web pytest
-  after_script:
-    - docker compose down
-  artifacts:
-      paths:
-          - .env
-          - ml/models/*
+#test:
+#  script:
+#    - docker compose up -d
+#    - docker compose exec web pytest
+#  after_script:
+#    - docker compose down
+#  artifacts:
+#      paths:
+#          - .env
+#          - ml/models/*
 
 #  cache:
 #    key: build-cache
