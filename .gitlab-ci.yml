@@ -53,11 +53,11 @@ build:
 #    - ls ./ml/models/
 
   after_script:
-    - echo "$(docker container ls --all --quiet --filter "name=polarity")"
-    - echo "$(docker container ls --all --quiet --filter "name=polarity_trainer")"
-    - MYTEST="$(docker container ls --all --quiet --filter "name=polarity_trainer")"
+    - docker image ls --all --quiet --filter "reference=*polarity_trainer"
+    - docker image ls --all --quiet --filter "reference=*polarity"
+    - MYTEST="$(docker image ls --all --quiet --filter "reference=*polarity")"
     - echo "$MYTEST"
-    - docker cp $(docker container ls --all --quiet --filter "name=polarity_trainer"):/polarity/models/mytest.txt $CI_PROJECT_DIR/ml/models/mytest.txt
+    - docker cp $(docker image ls --all --quiet --filter "reference=*polarity"):/polarity/models/mytest.txt $CI_PROJECT_DIR/ml/models/mytest.txt
     - ls $CI_PROJECT_DIR/ml/models
   artifacts:
       paths:
