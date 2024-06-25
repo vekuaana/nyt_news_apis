@@ -58,7 +58,7 @@ build:
     - MYTEST="$(docker image ls --all --quiet --filter "reference=*polarity")"
     - echo "$MYTEST"
     - container_id=$(docker create "$MYTEST")
-    - docker cp $container_id:/polarity/models $CI_PROJECT_DIR/ml/models/
+    - docker cp $container_id:/polarity/models $CI_PROJECT_DIR/ml/
     - docker rm "$container_id"
     - ls $CI_PROJECT_DIR/ml/models
   artifacts:
