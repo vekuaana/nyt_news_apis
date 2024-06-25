@@ -47,14 +47,15 @@ build:
     - ls -a
     - echo "$CI_PROJECT_DIR"
     - echo "$(docker-compose -f docker-compose.yml ps -q -- polarity)"
-
+    - OULA=$(docker-compose -f docker-compose.yml ps -q -- polarity)
+    - echo "$OULA"
 
   script:
     - docker compose --profile build build
 #    - ls ./ml/models/
 
   after_script:
-    - docker cp "$(docker-compose -f docker-compose.yml ps -q -- polarity)":/polarity/models/mytest.txt $CI_PROJECT_DIR/ml/models/mytest.txt
+    - docker cp $OULA:/polarity/models/mytest.txt $CI_PROJECT_DIR/ml/models/mytest.txt
     - ls $CI_PROJECT_DIR/ml/models
   artifacts:
       paths:
