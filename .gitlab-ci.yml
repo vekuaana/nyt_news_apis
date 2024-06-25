@@ -1,19 +1,20 @@
-image:
-  name: "docker:latest"
-  entrypoint: ["/bin/sh", "-c"]
+#image:
+#  name: "docker:latest"
+#  entrypoint: ["/bin/sh", "-c"]
 
 services:
-  - docker:dind
+  - docker:19.03.12-dind
 
 variables:
-  DOCKER_HOST: tcp://docker:2375/
+#  DOCKER_HOST: tcp://docker:2375/
+  DOCKER_DRIVER: overlay2
 
 cache:
   key: $CI_COMMIT_REF_SLUG
 
 
 stages:
-  - build
+#  - build
   - test
 #  - push
 #  - deploy
@@ -28,38 +29,36 @@ before_script:
 
 after_script:
   - docker logout
-
-
-build:
-  variables:
-    CI_JOB_TIMEOUT: 3000
-  stage: build
-  before_script:
-    - echo "$DOCKERHUB_USERNAME"
-    - echo "$DOCKER_HOST"
-    - echo "$CI_REGISTRY_USER"
-    - echo "$CI_REGISTRY_IMAGE"
-    - echo "$CI_REGISTRY"
-    - docker login -u "$DOCKERHUB_USERNAME" -p "$DOCKERHUB_PWD"
-    - echo MONGO_INITDB_ROOT_USERNAME=$MONGO_INITDB_ROOT_USERNAME >> .env
-    - echo MONGO_INITDB_ROOT_PASSWORD=$MONGO_INITDB_ROOT_PASSWORD >> .env
-    - echo MONGO_INITDB_DATABASE=$MONGO_INITDB_DATABASE >> .env
-    - echo MONGOEXPRESS_PASSWORD=$MONGOEXPRESS_PASSWORD >> .env
-    - echo MONGOEXPRESS_LOGIN=$MONGOEXPRESS_LOGIN >> .env
-    - echo USER1=$USER1 >> .env
-    - echo PASSWORD1=$PASSWORD1 >> .env
-    - echo CI_REGISTRY_IMAGE_PROJECT=$CI_REGISTRY_IMAGE_PROJECT >> .env
-    - ls -a
-#    - cp .env ./ml/polarity/
-#    - ls -a ./ml/polarity/
-#    - docker compose pull
-
-  script:
-    - docker compose build
-    - docker compose push
-  artifacts:
-      paths:
-          - .env
+#
+#
+#build:
+#  variables:
+#    CI_JOB_TIMEOUT: 3000
+#  stage: build
+#  before_script:
+#    - echo "$DOCKERHUB_USERNAME"
+#    - echo "$DOCKER_HOST"
+#    - echo "$CI_REGISTRY_USER"
+#    - echo "$CI_REGISTRY_IMAGE"
+#    - echo "$CI_REGISTRY"
+#    - docker login -u "$DOCKERHUB_USERNAME" -p "$DOCKERHUB_PWD"
+#    - echo MONGO_INITDB_ROOT_USERNAME=$MONGO_INITDB_ROOT_USERNAME >> .env
+#    - echo MONGO_INITDB_ROOT_PASSWORD=$MONGO_INITDB_ROOT_PASSWORD >> .env
+#    - echo MONGO_INITDB_DATABASE=$MONGO_INITDB_DATABASE >> .env
+#    - echo MONGOEXPRESS_PASSWORD=$MONGOEXPRESS_PASSWORD >> .env
+#    - echo MONGOEXPRESS_LOGIN=$MONGOEXPRESS_LOGIN >> .env
+#    - echo USER1=$USER1 >> .env
+#    - echo PASSWORD1=$PASSWORD1 >> .env
+#    - echo CI_REGISTRY_IMAGE_PROJECT=$CI_REGISTRY_IMAGE_PROJECT >> .env
+#    - ls -a
+##    - docker compose pull
+#
+#  script:
+#    - docker compose build
+#    - docker compose push
+#  artifacts:
+#      paths:
+#          - .env
 #  cache:
 #    key: build-cache
 #    paths:
@@ -81,8 +80,7 @@ test:
   script:
     - echo $DOCKER_HOST
     - echo $DOCKER_DRIVER
-    - cp .env ./ml/polarity/
-    - ls -a ./ml/polarity/
+    - docker compose pull
     - docker compose up -d
     - docker compose exec web pytest
   after_script:

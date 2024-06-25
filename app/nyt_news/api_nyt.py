@@ -6,15 +6,21 @@ import time
 import json
 import math
 import datetime
+import os
 from datetime import datetime
 import re
+import logging.config
+import yaml
 
-from config import api_nyt_path
+from config import api_nyt_path, PACKAGE_ROOT
 import ScrapperAppleBooks as sc
 
-import logging
 
-logging.basicConfig(level=logging.INFO, format="%(levelname)s | %(asctime)s | %(message)s")
+with open(PACKAGE_ROOT + os.sep + 'config_logger.yaml', 'rt') as f:
+    config = yaml.safe_load(f.read())
+
+logging.config.dictConfig(config)
+logger = logging.getLogger(__name__)
 
 # Base URLs for NYT APIs
 BASE_URL = "https://api.nytimes.com/svc/"
@@ -78,7 +84,7 @@ class NYTConnector:
             logging.info(results)
             filtered_results = [doc for doc in results if doc["subsection"] == subsection
                                 or (set(doc["per_facet"]).intersection(set(per_facet)))]
-            print("Number of filtered results:", len(filtered_results))
+            logger.info("Number of filtered results:", len(filtered_results))
 
         return filtered_results
 
@@ -137,18 +143,18 @@ class NYTConnector:
         r = requests.get(BASE_URL_KW, params=search_params)
         response = r.json()['response']
         hits = response['meta']['hits']
-        print("Number of hits:", hits)
+        logger.info("Number of hits:", hits)
 
         # Determine the number of pages (10 results per page)
         num_pages = int(math.ceil(hits / 10))
-        print("Number of pages:", num_pages)
+        logger.info("Number of pages:", num_pages)
 
         list_docs = []
 
         # Iterate through all pages to fetch the documents
         with open(f"{output_file}_{start_date}.json", 'w', encoding='utf-8') as f:
             for i in range(num_pages):
-                print(f"Fetching page {i}")
+                logger.info(f"Fetching page {i}")
                 search_params['page'] = i
                 r = requests.get(BASE_URL_KW, params=search_params)
                 response = r.json()['response']

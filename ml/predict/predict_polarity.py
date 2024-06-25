@@ -1,6 +1,10 @@
 from transformers import pipeline, T5Tokenizer
 import re
 import os
+import logging
+
+logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(name)s : %(module)s - %(levelname)s - %(message)s')
+logger = logging.getLogger(__name__)
 
 
 class Polarity:
@@ -126,8 +130,8 @@ class Polarity:
                 formatted_text = re.sub('/ENTITY/', entity, text)
                 pred = self.model(formatted_text)[0]['generated_text']
                 if verbose:
-                    print("Entity :", entity)
-                    print("Prediction :", pred)
+                    logger.info("Entity :", entity)
+                    logger.info("Prediction :", pred)
 
             res.append({'entity': entity, 'prediction': pred})
         return res

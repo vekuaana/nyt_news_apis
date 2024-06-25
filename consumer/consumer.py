@@ -12,8 +12,8 @@ from fastapi.templating import Jinja2Templates
 from fastapi.requests import Request
 
 
-logging.basicConfig(level=logging.INFO)
-logging.basicConfig(format="%(levelname)s | %(asctime)s | %(message)s")
+logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(name)s : %(module)s - %(levelname)s - %(message)s')
+logger = logging.getLogger(__name__)
 
 app = FastAPI(title="API Consumer",
               description="API that consumes NYT data about USA Elections and sends it to a dashboard",
@@ -51,7 +51,7 @@ class Consumer:
                 client_id='admin_client'
             )
         except NoBrokersAvailable as e:
-            logging.error(f"Error with broker: {e}")
+            logger.error(f"Error with broker: {e}")
             raise
 
     def check_topic(self):
@@ -67,7 +67,7 @@ class Consumer:
             if msg is None:
                 continue
             for message in self.consumer:
-                print(f"Message :{message.value}")
+                logger.debug(f"Message :{message.value}")
                 self.consumer.commit()
                 return message.value
 

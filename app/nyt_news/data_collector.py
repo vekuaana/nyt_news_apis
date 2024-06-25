@@ -2,6 +2,8 @@
 import requests
 import json
 import os
+import logging.config
+import yaml
 
 from datetime import datetime
 from dataclasses import dataclass
@@ -13,18 +15,11 @@ from api_nyt import NYTConnector
 from connection_db import MongoDBConnection
 from config import PACKAGE_ROOT
 
-# import logging
-import logging.config
-import yaml
 
-# Load the config file
 with open(PACKAGE_ROOT + os.sep + 'config_logger.yaml', 'rt') as f:
     config = yaml.safe_load(f.read())
 
-# Configure the logging module with the config file
 logging.config.dictConfig(config)
-
-# Get a logger object
 logger = logging.getLogger(__name__)
 
 

@@ -13,15 +13,10 @@ from data_collector import ETL
 from config import PACKAGE_ROOT
 
 
-
-# # Load the config file
 with open(PACKAGE_ROOT + os.sep + 'config_logger.yaml', 'rt') as f:
     config = yaml.safe_load(f.read())
 
-# Configure the logging module with the config file
 logging.config.dictConfig(config)
-
-# Get a logger object
 logger = logging.getLogger(__name__)
 
 

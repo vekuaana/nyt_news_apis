@@ -81,6 +81,8 @@ def main():
                         elif isinstance(article_data['byline'], list):
                             article_data['byline'] = []
                         request_body = json.dumps(article_data)
+                        logger.info('request_body')
+                        logger.info(request_body)
 
                         # get polarity
                         res_polarity = requests.post(polarity_url, data=request_body)
