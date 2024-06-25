@@ -48,7 +48,7 @@ build:
     - echo "$CI_PROJECT_DIR"
     - echo "$(docker-compose -f docker-compose.yml ps -q -- polarity)"
     - OULA = "$(docker-compose -f docker-compose.yml ps -q -- polarity)"
-    - echo $OULA
+    - echo "$OULA"
 
   script:
     - docker compose --profile build build
