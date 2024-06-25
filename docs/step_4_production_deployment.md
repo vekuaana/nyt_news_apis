@@ -15,6 +15,7 @@ Dans ce sprint il faudra réaliser une API du modèle de ML qui devra être "con
 ### Point du 25/06/2024
 * comment test le endpoint du consumer ?
 * pourquoi les builds se refont même si aucun fichier n'a bougé dans le conteneur (ex : polarity)
+* comment conserver le model/image d'un job à l'autre ?
 
 
 ### Point du 18/06/2024
