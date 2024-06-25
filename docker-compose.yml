@@ -195,21 +195,21 @@ services:
         - ./ml/models:/models
         - .models:/models2
 
-#    prediction:
-#      container_name: predict
-#      build:
-#        context: ./ml/predict
-#        dockerfile: Dockerfile
-#      env_file:
-#        - .env
-##      image: registry.gitlab.com/nyt_news4/nyt_news/prediction:latest
-##      image: docker.io/linenlp/prediction:latest
-#      networks:
-#        - mongo-compose-network
+    prediction:
+      container_name: predict
+      build:
+        context: ./ml/predict
+        dockerfile: Dockerfile
+      env_file:
+        - .env
+#      image: registry.gitlab.com/nyt_news4/nyt_news/prediction:latest
+#      image: docker.io/linenlp/prediction:latest
+      networks:
+        - mongo-compose-network
 #      ports:
 #        - '8005:8005'
-#      volumes:
-#        - ./ml/models:/models
+      volumes:
+        - ./ml/models:/models
 #      healthcheck:
 #        test: curl --fail http://localhost:8005/health || exit 1
 #        interval: 45s
