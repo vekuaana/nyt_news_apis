@@ -40,6 +40,7 @@ build:
     - echo "$CI_REGISTRY_USER"
     - echo "$CI_REGISTRY_IMAGE"
     - echo $CI_REGISTRY
+    - echo $$DOCKERHUB_USERNAME
     - echo MONGO_INITDB_ROOT_USERNAME=$MONGO_INITDB_ROOT_USERNAME >> .env
     - echo MONGO_INITDB_ROOT_PASSWORD=$MONGO_INITDB_ROOT_PASSWORD >> .env
     - echo MONGO_INITDB_DATABASE=$MONGO_INITDB_DATABASE >> .env
@@ -49,8 +50,8 @@ build:
     - echo PASSWORD1=$PASSWORD1 >> .env
     - echo CI_REGISTRY_IMAGE_PROJECT=$CI_REGISTRY_IMAGE_PROJECT >> .env
     - ls -a
-    - cp .env ./ml/polarity/
-    - ls -a ./ml/polarity/
+#    - cp .env ./ml/polarity/
+#    - ls -a ./ml/polarity/
 #    - docker compose pull
 
   script:
