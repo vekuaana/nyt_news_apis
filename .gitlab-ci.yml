@@ -54,8 +54,8 @@ build:
     - docker compose --profile build build
 #    - ls ./ml/models/
 
-  after_script: :
-    - docker cp $OULA:/polarity/models $CI_PROJECT_DIR/ml/models
+#  after_script: :
+#    - docker cp $OULA:/polarity/models $CI_PROJECT_DIR/ml/models
   artifacts:
       paths:
           - .env
