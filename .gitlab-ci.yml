@@ -46,15 +46,17 @@ build:
     - echo CI_REGISTRY_IMAGE_PROJECT=$CI_REGISTRY_IMAGE_PROJECT >> .env
     - ls -a
     - echo "$CI_PROJECT_DIR"
-    - echo "$(docker container ls --all --quiet --filter "name=polarity_trainer")"
-    - MYTEST="$(docker container ls --all --quiet --filter "name=polarity_trainer")"
-    - echo "$MYTEST"
+
 
   script:
     - docker compose --profile build build
 #    - ls ./ml/models/
 
   after_script:
+    - echo "$(docker container ls --all --quiet --filter "name=polarity")"
+    - echo "$(docker container ls --all --quiet --filter "name=polarity_trainer")"
+    - MYTEST="$(docker container ls --all --quiet --filter "name=polarity_trainer")"
+    - echo "$MYTEST"
     - docker cp $(docker container ls --all --quiet --filter "name=polarity_trainer"):/polarity/models/mytest.txt $CI_PROJECT_DIR/ml/models/mytest.txt
     - ls $CI_PROJECT_DIR/ml/models
   artifacts:
