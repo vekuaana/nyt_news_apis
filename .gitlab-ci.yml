@@ -52,7 +52,7 @@ build:
 #    - ls ./ml/models/
 
   after_script:
-    - docker cp polarity:/polarity/models/mytest.txt $CI_PROJECT_DIR/ml/models/mytest.txt
+    - docker cp polarity_trainer:/polarity/models/mytest.txt $CI_PROJECT_DIR/ml/models/mytest.txt
     - ls $CI_PROJECT_DIR/ml/models
   artifacts:
       paths:
