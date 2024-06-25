@@ -7,7 +7,9 @@ from predict_polarity import Polarity
 
 from books_to_article_similarity import get_books, get_top_3_books_to_article
 
-app = FastAPI()
+app = FastAPI(title="API Prediction",
+              description="API that predicts the polarity of a NYT article and recommends a book",
+              version="0.0.1")
 
 model = None
 book = None
@@ -42,7 +44,11 @@ class Article(BaseModel):
     lead_paragraph: Optional[str] = None
 
 
-@app.post("/polarity")
+@app.post("/polarity",
+          summary="Predicts the polarity for an article",
+          description="Predicts the polarity (positive, neutral or negative) of an article based on its "
+                      "headline and a candidate to US election"
+)
 def get_polarity(article: Article):
     title = article.headline
     year = article.pub_date.strftime("%Y")
@@ -58,7 +64,10 @@ def get_books_to_article(article: Article):
     return {"response": res}
 
 
-@app.get("/health")
+@app.get("/health",
+         summary="Health check",
+         description="Checks the health status of the API"
+         )
 def health_check():
     return {"status": "healthy"}
 

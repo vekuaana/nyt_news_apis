@@ -90,11 +90,14 @@ def index(request: Request):
 
     except ValueError:
 
-        context = {"request": request, "article": 'Error', "date":datetime.datetime.now()}
+        context = {"request": request, "article": 'Error', "date": datetime.datetime.now()}
         return templates.TemplateResponse('index.html', context)
 
 
-@app.get("/health")
+@app.get("/health",
+         summary="Health check",
+         description="Checks the health status of the API"
+         )
 def health_check():
     return {"status": "healthy"}
 

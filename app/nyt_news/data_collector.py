@@ -1,6 +1,7 @@
 # coding:utf-8
 import requests
 import json
+import os
 
 from datetime import datetime
 from dataclasses import dataclass
@@ -10,6 +11,22 @@ from pymongo.errors import OperationFailure, ServerSelectionTimeoutError
 
 from api_nyt import NYTConnector
 from connection_db import MongoDBConnection
+from config import PACKAGE_ROOT
+
+# import logging
+import logging.config
+import yaml
+
+# Load the config file
+with open(PACKAGE_ROOT + os.sep + 'config_logger.yaml', 'rt') as f:
+    config = yaml.safe_load(f.read())
+
+# Configure the logging module with the config file
+logging.config.dictConfig(config)
+
+# Get a logger object
+logger = logging.getLogger(__name__)
+
 
 @dataclass_json
 @dataclass
@@ -44,14 +61,14 @@ class ETL(NYTConnector):
             self.db = MongoDBConnection('mongodb').conn_db
         except ServerSelectionTimeoutError:
             # Handle the case where the connection times out if we try to connect outside the container
-            print("Try to connect outside the container with localhost")
+            logger.info("Try to connect outside the container with localhost")
             try:
                 self.db = MongoDBConnection('localhost').conn_db
             except ServerSelectionTimeoutError as sste:
-                print("Unable to connect to database. Make sure the tunnel is still active.")
-                print(sste)
+                logger.error("Unable to connect to database. Make sure the tunnel is still active.")
+                logger.error(sste)
         except OperationFailure as of:
-            print(of)
+            logger.error(of)
 
     def extract_nyt_newswire_article(self):
         """
@@ -62,7 +79,8 @@ class ETL(NYTConnector):
         """
         res = self.request_times_newswire('all', 'u.s.')
         list_json = []
-
+        logger.debug("data_collector")
+        logger.debug(res)
         for doc in res:
             election = self.db['election'].find_one({'election_year': datetime.fromisoformat(doc['published_date']).strftime("%Y")})
             election_id = election['election_id']
@@ -83,6 +101,7 @@ class ETL(NYTConnector):
                            election_id=election_id)
 
             request_body = json.dumps(data.to_dict())
+
             # get polarity
             res_polarity = requests.post(self.polarity_url, data=request_body)
             if res_polarity.status_code == 200:

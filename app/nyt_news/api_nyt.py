@@ -12,6 +12,10 @@ import re
 from config import api_nyt_path
 import ScrapperAppleBooks as sc
 
+import logging
+
+logging.basicConfig(level=logging.INFO, format="%(levelname)s | %(asctime)s | %(message)s")
+
 # Base URLs for NYT APIs
 BASE_URL = "https://api.nytimes.com/svc/"
 BASE_URL_NEWSWIRE = BASE_URL + "news/v3/content"
@@ -63,13 +67,15 @@ class NYTConnector:
         # Send the HTTP GET request to the API and get the JSON response
         response = requests.get(url, params=params).json()
         num_results = response.get('num_results', 0)
-        print("Number of results:", num_results)
+        logging.info("Number of results:" + str(num_results))
 
         results = response.get('results', [])
 
         # If results exist, filter with subsection and person entity
         filtered_results = []
         if results:
+            logging.info('api_nyt')
+            logging.info(results)
             filtered_results = [doc for doc in results if doc["subsection"] == subsection
                                 or (set(doc["per_facet"]).intersection(set(per_facet)))]
             print("Number of filtered results:", len(filtered_results))
