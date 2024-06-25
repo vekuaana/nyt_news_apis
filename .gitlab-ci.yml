@@ -35,6 +35,7 @@ build:
     CI_JOB_TIMEOUT: 3000
   stage: build
   before_script:
+    - echo $DOCKERHUB_USERNAME
     - docker login -u "$DOCKERHUB_USERNAME" -p "$DOCKERHUB_PWD"
     - echo "$DOCKER_HOST"
     - echo "$CI_REGISTRY_USER"
