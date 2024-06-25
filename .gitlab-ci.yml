@@ -35,13 +35,12 @@ build:
     CI_JOB_TIMEOUT: 3000
   stage: build
   before_script:
-    - echo $DOCKERHUB_USERNAME
-    - docker login -u "$DOCKERHUB_USERNAME" -p "$DOCKERHUB_PWD"
+    - echo "$DOCKERHUB_USERNAME"
     - echo "$DOCKER_HOST"
     - echo "$CI_REGISTRY_USER"
     - echo "$CI_REGISTRY_IMAGE"
-    - echo $CI_REGISTRY
-    - echo $$DOCKERHUB_USERNAME
+    - echo "$CI_REGISTRY"
+    - docker login -u "$DOCKERHUB_USERNAME" -p "$DOCKERHUB_PWD"
     - echo MONGO_INITDB_ROOT_USERNAME=$MONGO_INITDB_ROOT_USERNAME >> .env
     - echo MONGO_INITDB_ROOT_PASSWORD=$MONGO_INITDB_ROOT_PASSWORD >> .env
     - echo MONGO_INITDB_DATABASE=$MONGO_INITDB_DATABASE >> .env
