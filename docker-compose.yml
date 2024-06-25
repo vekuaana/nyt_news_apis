@@ -180,10 +180,10 @@ services:
     polarity:
       container_name: polarity_trainer
       build:
-      env_file:
-        - .env
         context: ./ml/polarity
         dockerfile: Dockerfile
+      env_file:
+        - .env
 #      image: registry.gitlab.com/nyt_news4/nyt_news/polarity:latest
       image: docker.io/linenlp/polarity:latest
       networks:
