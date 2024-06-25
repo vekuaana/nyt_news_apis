@@ -15,7 +15,7 @@ variables:
 
 stages:
   - build
-  - test
+#  - test
 #  - push
 #  - deploy
 
@@ -33,7 +33,7 @@ after_script:
 build:
   variables:
     CI_JOB_TIMEOUT: 3000
-    OULA: 3$(docker-compose -f docker-compose.yml ps -q -- polarity)3
+    OULA: "$(docker-compose -f docker-compose.yml ps -q -- polarity)"
   stage: build
   before_script:
     - docker login -u "$DOCKERHUB_USERNAME" -p "$DOCKERHUB_PWD"
@@ -55,8 +55,8 @@ build:
     - docker compose --profile build build
 #    - ls ./ml/models/
 
-#  after_script: :
-#    - docker cp $(docker-compose -f docker-compose.yml ps -q -- polarity):/polarity/models $CI_PROJECT_DIR/ml/models
+  after_script: :
+    - docker cp $OULA:/polarity/models/ $CI_PROJECT_DIR/ml/models
   artifacts:
       paths:
           - .env
