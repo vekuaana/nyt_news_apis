@@ -45,7 +45,7 @@ build:
     - echo PASSWORD1=$PASSWORD1 >> .env
     - echo CI_REGISTRY_IMAGE_PROJECT=$CI_REGISTRY_IMAGE_PROJECT >> .env
     - ls -a
-    - docker compose pull
+#    - docker compose pull
 
   script:
     - docker compose build
