@@ -215,17 +215,20 @@ services:
         timeout: 10s
         retries: 5
 
-#    archive:
-#      container_name: archive
-#      build:
-#        context: ./ml/nyt_api_archive2
-#        dockerfile: Dockerfile
-#      env_file:
-#        - .env
-##      image: registry.gitlab.com/nyt_news4/nyt_news/prediction:latest
-##      image: docker.io/linenlp/prediction:latest
-#      networks:
-#        - mongo-compose-network
+    archive:
+      container_name: archive
+      restart: on-failure
+      build:
+        context: ./nyt_api_archive
+        dockerfile: Dockerfile
+      env_file:
+        - .env
+#      image: registry.gitlab.com/nyt_news4/nyt_news/prediction:latest
+#      image: docker.io/linenlp/prediction:latest
+      command: >
+        bash -c "python main.py"
+      networks:
+        - mongo-compose-network
 
 networks:
     kafka:

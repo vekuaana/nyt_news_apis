@@ -45,11 +45,15 @@ build:
     - echo PASSWORD1=$PASSWORD1 >> .env
     - echo CI_REGISTRY_IMAGE_PROJECT=$CI_REGISTRY_IMAGE_PROJECT >> .env
     - ls -a
-#    - docker compose pull
+    - echo "$CI_PROJECT_DIR"
+
 
   script:
     - docker compose --profile build build
-#    - docker compose push
+    - ls ./ml/models/
+    - echo "$(docker-compose -f docker-compose.yml ps -q -- polarity)"
+#  after_script: :
+#    - docker cp $(docker-compose -f docker-compose.yml ps -q -- polarity):/polarity/results ./results
   artifacts:
       paths:
           - .env
