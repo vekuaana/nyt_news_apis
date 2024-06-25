@@ -1,18 +1,18 @@
 # coding:utf-8
-import sys
-
-import torch
+# import sys
+#
+# import torch
 import os
-import numpy as np
-import evaluate
-import mlflow
-from sklearn.metrics import classification_report
-
-from transformers import DataCollatorForSeq2Seq, HfArgumentParser, EarlyStoppingCallback
-from transformers import Seq2SeqTrainingArguments, Seq2SeqTrainer, set_seed
-from transformers import T5Tokenizer, T5ForConditionalGeneration
-
-from trainer_seq2seq import ModelArguments, DataTrainingArguments, load_and_prepare_data
+# import numpy as np
+# import evaluate
+# import mlflow
+# from sklearn.metrics import classification_report
+#
+# from transformers import DataCollatorForSeq2Seq, HfArgumentParser, EarlyStoppingCallback
+# from transformers import Seq2SeqTrainingArguments, Seq2SeqTrainer, set_seed
+# from transformers import T5Tokenizer, T5ForConditionalGeneration
+#
+# from trainer_seq2seq import ModelArguments, DataTrainingArguments, load_and_prepare_data
 
 # mlflow server --host 0.0.0.0 --port 8080
 
@@ -22,7 +22,7 @@ os.environ["MLFLOW_TRACKING_URI"]=""
 os.environ["HF_MLFLOW_LOG_ARTIFACTS"]="1"
 
 def main():
-    with open('models2' + os.sep + 'mytest.txt', "w") as writer:
+    with open('models' + os.sep + 'mytest.txt', "w") as writer:
         writer.write("index\ttext\tgold\tprediction\ncoucouuuuuuuuuuuuuu")
     # parser = HfArgumentParser((ModelArguments, DataTrainingArguments, Seq2SeqTrainingArguments ))
     # model_args, data_args, training_args = parser.parse_json_file(json_file=os.path.abspath(sys.argv[1]))
