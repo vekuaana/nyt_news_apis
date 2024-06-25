@@ -181,3 +181,4 @@ seq2seq_model
 ml/polarity/flan_seq2seq_model/*
 ml/models/flan_seq2seq_model/*
 !requirements.txt
+nyt_api_archive/config/nyt_api.cfg
