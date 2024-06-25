@@ -48,12 +48,12 @@ build:
 #    - docker compose pull
 
   script:
-    - docker compose build
+    - docker compose build --profile build
 #    - docker compose push
   artifacts:
       paths:
           - .env
-          - ml/models/
+          - ml/models/*
 
 
 #  cache:
@@ -63,14 +63,14 @@ build:
 
 test:
   script:
-    - docker compose up --scale polarity=0 -d
+    - docker compose up -d
     - docker compose exec web pytest
   after_script:
     - docker compose down
   artifacts:
       paths:
           - .env
-          - ml/models/
+          - ml/models/*
 
 #  cache:
 #    key: build-cache
