@@ -75,9 +75,9 @@ build:
 test:
   script:
     - docker compose up -d
-#    - docker compose exec web pytest
+    - docker compose exec web pytest
   after_script:
-#    - docker compose down
+    - docker compose down
   artifacts:
       paths:
           - .env
