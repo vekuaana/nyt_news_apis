@@ -177,19 +177,19 @@ services:
       ports:
         - "8001:8000"
 
-#    polarity:
-#      container_name: polarity_trainer
-#      build:
-#        context: ./ml/polarity
-#        dockerfile: Dockerfile
-#      env_file:
-#        - .env
-##      image: registry.gitlab.com/nyt_news4/nyt_news/polarity:latest
-#      image: docker.io/linenlp/polarity:latest
-#      networks:
-#        - mongo-compose-network
-#      volumes:
-#        - ./ml/models:/models
+    polarity:
+      container_name: polarity_trainer
+      build:
+        context: ./ml/polarity
+        dockerfile: Dockerfile
+      env_file:
+        - .env
+#      image: registry.gitlab.com/nyt_news4/nyt_news/polarity:latest
+      image: docker.io/linenlp/polarity:latest
+      networks:
+        - mongo-compose-network
+      volumes:
+        - ./ml/models:/models
 
     prediction:
       container_name: predict
