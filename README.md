@@ -13,13 +13,11 @@ Modifier les fichiers  **.env.example** et **api.cfg** avec les informations d'a
 ├── nyt_news
 │   ├── api.cfg
 ├── .env.example
-├── ml
-    ├── polarity
-        ├── .env.example
+
 ```
 Lancer la commande suivante :
 ```console
-docker-compose up -d
+docker compose up -d
 ```
 ## Objectifs
 Réalisation d'une API qui offre une perspective dynamique sur les élections américaines.
