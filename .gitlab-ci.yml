@@ -1,5 +1,5 @@
 image:
-  name: "docker:latest"
+  name: "docker:27.0.1"
   entrypoint: ["/bin/sh", "-c"]
 
 services:
