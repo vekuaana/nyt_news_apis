@@ -104,3 +104,48 @@ Model : trainer_flan
 ```
 
 Note : Les temps d'exécution sont similaires lors de l'inférence pour uen phrase en input sur cpu et gpu 
+
+## Recommandation de livres en fonction d'une requête utilisateur
+L'objectif est de pouvoir recommander des livres ayant été élus New York Times Bestsellers en fonction du contenu d'un article du New York Times. La recommandation de livres se basera sur la technique du TF-IDF, permettant d'évaluer l'importance d'un terme dans un document particulier, en tenant compte de la fréquence du terme dans l'ensemble des documents et sur la similarité cosinus. 
+
+TF-IDF signifie Term Frequency-Inverse Document Frequency (Fréquence de Terme-Fréquence Inverse de Document). C'est une fonction courante utilisée dans l'analyse de texte et le traitement du langage naturel pour calculer la similarité entre les documents. Le TF-IDF fonctionne en multipliant la fréquence de terme (Term Frequency) et la fréquence inverse de document (Inverse Document Frequency). La fréquence de terme représente le nombre de fois qu'un terme apparaît dans un document, et la fréquence inverse de document représente la fréquence de ce mot dans l'ensemble des documents.
+
+La matrice TF-IDF attribue une valeur (TF-IDF) pour chaque document et chaque mot. Le score de similarité à travers la matrice est ensuite calculé en utilisant le calcul de similarité cosinus. En résumé, deux documents auront une similarité plus élevée s'ils partagent plus de mots entre eux et moins de mots avec d'autres documents.
+
+### Pré-requis
+
+Environnement virtuel Python 3.11 (conda ou venv)
+
+```
+pip install -r requirements.txt
+```
+
+### Preprocessing 
+Le TF-IDF nécessite les étapes de prétraitement de texte suivantes :
+
+* Les données textuelles sont prétraitées en supprimant la ponctuation et autres caractères non alphanumériques.
+* Les mots non pertinents (mots vides) sont supprimés. Ce sont des mots tellement communs qu'il est inutile de les utiliser. 
+* Les mots sont tronqués pour ne garder que leur base. 
+* Tokenisation : Le texte est découpé en mots individuels.
+
+### Calcul 
+
+La formule du TF-IDF: 
+
+![image](https://github.com/Linenlp/nyt_news/assets/62116551/ad7ce6a7-8521-4b81-9d2a-3a72fa4c2ab7)
+
+* Input : Une matrice dont chaque ligne représente un résumé de livre hormis la dernière ligne qui contient le résumé de l'article (après préprocessing).
+* Output : Une matrice (la matrice TF-IDF) dont chaque ligne représente un article ou un livre et chaque colonne représente un mot apparu dans les résumés. La valeur d'une cellule correspond à la valeur TF-IDF de ce mot dans le document.
+
+La formule de la similarité cosinus:
+
+![image](https://github.com/Linenlp/nyt_news/assets/62116551/03c54b89-b975-44f4-982d-06c581ea97bf)
+
+* Input : La matrice TF-IDF.
+* Output : Un matrice donc les lignes et les colones représentent un livre ou un article. Au plus la valeur d'une cellule est grande, au plus deux documents sont similaires. La diagonale de cette matrice est remplie de 1 car le document est comparé avec lui-même.
+
+
+Les 3 livres dont les résumés sont les plus proches du résumé de l'article sont sélectionés.
+
+
+
