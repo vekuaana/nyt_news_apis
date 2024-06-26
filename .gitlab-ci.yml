@@ -46,6 +46,11 @@ build:
     - echo USER1=$USER1 >> .env
     - echo PASSWORD1=$PASSWORD1 >> .env
     - echo CI_REGISTRY_IMAGE_PROJECT=$CI_REGISTRY_IMAGE_PROJECT >> .env
+    - echo NYT_API_KEY=$NYT_API_KEY >> .env
+    - echo SECRET_KEY=$SECRET_KEY >> .env
+    - echo ALGORITHM=$ALGORITHM >> .env
+    - echo ACCESS_TOKEN_EXPIRATION=$ACCESS_TOKEN_EXPIRATION >> .env
+    - echo TOKEN=$TOKEN >> .env
     - ls -a
     - echo "$CI_PROJECT_DIR"
 

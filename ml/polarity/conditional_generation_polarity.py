@@ -1,6 +1,5 @@
 # coding:utf-8
 import sys
-
 import torch
 import os
 import numpy as np
