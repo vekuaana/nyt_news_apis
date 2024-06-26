@@ -63,7 +63,7 @@ build:
     - docker image ls --all --quiet --filter "reference=*polarity"
     - IMAGEID="$(docker image ls --all --quiet --filter "reference=*polarity")"
 #    - container_id=$(docker create "$IMAGEID")
-    - container_id="b03f9b44acd4"
+    - container_id=$(docker create "b03f9b44acd4")
     - docker cp $container_id:/models $CI_PROJECT_DIR/ml/
     - docker rm "$container_id"
     - ls $CI_PROJECT_DIR/ml/models
