@@ -18,6 +18,9 @@ def token():
             "password": os.getenv('PASSWORD1')
         }
     )
+    print(os.getenv('USER1'))
+    print(response)
+    print(response.json())
     token = response.json()['access_token']
     return token
 
