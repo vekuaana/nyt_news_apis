@@ -126,7 +126,7 @@ class Polarity:
 
         for entity in entities:
             pred = None
-            if re.search(r'(^' + entity + r'|\s+' + entity + r'(\s|[’\']s)|' + entity + '$)', text):
+            if re.search(r'(^' + entity + r'|\s+' + entity + r'(\s|-|[’\']s)|' + entity + '$)', text):
                 formatted_text = re.sub('/ENTITY/', entity, text)
                 pred = self.model(formatted_text)[0]['generated_text']
                 if verbose:

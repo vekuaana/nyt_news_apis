@@ -55,16 +55,16 @@ build:
     - echo "$CI_PROJECT_DIR"
 
 
-  script:
-    - docker-compose --profile build build
-#    - ls ./ml/models/
+#  script:
+#    - docker-compose --profile build build
+##    - ls ./ml/models/
 
-  after_script:
-    - docker image ls --all --quiet --filter "reference=*polarity_trainer"
+  script:
     - docker image ls --all --quiet --filter "reference=*polarity"
     - IMAGEID="$(docker image ls --all --quiet --filter "reference=*polarity")"
-    - container_id=$(docker create "$IMAGEID")
-    - docker cp $container_id:/polarity/models $CI_PROJECT_DIR/ml/
+#    - container_id=$(docker create "$IMAGEID")
+    - container_id="b03f9b44acd4"
+    - docker cp $container_id:/models $CI_PROJECT_DIR/ml/
     - docker rm "$container_id"
     - ls $CI_PROJECT_DIR/ml/models
   artifacts:

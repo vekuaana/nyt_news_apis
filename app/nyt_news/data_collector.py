@@ -4,6 +4,7 @@ import json
 import os
 import logging.config
 import yaml
+import re
 
 from datetime import datetime
 from dataclasses import dataclass
@@ -93,7 +94,11 @@ class ETL(NYTConnector):
             election = self.db['election'].find_one({'election_year': datetime.fromisoformat(doc['published_date']).strftime("%Y")})
             election_id = election['election_id']
             entities = [x["name"].split()[-1] for x in election['candidate']]
-            main_candidate = [x for x in entities if x in [x.split(',')[0] for x in doc['per_facet']]]
+            # main_candidate = [x for x in entities if x in [x.split(',')[0] for x in doc['per_facet']]]
+            main_candidate = []
+            for entity in entities:
+                if re.search(r'(^' + entity + r'|\s+' + entity + r'(\s|-|[’\']s)|' + entity + '$)', doc["title"]):
+                    main_candidate.append(entity)
             if isinstance(doc['byline'], str):
                 doc['byline'] = [doc['byline']]
             data = Article(abstract=doc['abstract'],
@@ -127,6 +132,8 @@ class ETL(NYTConnector):
                 raise DataError(f"Something went wrong in Article : {res_books.json()}")
 
             list_json.append(data.to_dict())
+            logger.info("-------------------example---------------")
+            logger.info(data)
 
         return list_json
     
