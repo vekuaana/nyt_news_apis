@@ -25,13 +25,13 @@ logger = logging.getLogger(__name__)
 model = None
 book = None
 
-pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
-
-# Configuration pour le JWT
-SECRET_KEY = os.getenv('SECRET_KEY')
-ALGORITHM = os.getenv('ALGORITHM')
-ACCESS_TOKEN_EXPIRATION = int(os.getenv('ACCESS_TOKEN_EXPIRATION'))
+# pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+# oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
+#
+# # Configuration pour le JWT
+# SECRET_KEY = os.getenv('SECRET_KEY')
+# ALGORITHM = os.getenv('ALGORITHM')
+# ACCESS_TOKEN_EXPIRATION = int(os.getenv('ACCESS_TOKEN_EXPIRATION'))
 
 app = FastAPI(title="API Prediction",
               description="API that predicts the polarity of a NYT article and recommends a book",
