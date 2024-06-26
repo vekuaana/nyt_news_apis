@@ -3,7 +3,7 @@ image:
   entrypoint: ["/bin/sh", "-c"]
 
 services:
-  - docker:dind
+  - docker:27.0.1-dind
 
 variables:
   DOCKER_HOST: tcp://docker:2375/
