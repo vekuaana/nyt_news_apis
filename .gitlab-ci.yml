@@ -1,5 +1,5 @@
 image:
-  name: "docker:27.0.1"
+  name: "docker:latest"
   entrypoint: ["/bin/sh", "-c"]
 
 services:
@@ -51,7 +51,7 @@ build:
 
 
   script:
-    - docker compose --profile build build
+    - docker-compose --profile build build
 #    - ls ./ml/models/
 
   after_script:
@@ -76,10 +76,10 @@ build:
 
 test:
   script:
-    - docker compose up -d
-    - docker compose exec prediction pytest -vv
+    - docker-compose up -d
+    - docker-compose exec prediction pytest -vv
   after_script:
-    - docker compose down
+    - docker-compose down
   artifacts:
       paths:
           - .env
