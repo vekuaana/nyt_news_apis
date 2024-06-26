@@ -55,11 +55,12 @@ build:
     - echo "$CI_PROJECT_DIR"
 
 
-#  script:
-#    - docker-compose --profile build build
-##    - ls ./ml/models/
-
   script:
+    - docker-compose --profile build build
+    - docker-compose build
+#    - ls ./ml/models/
+
+  after_script:
     - docker image ls --all --quiet --filter "reference=*polarity"
     - ls -a
     - IMAGEID="$(docker image ls --all --quiet --filter "reference=*polarity")"
