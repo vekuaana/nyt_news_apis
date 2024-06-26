@@ -74,10 +74,10 @@ app = FastAPI(title="API Prediction",
 #     aa = AuthAPI()
 
 
-@app.on_event("startup")
-def get_books_coll():
-    global book
-    book = get_books()
+# @app.on_event("startup")
+# def get_books_coll():
+#     global book
+#     book = get_books()
 
 #
 # class Article(BaseModel):
@@ -186,7 +186,7 @@ def health_check():
     return {"status": "healthy"}
 
 
-# if __name__ == "__main__":
-#     import uvicorn
-#     uvicorn.run(app, host="0.0.0.0", port=8010)
+if __name__ == "__main__":
+    import uvicorn
+    uvicorn.run(app, host="0.0.0.0", port=8005)
 

@@ -203,6 +203,7 @@ services:
         - .env
 #      image: registry.gitlab.com/nyt_news4/nyt_news/prediction:latest
 #      image: docker.io/linenlp/prediction:latest
+      command: python main.py
       networks:
         - mongo-compose-network
       ports:
