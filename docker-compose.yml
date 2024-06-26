@@ -152,8 +152,8 @@ services:
       depends_on:
         kafka1:
           condition: service_healthy
-        prediction:
-          condition: service_healthy
+#        prediction:
+#          condition: service_healthy
       command: >
         bash -c "python nyt_news/main.py"
       networks:
@@ -209,11 +209,11 @@ services:
         - '8005:8005'
       volumes:
         - ./ml/models:/models
-      healthcheck:
-        test: curl --fail http://localhost:8005/health || exit 1
-        interval: 45s
-        timeout: 10s
-        retries: 5
+#      healthcheck:
+#        test: curl --fail http://localhost:8005/health || exit 1
+#        interval: 45s
+#        timeout: 10s
+#        retries: 5
 
 #    archive:
 #      container_name: archive
