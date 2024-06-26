@@ -6,18 +6,19 @@ from dotenv import load_dotenv, find_dotenv
 
 load_dotenv(find_dotenv())
 
-class Singleton(type):
+
+class SingletonPredict(type):
     def __init__(cls, name, bases, dict):
-        super(Singleton, cls).__init__(name, bases, dict)
+        super(SingletonPredict, cls).__init__(name, bases, dict)
         cls.instance = None
 
     def __call__(cls,*args,**kw):
         if cls.instance is None:
-            cls.instance = super(Singleton, cls).__call__(*args, **kw)
+            cls.instance = super(SingletonPredict, cls).__call__(*args, **kw)
         return cls.instance
 
 
-class MongoDBConnection(metaclass=Singleton):
+class MongoDBConnection(metaclass=SingletonPredict):
     def __init__(self, host):
         """
             Connect to the MongoDB instance and return the database object.

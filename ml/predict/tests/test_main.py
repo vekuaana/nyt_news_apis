@@ -1,7 +1,25 @@
 import json
 import requests
+import pytest
+import os
+
+from dotenv import load_dotenv, find_dotenv
 
 base_url = "http://localhost:8005/"
+load_dotenv(find_dotenv())
+
+
+@pytest.fixture
+def token():
+    response = requests.post(
+        url=base_url + "get_token",
+        data={
+            "username": os.getenv('USER1'),
+            "password": os.getenv('PASSWORD1')
+        }
+    )
+    token = response.json()['access_token']
+    return token
 
 
 def test_health_check():
@@ -11,7 +29,7 @@ def test_health_check():
     assert response.json()['status'] == "healthy"
 
 
-def test_get_polarity():
+def test_get_polarity(token):
     # Test polarity endpoint
     data = {
         'abstract': 'The new policy is one of the most significant actions to protect immigrants in years. It affects '
@@ -44,7 +62,7 @@ def test_get_polarity():
         'lead_paragraph': None}
 
     request_body = json.dumps(data)
-    res = requests.post(base_url + 'polarity', data=request_body)
+    res = requests.post(base_url + 'polarity', data=request_body, headers={"Authorization": "Bearer " + token})
     res_json = res.json()['response']
     res_biden = [x for x in res_json if x['entity'] == 'Biden']
 

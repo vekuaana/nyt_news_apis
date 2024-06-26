@@ -50,6 +50,7 @@ class ETL(NYTConnector):
         self.nyt_newswire_counter = 1
         self.polarity_url = "http://prediction:8005/polarity"
         self.books_to_article_url = "http://prediction:8005/books"
+        self.token = self.get_token()
         super().__init__()
         try:
             # Attempt to connect to MongoDB within a container environment
@@ -64,6 +65,18 @@ class ETL(NYTConnector):
                 logger.error(sste)
         except OperationFailure as of:
             logger.error(of)
+
+    @staticmethod
+    def get_token():
+        response = requests.post(
+            url="http://prediction:8005/get_token",
+            data={
+                "username": os.getenv('USER1'),
+                "password": os.getenv('PASSWORD1')
+            }
+        )
+        token = response.json()['access_token']
+        return token
 
     def extract_nyt_newswire_article(self):
         """
@@ -98,7 +111,7 @@ class ETL(NYTConnector):
             request_body = json.dumps(data.to_dict())
 
             # get polarity
-            res_polarity = requests.post(self.polarity_url, data=request_body)
+            res_polarity = requests.post(self.polarity_url, data=request_body, headers={"Authorization": "Bearer " + self.token})
             if res_polarity.status_code == 200:
                 res_polarity_json = res_polarity.json()
                 data.polarity = res_polarity_json['response']
@@ -106,7 +119,7 @@ class ETL(NYTConnector):
                 raise DataError(f"Something went wrong in Article : {res_polarity.json()}")
 
             # get books 
-            res_books = requests.post(self.books_to_article_url, data=request_body)
+            res_books = requests.post(self.books_to_article_url, data=request_body, headers={"Authorization": "Bearer " + self.token})
             if res_books.status_code == 200:
                 res_books_json = res_books.json()
                 data.recommended_book = res_books_json['response']
