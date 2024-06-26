@@ -57,9 +57,8 @@ build:
   after_script:
     - docker image ls --all --quiet --filter "reference=*polarity_trainer"
     - docker image ls --all --quiet --filter "reference=*polarity"
-    - MYTEST="$(docker image ls --all --quiet --filter "reference=*polarity")"
-    - echo "$MYTEST"
-    - container_id=$(docker create "$MYTEST")
+    - IMAGEID="$(docker image ls --all --quiet --filter "reference=*polarity")"
+    - container_id=$(docker create "$IMAGEID")
     - docker cp $container_id:/polarity/models $CI_PROJECT_DIR/ml/
     - docker rm "$container_id"
     - ls $CI_PROJECT_DIR/ml/models
@@ -78,6 +77,7 @@ test:
   script:
     - docker-compose up -d
     - docker-compose exec prediction pytest -vv
+    - docker-compose exec consumer pytest -vv
   after_script:
     - docker-compose down
   artifacts:
