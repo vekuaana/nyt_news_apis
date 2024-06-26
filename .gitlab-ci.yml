@@ -82,7 +82,9 @@ build:
 test:
   script:
     - ls $CI_PROJECT_DIR/ml/models
+    - ls -a
     - docker-compose up -d
+    - docker ps -a
     - docker-compose exec prediction pytest -vv
     - docker-compose exec consumer pytest -vv
   after_script:
