@@ -56,7 +56,7 @@ build:
 
 
   script:
-    - docker-compose --profile build build
+#    - docker-compose --profile build build
     - docker-compose build
 #    - ls ./ml/models/
 
