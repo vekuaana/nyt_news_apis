@@ -1,4 +1,86 @@
 year,name,party,election_date
+1852,Winfield Scott,Whig,1852-11-02
+1852,Franklin Pierce,Democratic,1852-11-02
+1856,John Charles Fremont,Republican,1856-11-04
+1856,James Buchanan,Democratic,1856-11-04
+1860,Abraham Lincoln,Republican,1860-11-06
+1860,Stephen Arnold Douglas,Democratic,1860-11-06
+1864,Abraham Lincoln,Republican,1864-11-08
+1864,George McClellan,Democratic,1864-11-08
+1868,Ulysses S. Grant,Republican,1868-11-03
+1868,Horatio Seymour,Democratic,1868-11-03
+1872,Ulysses S. Grant,Republican,1872-11-05
+1872,Horace Greeley,Democratic,1872-11-05
+1876,Rutherford B. Hayes,Republican,1876-11-07
+1876,Samuel Jones Tilden,Democratic,1876-11-07
+1880,James A. Garfield,Republican,1880-11-02
+1880,Winfield Scott Hancock,Democratic,1880-11-02
+1884,Grover Cleveland,Democratic,1884-11-04
+1884,James Blaine,Republican,1884-11-04
+1888,Benjamin Harrison,Republican,1888-11-06
+1888,Grover Cleveland,Democratic,1888-11-06
+1892,Grover Cleveland,Democratic,1892-11-08
+1892,Benjamin Harrison,Republican,1892-11-08
+1896,William McKinley,Republican,1896-11-03
+1896,William Jennings Bryan,Democratic,1896-11-03
+1900,William McKinley,Republican,1900-11-06
+1900,William Jennings Bryan,Democratic,1900-11-06
+1904,Theodore Roosevelt,Republican,1904-11-08
+1904,Alton Parker,Democratic,1904-11-08
+1908,William Howard Taft,Republican,1908-11-03
+1908,William Jennings Bryan,Democratic,1908-11-03
+1912,Woodrow Wilson,Democratic,1912-11-05
+1912,Theodore Roosevelt,Progressive,1912-11-05
+1916,Woodrow Wilson,Democratic,1916-11-07
+1916,Charles Evans Hughes,Republican,1916-11-07
+1920,Warren G. Harding,Republican,1920-11-02
+1920,James Middleton Cox,Democratic,1920-11-02
+1924,Calvin Coolidge,Republican,1924-11-04
+1924,John W. Davis,Democratic,1924-11-04
+1928,Herbert Hoover,Republican,1928-11-06
+1928,Al Smith,Democratic,1928-11-06
+1932,Franklin Delano Roosevelt,Democratic,1932-11-08
+1932,Herbert Hoover,Republican,1932-11-08
+1936,Franklin Delano Roosevelt,Democratic,1936-11-03
+1936,Alf Landon,Republican,1936-11-03
+1940,Franklin Delano Roosevelt,Democratic,1940-11-05
+1940,Wendell Willkie,Republican,1940-11-05
+1944,Franklin Delano Roosevelt,Democratic,1944-11-07
+1944,Thomas Dewey,Republican,1944-11-07
+1948,Harry S. Truman,Democratic,1948-11-02
+1948,Thomas Dewey,Republican,1948-11-02
+1952,Dwight D. Eisenhower,Republican,1952-11-04
+1952,Adlai Stevenson,Democratic,1952-11-04
+1956,Dwight D. Eisenhower,Republican,1956-11-06
+1956,Adlai Stevenson,Democratic,1956-11-06
+1960,John Fitzgerald Kennedy,Democratic,1960-11-08
+1960,Richard Nixon,Republican,1960-11-08
+1964,Lyndon B. Johnson,Democratic,1964-11-03
+1964,Barry Goldwater,Republican,1964-11-03
+1968,Richard Nixon,Republican,1968-11-05
+1968,Hubert Humphrey,Democratic,1968-11-05
+1972,Richard Nixon,Republican,1972-11-07
+1972,George McGovern,Democratic,1972-11-07
+1976,Jimmy Carter,Democratic,1976-11-02
+1976,Gerald Ford,Republican,1976-11-02
+1980,Ronald Reagan,Republican,1980-11-04
+1980,Jimmy Carter,Democratic,1980-11-04
+1984,Ronald Reagan,Republican,1984-11-06
+1984,Walter Mondale,Democratic,1984-11-06
+1988,George H. W. Bush,Republican,1988-11-08
+1988,Michael Dukakis,Democratic,1988-11-08
+1992,Bill Clinton,Democratic,1992-11-03
+1992,George H. W. Bush,Republican,1992-11-03
+1996,Bill Clinton,Democratic,1996-11-05
+1996,Bob Dole,Republican,1996-11-05
+2000,George W. Bush,Republican,2000-11-07
+2000,Al Gore,Democratic,2000-11-07
+2004,George W. Bush,Republican,2004-11-02
+2004,John Kerry,Democratic,2004-11-02
+2008,Barack Obama,Democratic,2008-11-04
+2008,John McCain,Republican,2008-11-04
+2012,Barack Obama,Democratic,2012-11-06
+2012,Mitt Romney,Republican,2012-11-06
 2016,Donald Trump,Republican,2016-11-08
 2016,Hillary Clinton,Democratic,2016-11-08
 2020,Joe Biden,Democratic,2020-11-03

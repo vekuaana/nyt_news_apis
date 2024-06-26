@@ -18,6 +18,17 @@ polarity_url = "http://prediction:8005/polarity"
 books_to_article_url = "http://prediction:8005/books"
 
 
+def get_token():
+    response = requests.post(
+        url="http://prediction:8005/get_token",
+        data={
+            "username": os.getenv('USER1'),
+            "password": os.getenv('PASSWORD1')
+        }
+    )
+    token = response.json()['access_token']
+    return token
+
 def main():
     # Configurer la journalisation
     logging.basicConfig(level=logging.INFO, 
@@ -51,6 +62,8 @@ def main():
     nyt_fetcher = NYTArticleFetcher(api_url, api_key)
 
     query_counter = {'count': 0}
+
+    token = get_token()
 
     # Traiter chaque année
     for year, info in candidates_data.items():
@@ -96,7 +109,7 @@ def main():
                         logger.info(request_body)
 
                         # get polarity
-                        res_polarity = requests.post(polarity_url, data=request_body)
+                        res_polarity = requests.post(polarity_url, data=request_body, headers={"Authorization": "Bearer " + token})
                         logger.info(res_polarity)
                         if res_polarity.status_code == 200:
                             res_polarity_json = res_polarity.json()
@@ -105,7 +118,7 @@ def main():
                             logger.info(article_data)
 
                         # get recommended books
-                        res_books = requests.post(books_to_article_url, data=request_body)
+                        res_books = requests.post(books_to_article_url, data=request_body, headers={"Authorization": "Bearer " + token})
                         if res_books.status_code == 200:
                             res_books_json = res_books.json()
                             article_data['recommended_book'] = res_books_json['response']
