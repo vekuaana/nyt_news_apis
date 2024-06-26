@@ -19,8 +19,9 @@ def token():
             "password": os.getenv('PASSWORD1')
         }
     )
-    token = response.json()['access_token']
-    if response.status_code == 500:
+    if response.status_code == 200:
+        token = response.json()['access_token']
+    elif response.status_code == 500:
         response = requests.post(
             url="http://prediction:8005/" + "get_token",
             data={
@@ -28,8 +29,9 @@ def token():
                 "password": os.getenv('PASSWORD1')
             }
         )
-        token = response.json()['access_token']
-        if response.status_code == 500:
+        if response.status_code == 200:
+            token = response.json()['access_token']
+        elif response.status_code == 500:
             token = os.getenv('TOKEN')
 
     return token
