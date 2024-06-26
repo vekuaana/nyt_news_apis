@@ -11,13 +11,16 @@ from datetime import datetime
 import re
 import logging.config
 import yaml
+from dotenv import load_dotenv, find_dotenv
 
-from config import api_nyt_path, PACKAGE_ROOT
+from config import PACKAGE_ROOT
 import ScrapperAppleBooks as sc
 
 
 with open(PACKAGE_ROOT + os.sep + 'config_logger.yaml', 'rt') as f:
     config = yaml.safe_load(f.read())
+
+load_dotenv(find_dotenv())
 
 logging.config.dictConfig(config)
 logger = logging.getLogger(__name__)
@@ -43,9 +46,7 @@ class NYTConnector:
         """
         Initializes the NYTConnector by reading the API key from a configuration file.
         """
-        cfg = configparser.ConfigParser()
-        cfg.read(api_nyt_path)
-        self.API_KEY = cfg.get('KEYS', 'key_nyt_news')
+        self.API_KEY = os.getenv('NYT_API_KEY')
 
     def request_times_newswire(self,
                                source: str = 'all',
@@ -71,11 +72,13 @@ class NYTConnector:
         url = f"{BASE_URL_NEWSWIRE}/{source}/{section}.json"
 
         # Send the HTTP GET request to the API and get the JSON response
-        response = requests.get(url, params=params).json()
-        num_results = response.get('num_results', 0)
+        response = requests.get(url, params=params)
+        logger.info(response)
+        response_json = requests.get(url, params=params).json()
+        num_results = response_json.get('num_results', 0)
         logging.info("Number of results:" + str(num_results))
 
-        results = response.get('results', [])
+        results = response_json.get('results', [])
 
         # If results exist, filter with subsection and person entity
         filtered_results = []
@@ -87,36 +90,6 @@ class NYTConnector:
             logger.info("Number of filtered results:", len(filtered_results))
 
         return filtered_results
-
-
-    def request_archive(self, month: int, year: int):
-        """
-        Fetches the archived NYT articles for a given month and year.
-
-        Args:
-            month (int): The month for which to fetch articles.
-            year (int): The year for which to fetch articles.
-
-        Returns:
-            list: A list of archived NYT articles for the specified month and year.
-        """
-        params = {"api-key": self.API_KEY}
-        # Build the endpoint URL for fetching archived articles
-        url = f"{BASE_URL_ARCHIVE}/{year}/{month}.json"
-
-        # Generate an output file name based on the month and year
-        output_file_name = f"data_archive_{month}_{year}.json"
-
-        # Send the HTTP GET request and get the JSON response
-        response = requests.get(url, params=params).json()
-        docs = response['response'].get('docs', [])
-
-        # If docs, save them to the output file
-        if docs:
-            with open(output_file_name, 'w', encoding='utf-8') as f:
-                json.dump(docs, f, ensure_ascii=False, indent=4)
-
-        return docs
 
     def request_by_keyword(self, keyword: str, output_file: str, start_date: str = None, end_date: str = None):
         """
@@ -317,7 +290,6 @@ class NYTConnector:
 if __name__ == "__main__":
     nyt_c = NYTConnector()
     res = nyt_c.request_times_newswire('all', 'u.s.')
-    # nyt_c.request_archive('9', '2000')
     # nyt_c.request_weelkly_nonfiction_bestsellers_books('05', '08', '2020')
     # nyt_c.request_most_popular(30)
     # nyt_c.request_by_keyword('Presidential Election of 2024', 'data_us_election', '20240508', '20240512')

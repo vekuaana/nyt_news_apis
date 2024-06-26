@@ -1,11 +1,6 @@
 import requests
-import logging
 from typing import List, Dict, Any
 from datetime import datetime
-
-logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(name)s : %(module)s - %(levelname)s - %(message)s')
-logger = logging.getLogger(__name__)
-
 
 class NYTArticleFetcher:
     """
@@ -20,7 +15,7 @@ class NYTArticleFetcher:
         Récupère les articles d'un mois spécifique d'une année déterminée à partir de l'API Archive du NYT
         """
         request_url = f"{self.api_url}/{year}/{month}.json?api-key={self.api_key}"
-        logger.info(f"Requête URL: {request_url}")
+        print(f"Requête URL: {request_url}")
         response = requests.get(request_url)
         response.raise_for_status()
         data = response.json()

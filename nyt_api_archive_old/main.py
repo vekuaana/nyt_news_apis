@@ -1,22 +1,17 @@
+from configparser import ConfigParser
 from datetime import datetime
 import time
 import requests
 import json
 import re
 import logging
-import os
-
-from dotenv import load_dotenv, find_dotenv
 
 from csv_service.csv_reader import CSVReader
 from db_service.mongodb_connector import MongoDBConnector
 from fetcher_service.nyt_article_fetcher import NYTArticleFetcher
 
-load_dotenv(find_dotenv())
-
-polarity_url = "http://prediction:8005/polarity"
-books_to_article_url = "http://prediction:8005/books"
-
+polarity_url = "http://localhost:8005/polarity"
+books_to_article_url = "http://localhost:8005/books"
 
 def main():
     # Configurer la journalisation
@@ -29,19 +24,13 @@ def main():
     logger = logging.getLogger(__name__)
 
     # Charger la configuration
-    api_url = "https://api.nytimes.com/svc/archive/v1"
-    api_key = os.getenv('NYT_API_KEY')
-    username_db = os.getenv('USER1')
-    password_db = os.getenv('PASSWORD1')
-    authsource_db = os.getenv('MONGO_INITDB_DATABASE')
-
+    config = ConfigParser()
+    config.read('config/nyt_api.cfg')
+    api_url = config['API']['api_url']
+    api_key = config['API']['api_key']
+    
     # Configurer la connexion à MongoDB
-    mongo_connector = MongoDBConnector('localhost',
-                                       'nyt_news',
-                                       'usa_election_articles',
-                                       username_db,
-                                       password_db,
-                                       authsource_db)
+    mongo_connector = MongoDBConnector('mongodb://localhost:27017/', 'nyt_news', 'usa_election_articles')
 
     # Charger les données des candidats depuis le fichier CSV
     csv_reader = CSVReader('config/election_candidates.csv')
@@ -122,11 +111,11 @@ def main():
                         else:
                             result = mongo_connector.db['usa_election_articles'].replace_one({'uri': article_data['uri']}, article_data)
                             if result.matched_count > 0:
-                                logger.info(f"Document matched and replaced: {result.matched_count}")
+                                print(f"Document matched and replaced: {result.matched_count}")
                             elif result.upserted_id:
-                                logger.info(f"Document inserted with id: {result.upserted_id}")
+                                print(f"Document inserted with id: {result.upserted_id}")
                             else:
-                                logger.info("No document was replaced or inserted")
+                                print("No document was replaced or inserted")
 
                     time.sleep(12)
                     query_counter['count'] += 1
@@ -139,5 +128,5 @@ def main():
                 except Exception as e:
                     logger.exception(f"Erreur inattendue pour {year}-{month}: {e}")
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()
