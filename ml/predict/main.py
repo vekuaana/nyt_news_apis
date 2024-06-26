@@ -25,13 +25,13 @@ logger = logging.getLogger(__name__)
 model = None
 book = None
 
-# pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
-# oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
-#
-# # Configuration pour le JWT
-# SECRET_KEY = os.getenv('SECRET_KEY')
-# ALGORITHM = os.getenv('ALGORITHM')
-# ACCESS_TOKEN_EXPIRATION = int(os.getenv('ACCESS_TOKEN_EXPIRATION'))
+pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
+
+# Configuration pour le JWT
+SECRET_KEY = os.getenv('SECRET_KEY')
+ALGORITHM = os.getenv('ALGORITHM')
+ACCESS_TOKEN_EXPIRATION = int(os.getenv('ACCESS_TOKEN_EXPIRATION'))
 
 app = FastAPI(title="API Prediction",
               description="API that predicts the polarity of a NYT article and recommends a book",
@@ -74,102 +74,102 @@ def get_model():
     aa = AuthAPI()
 
 
-# @app.on_event("startup")
-# def get_books_coll():
-#     global book
-#     book = get_books()
+@app.on_event("startup")
+def get_books_coll():
+    global book
+    book = get_books()
 
 
-# class Article(BaseModel):
-#     abstract: str
-#     headline: str
-#     keywords: list
-#     pub_date: datetime
-#     document_type: str
-#     section_name: str
-#     byline: list
-#     web_url: str
-#     uri: str
-#     main_candidate: list
-#     polarity: Optional[list] = None
-#     recommended_book: Optional[list] = None
-#     election_id: Optional[int] = None
-#     lead_paragraph: Optional[str] = None
-#
-#
-# class Token(BaseModel):
-#     access_token: str
-#     token_type: str
-#
-#
-# def verify_password(plain_password, hashed_password):
-#     return pwd_context.verify(plain_password, hashed_password)
-#
-#
-# def create_access_token(data: dict, expires_delta: timedelta = None):
-#     to_encode = data.copy()
-#     if expires_delta:
-#         expire = datetime.utcnow() + expires_delta
-#     else:
-#         expire = datetime.utcnow() + timedelta(minutes=15)
-#     to_encode.update({"exp": expire})
-#     encoded_jwt = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
-#     return encoded_jwt
-#
-#
-# def get_current_user(token: str = Depends(oauth2_scheme)):
-#     credentials_exception = HTTPException(
-#         status_code=status.HTTP_401_UNAUTHORIZED,
-#         detail="Could not validate credentials",
-#         headers={"WWW-Authenticate": "Bearer"},
-#     )
-#     try:
-#         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
-#         username: str = payload.get("sub")
-#         if username is None:
-#             raise credentials_exception
-#     except :
-#         raise credentials_exception
-#     user = aa.get_user_password(username)
-#     if user is None:
-#         raise credentials_exception
-#     return user
-#
-#
-# @app.post("/get_token", response_model=Token)
-# async def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends()):
-#     """
-#     Authenticates user by providing a username and password. If authentication is successful, it returns a token.
-#
-#     Args:
-#         form_data: form data containing username and password.
-#
-#     Returns:
-#         Token
-#     """
-#
-#     user = aa.get_user_password(form_data.username)
-#     hashed_password = user["password"]
-#     if not user or not verify_password(form_data.password, hashed_password):
-#         raise HTTPException(status_code=400, detail="Incorrect username or password")
-#
-#     access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRATION)
-#     access_token = create_access_token(data={"sub": form_data.username}, expires_delta=access_token_expires)
-#
-#     return {"access_token": access_token, "token_type": "bearer"}
-#
-#
-# @app.post("/polarity",
-#           summary="Predicts the polarity for an article",
-#           description="Predicts the polarity (positive, neutral or negative) of an article based on its "
-#                       "headline and a candidate to US election")
-# def get_polarity(article: Article, current_user: str = Depends(get_current_user)):
-#     title = article.headline
-#     year = article.pub_date.strftime("%Y")
-#
-#     res = model.predict(title, year, False)
-#     return {"response": res}
-#
+class Article(BaseModel):
+    abstract: str
+    headline: str
+    keywords: list
+    pub_date: datetime
+    document_type: str
+    section_name: str
+    byline: list
+    web_url: str
+    uri: str
+    main_candidate: list
+    polarity: Optional[list] = None
+    recommended_book: Optional[list] = None
+    election_id: Optional[int] = None
+    lead_paragraph: Optional[str] = None
+
+
+class Token(BaseModel):
+    access_token: str
+    token_type: str
+
+
+def verify_password(plain_password, hashed_password):
+    return pwd_context.verify(plain_password, hashed_password)
+
+
+def create_access_token(data: dict, expires_delta: timedelta = None):
+    to_encode = data.copy()
+    if expires_delta:
+        expire = datetime.utcnow() + expires_delta
+    else:
+        expire = datetime.utcnow() + timedelta(minutes=15)
+    to_encode.update({"exp": expire})
+    encoded_jwt = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
+    return encoded_jwt
+
+
+def get_current_user(token: str = Depends(oauth2_scheme)):
+    credentials_exception = HTTPException(
+        status_code=status.HTTP_401_UNAUTHORIZED,
+        detail="Could not validate credentials",
+        headers={"WWW-Authenticate": "Bearer"},
+    )
+    try:
+        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+        username: str = payload.get("sub")
+        if username is None:
+            raise credentials_exception
+    except :
+        raise credentials_exception
+    user = aa.get_user_password(username)
+    if user is None:
+        raise credentials_exception
+    return user
+
+
+@app.post("/get_token", response_model=Token)
+async def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends()):
+    """
+    Authenticates user by providing a username and password. If authentication is successful, it returns a token.
+
+    Args:
+        form_data: form data containing username and password.
+
+    Returns:
+        Token
+    """
+
+    user = aa.get_user_password(form_data.username)
+    hashed_password = user["password"]
+    if not user or not verify_password(form_data.password, hashed_password):
+        raise HTTPException(status_code=400, detail="Incorrect username or password")
+
+    access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRATION)
+    access_token = create_access_token(data={"sub": form_data.username}, expires_delta=access_token_expires)
+
+    return {"access_token": access_token, "token_type": "bearer"}
+
+
+@app.post("/polarity",
+          summary="Predicts the polarity for an article",
+          description="Predicts the polarity (positive, neutral or negative) of an article based on its "
+                      "headline and a candidate to US election")
+def get_polarity(article: Article, current_user: str = Depends(get_current_user)):
+    title = article.headline
+    year = article.pub_date.strftime("%Y")
+
+    res = model.predict(title, year, False)
+    return {"response": res}
+
 #
 # @app.post("/books")
 # def get_books_to_article(article: Article, current_user: str = Depends(get_current_user)):
