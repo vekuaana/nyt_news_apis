@@ -1,4 +1,4 @@
-from fake import faker
+from fake2 import faker
 
 
 def test_faker():
