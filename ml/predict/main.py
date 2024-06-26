@@ -24,62 +24,62 @@ logger = logging.getLogger(__name__)
 
 model = None
 book = None
-#
-# pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
-# oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
-#
-# # Configuration pour le JWT
-# SECRET_KEY = os.getenv('SECRET_KEY')
-# ALGORITHM = os.getenv('ALGORITHM')
-# ACCESS_TOKEN_EXPIRATION = int(os.getenv('ACCESS_TOKEN_EXPIRATION'))
+
+pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
+
+# Configuration pour le JWT
+SECRET_KEY = os.getenv('SECRET_KEY')
+ALGORITHM = os.getenv('ALGORITHM')
+ACCESS_TOKEN_EXPIRATION = int(os.getenv('ACCESS_TOKEN_EXPIRATION'))
 
 app = FastAPI(title="API Prediction",
               description="API that predicts the polarity of a NYT article and recommends a book",
               version="0.0.1")
 
-#
-# class AuthAPI:
-#     def __init__(self):
-#         self.db = self.get_conn()
-#
-#     @staticmethod
-#     def get_conn():
-#         try:
-#             # Attempt to connect to MongoDB within a container environment
-#             db = MongoDBConnection('mongodb').conn_db
-#             return db
-#         except (ServerSelectionTimeoutError, TypeError):
-#             # Handle the case where the connection times out if we try to connect outside the container
-#             logger.error("Try to connect outside the container with localhost")
-#             try:
-#                 db = MongoDBConnection('localhost').conn_db
-#                 return db
-#             except ServerSelectionTimeoutError as sste:
-#                 logger.error("Unable to connect to database. Make sure the tunnel is still active.")
-#                 logger.error(sste)
-#         except OperationFailure as of:
-#             logger.error(of)
-#
-#     def get_user_password(self, input_user):
-#         rep = self.db['users'].find_one({'user': input_user})
-#         pwd = rep['password']
-#         return {'user': rep['user'], 'password': pwd}
-#
-#
-# @app.on_event("startup")
-# def get_model():
-#     global model
-#     global aa
-#     model = Polarity(model_name="flan_seq2seq_model")
-#     aa = AuthAPI()
-#
-#
-# @app.on_event("startup")
-# def get_books_coll():
-#     global book
-#     book = get_books()
-#
-#
+
+class AuthAPI:
+    def __init__(self):
+        self.db = self.get_conn()
+
+    @staticmethod
+    def get_conn():
+        try:
+            # Attempt to connect to MongoDB within a container environment
+            db = MongoDBConnection('mongodb').conn_db
+            return db
+        except (ServerSelectionTimeoutError, TypeError):
+            # Handle the case where the connection times out if we try to connect outside the container
+            logger.error("Try to connect outside the container with localhost")
+            try:
+                db = MongoDBConnection('localhost').conn_db
+                return db
+            except ServerSelectionTimeoutError as sste:
+                logger.error("Unable to connect to database. Make sure the tunnel is still active.")
+                logger.error(sste)
+        except OperationFailure as of:
+            logger.error(of)
+
+    def get_user_password(self, input_user):
+        rep = self.db['users'].find_one({'user': input_user})
+        pwd = rep['password']
+        return {'user': rep['user'], 'password': pwd}
+
+
+@app.on_event("startup")
+def get_model():
+    global model
+    global aa
+    model = Polarity(model_name="flan_seq2seq_model")
+    aa = AuthAPI()
+
+
+@app.on_event("startup")
+def get_books_coll():
+    global book
+    book = get_books()
+
+
 # class Article(BaseModel):
 #     abstract: str
 #     headline: str
