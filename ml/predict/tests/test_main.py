@@ -11,6 +11,7 @@ load_dotenv(find_dotenv())
 
 @pytest.fixture
 def token():
+
     response = requests.post(
         url=base_url + "get_token",
         data={
@@ -18,10 +19,19 @@ def token():
             "password": os.getenv('PASSWORD1')
         }
     )
-    print(os.getenv('USER1'))
-    print(response)
-    print(response.json())
     token = response.json()['access_token']
+    if response.status_code == 500:
+        response = requests.post(
+            url="http://prediction:8005/" + "get_token",
+            data={
+                "username": os.getenv('USER1'),
+                "password": os.getenv('PASSWORD1')
+            }
+        )
+        token = response.json()['access_token']
+        if response.status_code == 500:
+            token = os.getenv('TOKEN')
+
     return token
 
 

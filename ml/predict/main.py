@@ -147,8 +147,9 @@ async def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends(
     Returns:
         Token
     """
-
+    print("ici")
     user = aa.get_user_password(form_data.username)
+    print(user['user'])
     hashed_password = user["password"]
     if not user or not verify_password(form_data.password, hashed_password):
         raise HTTPException(status_code=400, detail="Incorrect username or password")
