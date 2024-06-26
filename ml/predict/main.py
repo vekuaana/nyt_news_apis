@@ -74,10 +74,10 @@ app = FastAPI(title="API Prediction",
 #     aa = AuthAPI()
 
 
-@app.on_event("startup")
-def get_books_coll():
-    global book
-    book = get_books()
+# @app.on_event("startup")
+# def get_books_coll():
+#     global book
+#     book = get_books()
 
 
 # class Article(BaseModel):
