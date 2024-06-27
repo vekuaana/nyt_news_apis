@@ -87,7 +87,7 @@ class NYTConnector:
             logging.info(results)
             filtered_results = [doc for doc in results if doc["subsection"] == subsection
                                 or (set(doc["per_facet"]).intersection(set(per_facet)))]
-            logger.info("Number of filtered results:", len(filtered_results))
+            logger.info("Number of filtered results:" + str(len(filtered_results)))
 
         return filtered_results
 

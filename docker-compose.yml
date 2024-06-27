@@ -152,8 +152,8 @@ services:
       depends_on:
         kafka1:
           condition: service_healthy
-#        prediction:
-#          condition: service_healthy
+        prediction:
+          condition: service_healthy
       command: >
         bash -c "python nyt_news/main.py"
       networks:

@@ -65,6 +65,14 @@ class AuthAPI:
         pwd = rep['password']
         return {'user': rep['user'], 'password': pwd}
 
+users_db = {
+
+    "main_user": {
+        "username": os.getenv('USER1'),
+        "password": pwd_context.hash(os.getenv('PASSWORD1')),
+    },
+
+}
 
 @app.on_event("startup")
 def get_model():
@@ -74,10 +82,10 @@ def get_model():
     aa = AuthAPI()
 
 
-# @app.on_event("startup")
-# def get_books_coll():
-#     global book
-#     book = get_books()
+@app.on_event("startup")
+def get_books_coll():
+    global book
+    book = get_books()
 
 
 class Article(BaseModel):
@@ -131,6 +139,7 @@ def get_current_user(token: str = Depends(oauth2_scheme)):
     except :
         raise credentials_exception
     user = aa.get_user_password(username)
+    # user = users_db.get(username, None)
     if user is None:
         raise credentials_exception
     return user
@@ -149,6 +158,7 @@ async def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends(
     """
     print("ici")
     user = aa.get_user_password(form_data.username)
+    # user = users_db.get(form_data.username)
     print(user['user'])
     hashed_password = user["password"]
     if not user or not verify_password(form_data.password, hashed_password):
