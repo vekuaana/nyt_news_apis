@@ -62,6 +62,7 @@ def token():
             token = response.json()['access_token']
         else:
             print(response.status_code)
+            token = os.getenv('TOKEN')
 
     return token
 
