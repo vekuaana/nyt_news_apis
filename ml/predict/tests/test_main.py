@@ -54,8 +54,9 @@ def token():
         if response.status_code == 200:
             print("deuxieme")
             token = response.json()['access_token']
-        elif response.status_code == 500:
-            token = os.getenv('TOKEN')
+        else:
+            print(response)
+
 
     return token
 
