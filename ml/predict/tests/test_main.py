@@ -14,6 +14,7 @@ def test_conn():
         res = db['users'].find_one({'user': os.getenv('USER1')})
         print(res)
         tmp = os.getenv('HASH_PASSWORD')
+        print(tmp)
         assert res['password'] == tmp
     except (ServerSelectionTimeoutError, TypeError):
         # Handle the case where the connection times out if we try to connect outside the container
@@ -23,6 +24,7 @@ def test_conn():
             res = db['users'].find_one({'user': os.getenv('USER1')})
             print(res)
             tmp = os.getenv('HASH_PASSWORD')
+            print(tmp)
             assert res['password'] == tmp
         except ServerSelectionTimeoutError as sste:
             print("Unable to connect to database. Make sure the tunnel is still active.")
@@ -44,6 +46,7 @@ def token():
             "password": os.getenv('PASSWORD1')
         }
     )
+    print(response)
     if response.status_code == 200:
         print('premier')
         token = response.json()['access_token']
@@ -57,6 +60,7 @@ def token():
                 "password": os.getenv('PASSWORD1')
             }
         )
+        print(response)
         if response.status_code == 200:
             print("deuxieme")
             token = response.json()['access_token']
