@@ -43,7 +43,9 @@ def token():
     if response.status_code == 200:
         print('premier')
         token = response.json()['access_token']
-    elif response.status_code == 500:
+    else:
+        print("laaa")
+        print(response.status_code)
         response = requests.post(
             url="http://prediction:8005/" + "get_token",
             data={
@@ -55,8 +57,7 @@ def token():
             print("deuxieme")
             token = response.json()['access_token']
         else:
-            print(response)
-
+            print(response.status_code)
 
     return token
 
