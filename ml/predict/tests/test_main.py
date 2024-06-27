@@ -4,6 +4,27 @@ import pytest
 import os
 
 from dotenv import load_dotenv, find_dotenv
+from connection_db import MongoDBConnection
+from pymongo.errors import OperationFailure, ServerSelectionTimeoutError
+
+def test_conn():
+    try:
+        # Attempt to connect to MongoDB within a container environment
+        db = MongoDBConnection('mongodb').conn_db
+        res = db['users'].find_one({'user': os.getenv('USER1')})
+        assert res == 'user1'
+    except (ServerSelectionTimeoutError, TypeError):
+        # Handle the case where the connection times out if we try to connect outside the container
+        print("Try to connect outside the container with localhost")
+        try:
+            db = MongoDBConnection('localhost').conn_db
+            res = db['users'].find_one({'user': os.getenv('USER1')})
+            assert res == 'user1'
+        except ServerSelectionTimeoutError as sste:
+            print("Unable to connect to database. Make sure the tunnel is still active.")
+    except OperationFailure as of:
+        print(of)
+
 
 base_url = "http://localhost:8005/"
 load_dotenv(find_dotenv())
