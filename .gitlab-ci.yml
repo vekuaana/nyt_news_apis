@@ -52,7 +52,7 @@ build:
     - echo ALGORITHM=$ALGORITHM >> .env
     - echo ACCESS_TOKEN_EXPIRATION=$ACCESS_TOKEN_EXPIRATION >> .env
     - echo TOKEN=$TOKEN >> .env
-    - echo HASH_PASSWORD=$HASH_PASSWORD >> .env
+    - echo "HASH_PASSWORD='$HASH_PASSWORD'" >> .env
     - ls -a
     - cat .env
     - echo "$CI_PROJECT_DIR"
