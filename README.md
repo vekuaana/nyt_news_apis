@@ -8,11 +8,10 @@ Créer un compte sur [NYT Dev](https://developer.nytimes.com/get-started) pour r
 La clé devra être ajouté au fichier **api.cfg** (voir prochaine étape)
 
 ## Installation
-Modifier les fichiers  **.env.example** et **api.cfg** avec les informations d'authentification. Renommer **.env.example** en >> **.env** et **api.example.cfg** en >> **api.cfg**.
+Modifier le fichier  **.env.example** avec les informations d'authentification. Renommer **.env.example** en >> **.env**.
 ```bash
 ├── nyt_news
-│   ├── api.cfg
-├── .env.example
+│   ├── .env.example
 
 ```
 Lancer la commande suivante :

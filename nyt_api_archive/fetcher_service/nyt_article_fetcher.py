@@ -1,6 +1,11 @@
 import requests
+import logging
 from typing import List, Dict, Any
 from datetime import datetime
+
+logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(name)s : %(module)s - %(levelname)s - %(message)s')
+logger = logging.getLogger(__name__)
+
 
 class NYTArticleFetcher:
     """
@@ -15,14 +20,14 @@ class NYTArticleFetcher:
         Récupère les articles d'un mois spécifique d'une année déterminée à partir de l'API Archive du NYT
         """
         request_url = f"{self.api_url}/{year}/{month}.json?api-key={self.api_key}"
-        print(f"Requête URL: {request_url}")
+        logger.info(f"Requête URL: {request_url}")
         response = requests.get(request_url)
         response.raise_for_status()
         data = response.json()
         return data.get('response', {}).get('docs', [])
 
-     @staticmethod
-     def parse_date(date_str):
+    @staticmethod
+    def parse_date(date_str):
         # Liste des formats de date possibles
         date_formats = [
             '%Y-%m-%dT%H:%M:%S%z',
@@ -30,7 +35,7 @@ class NYTArticleFetcher:
         ]
         for fmtt in date_formats:
             try:
-                return datetime.strptime(date_str, fmt)
+                return datetime.strptime(date_str, fmtt)
             except ValueError:
                 continue
         raise ValueError(f"Date format for {date_str} not recognized")

@@ -1,6 +1,5 @@
 # coding:utf-8
 import sys
-
 import torch
 import os
 import numpy as np
@@ -18,10 +17,12 @@ from trainer_seq2seq import ModelArguments, DataTrainingArguments, load_and_prep
 
 os.environ["MLFLOW_EXPERIMENT_NAME"] = "polarity_classif"
 os.environ["MLFLOW_FLATTEN_PARAMS"] = "1"
-os.environ["MLFLOW_TRACKING_URI"]=""
-os.environ["HF_MLFLOW_LOG_ARTIFACTS"]="1"
+os.environ["MLFLOW_TRACKING_URI"] = ""
+os.environ["HF_MLFLOW_LOG_ARTIFACTS"] = "1"
+
 
 def main():
+
     parser = HfArgumentParser((ModelArguments, DataTrainingArguments, Seq2SeqTrainingArguments ))
     model_args, data_args, training_args = parser.parse_json_file(json_file=os.path.abspath(sys.argv[1]))
 
@@ -37,6 +38,7 @@ def main():
     tokenizer = T5Tokenizer.from_pretrained(model_args.tokenizer_name if model_args.tokenizer_name else model_args.model_name_or_path)
 
     f1_score = evaluate.load("f1")
+
 
     def preprocess_function(examples):
         inputs = ["Is this text about " + entity + " is 'neutral', 'positive' or 'negative' ? text : " + doc for

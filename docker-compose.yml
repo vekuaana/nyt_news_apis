@@ -9,7 +9,7 @@ services:
           - ./mongodb/init_db.sh:/docker-entrypoint-initdb.d/init_db.sh:ro
 
         ports:
-          - 27017:27018
+          - 27017:27017
         env_file:
           - .env
         environment:
@@ -145,6 +145,10 @@ services:
       build:
         context: ./app
         dockerfile: Dockerfile
+#      image: registry.gitlab.com/nyt_news4/nyt_news/app:latest
+#      image: docker.io/linenlp/app:latest
+      env_file:
+        - .env
       depends_on:
         kafka1:
           condition: service_healthy
@@ -162,6 +166,10 @@ services:
       build:
         context: ./consumer
         dockerfile: Dockerfile
+      env_file:
+        - .env
+#      image: registry.gitlab.com/nyt_news4/nyt_news/consumer:latest
+#      image: docker.io/linenlp/consumer:latest
       depends_on:
         kafka1:
           condition: service_healthy
@@ -176,6 +184,11 @@ services:
       build:
         context: ./ml/polarity
         dockerfile: Dockerfile
+      env_file:
+        - .env
+#      image: registry.gitlab.com/nyt_news4/nyt_news/polarity:latest
+#      image: docker.io/linenlp/polarity:latest
+      profiles: [build]
       networks:
         - mongo-compose-network
       volumes:
@@ -187,7 +200,9 @@ services:
         context: ./ml/predict
         dockerfile: Dockerfile
       env_file:
-        - .env   
+        - .env
+#      image: registry.gitlab.com/nyt_news4/nyt_news/prediction:latest
+#      image: docker.io/linenlp/prediction:latest
       networks:
         - mongo-compose-network
       ports:
@@ -200,7 +215,25 @@ services:
         timeout: 10s
         retries: 5
 
+    archive:
+      container_name: archive
+      restart: on-failure
+      build:
+        context: ./nyt_api_archive
+        dockerfile: Dockerfile
+      profiles: [build]
+      env_file:
+        - .env
+#      image: registry.gitlab.com/nyt_news4/nyt_news/prediction:latest
+#      image: docker.io/linenlp/prediction:latest
+      command: >
+        bash -c "python main.py"
+      depends_on:
+        prediction:
+          condition: service_healthy
+      networks:
+        - mongo-compose-network
+
 networks:
     kafka:
-      name: kafka
     mongo-compose-network:

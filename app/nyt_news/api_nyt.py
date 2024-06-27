@@ -6,12 +6,25 @@ import time
 import json
 import math
 import datetime
-from datetime import datetime, timedelta
+import os
 import re
+import logging.config
+import yaml
+from dotenv import load_dotenv, find_dotenv
+from datetime import datetime, timedelta
 import logging
 
-from config import api_nyt_path
+from config import PACKAGE_ROOT
 import ScrapperAppleBooks as sc
+
+
+with open(PACKAGE_ROOT + os.sep + 'config_logger.yaml', 'rt') as f:
+    config = yaml.safe_load(f.read())
+
+load_dotenv(find_dotenv())
+
+logging.config.dictConfig(config)
+logger = logging.getLogger(__name__)
 
 # Base URLs for NYT APIs
 BASE_URL = "https://api.nytimes.com/svc/"
@@ -34,9 +47,7 @@ class NYTConnector:
         """
         Initializes the NYTConnector by reading the API key from a configuration file.
         """
-        cfg = configparser.ConfigParser()
-        cfg.read(api_nyt_path)
-        self.API_KEY = cfg.get('KEYS', 'key_nyt_news')
+        self.API_KEY = os.getenv('NYT_API_KEY')
 
     def request_times_newswire(self,
                                source: str = 'all',
@@ -62,50 +73,24 @@ class NYTConnector:
         url = f"{BASE_URL_NEWSWIRE}/{source}/{section}.json"
 
         # Send the HTTP GET request to the API and get the JSON response
-        response = requests.get(url, params=params).json()
-        num_results = response.get('num_results', 0)
-        print("Number of results:", num_results)
+        response = requests.get(url, params=params)
+        logger.info(response)
+        response_json = requests.get(url, params=params).json()
+        num_results = response_json.get('num_results', 0)
+        logging.info("Number of results:" + str(num_results))
 
-        results = response.get('results', [])
+        results = response_json.get('results', [])
 
         # If results exist, filter with subsection and person entity
         filtered_results = []
         if results:
+            logging.info('api_nyt')
+            logging.info(results)
             filtered_results = [doc for doc in results if doc["subsection"] == subsection
                                 or (set(doc["per_facet"]).intersection(set(per_facet)))]
-            print("Number of filtered results:", len(filtered_results))
+            logger.info("Number of filtered results:" + str(len(filtered_results)))
 
         return filtered_results
-
-
-    def request_archive(self, month: int, year: int):
-        """
-        Fetches the archived NYT articles for a given month and year.
-
-        Args:
-            month (int): The month for which to fetch articles.
-            year (int): The year for which to fetch articles.
-
-        Returns:
-            list: A list of archived NYT articles for the specified month and year.
-        """
-        params = {"api-key": self.API_KEY}
-        # Build the endpoint URL for fetching archived articles
-        url = f"{BASE_URL_ARCHIVE}/{year}/{month}.json"
-
-        # Generate an output file name based on the month and year
-        output_file_name = f"data_archive_{month}_{year}.json"
-
-        # Send the HTTP GET request and get the JSON response
-        response = requests.get(url, params=params).json()
-        docs = response['response'].get('docs', [])
-
-        # If docs, save them to the output file
-        if docs:
-            with open(output_file_name, 'w', encoding='utf-8') as f:
-                json.dump(docs, f, ensure_ascii=False, indent=4)
-
-        return docs
 
     def request_by_keyword(self, keyword: str, output_file: str, start_date: str = None, end_date: str = None):
         """
@@ -132,18 +117,18 @@ class NYTConnector:
         r = requests.get(BASE_URL_KW, params=search_params)
         response = r.json()['response']
         hits = response['meta']['hits']
-        print("Number of hits:", hits)
+        logger.info("Number of hits:", hits)
 
         # Determine the number of pages (10 results per page)
         num_pages = int(math.ceil(hits / 10))
-        print("Number of pages:", num_pages)
+        logger.info("Number of pages:", num_pages)
 
         list_docs = []
 
         # Iterate through all pages to fetch the documents
         with open(f"{output_file}_{start_date}.json", 'w', encoding='utf-8') as f:
             for i in range(num_pages):
-                print(f"Fetching page {i}")
+                logger.info(f"Fetching page {i}")
                 search_params['page'] = i
                 r = requests.get(BASE_URL_KW, params=search_params)
                 response = r.json()['response']
@@ -293,13 +278,16 @@ class NYTConnector:
 
         return published_dates, books, unique_titles
 
+
 if __name__ == "__main__":
     nyt_c = NYTConnector()
     res = nyt_c.request_times_newswire('all', 'u.s.')
 
+
 class RateLimitExceededError(Exception):
     """Exception raised when the rate limit is exceeded."""
     pass
+
 
 class HTTPError(Exception):
     """Exception raised for general HTTP errors."""

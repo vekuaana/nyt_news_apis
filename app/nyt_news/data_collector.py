@@ -1,6 +1,10 @@
 # coding:utf-8
 import requests
 import json
+import os
+import logging.config
+import yaml
+import re
 
 from datetime import datetime
 from dataclasses import dataclass
@@ -10,6 +14,15 @@ from pymongo.errors import OperationFailure, ServerSelectionTimeoutError
 
 from api_nyt import NYTConnector
 from connection_db import MongoDBConnection
+from config import PACKAGE_ROOT
+
+
+with open(PACKAGE_ROOT + os.sep + 'config_logger.yaml', 'rt') as f:
+    config = yaml.safe_load(f.read())
+
+logging.config.dictConfig(config)
+logger = logging.getLogger(__name__)
+
 
 @dataclass_json
 @dataclass
@@ -27,7 +40,7 @@ class Article:
     polarity: Optional[list] = None
     recommended_book: Optional[int] = None
     election_id: Optional[int] = None
-    lead_paragraph: Optional[int] = None
+    lead_paragraph: Optional[str] = None
 
 
 class ETL(NYTConnector):
@@ -38,20 +51,33 @@ class ETL(NYTConnector):
         self.nyt_newswire_counter = 1
         self.polarity_url = "http://prediction:8005/polarity"
         self.books_to_article_url = "http://prediction:8005/books"
+        self.token = self.get_token()
         super().__init__()
         try:
             # Attempt to connect to MongoDB within a container environment
             self.db = MongoDBConnection('mongodb').conn_db
         except ServerSelectionTimeoutError:
             # Handle the case where the connection times out if we try to connect outside the container
-            print("Try to connect outside the container with localhost")
+            logger.info("Try to connect outside the container with localhost")
             try:
                 self.db = MongoDBConnection('localhost').conn_db
             except ServerSelectionTimeoutError as sste:
-                print("Unable to connect to database. Make sure the tunnel is still active.")
-                print(sste)
+                logger.error("Unable to connect to database. Make sure the tunnel is still active.")
+                logger.error(sste)
         except OperationFailure as of:
-            print(of)
+            logger.error(of)
+
+    @staticmethod
+    def get_token():
+        response = requests.post(
+            url="http://prediction:8005/get_token",
+            data={
+                "username": os.getenv('USER1'),
+                "password": os.getenv('PASSWORD1')
+            }
+        )
+        token = response.json()['access_token']
+        return token
 
     def extract_nyt_newswire_article(self):
         """
@@ -62,42 +88,52 @@ class ETL(NYTConnector):
         """
         res = self.request_times_newswire('all', 'u.s.')
         list_json = []
-
+        logger.debug("data_collector")
+        logger.debug(res)
         for doc in res:
             election = self.db['election'].find_one({'election_year': datetime.fromisoformat(doc['published_date']).strftime("%Y")})
             election_id = election['election_id']
             entities = [x["name"].split()[-1] for x in election['candidate']]
-            main_candidate = [x for x in entities if x in [x.split(',')[0] for x in doc['per_facet']]]
+            # main_candidate = [x for x in entities if x in [x.split(',')[0] for x in doc['per_facet']]]
+            main_candidate = []
+            for entity in entities:
+                if re.search(r'(^' + entity + r'|\s+' + entity + r'(\s|-|[’\']s)|' + entity + '$)', doc["title"]):
+                    main_candidate.append(entity)
+            if isinstance(doc['byline'], str):
+                doc['byline'] = [doc['byline']]
             data = Article(abstract=doc['abstract'],
                            headline=doc['title'],
                            keywords=doc['per_facet'] + doc['org_facet'] + doc['des_facet'],
                            pub_date=datetime.fromisoformat(doc['published_date']).strftime("%Y-%m-%d %H:%M:%S"),
                            document_type=doc['item_type'],
                            section_name=doc['section'],
-                           byline=[doc['byline']],
+                           byline=doc['byline'],
                            web_url=doc['url'],
                            uri=doc['uri'],
                            main_candidate=main_candidate,
                            election_id=election_id)
 
             request_body = json.dumps(data.to_dict())
+
             # get polarity
-            res_polarity = requests.post(self.polarity_url, data=request_body)
+            res_polarity = requests.post(self.polarity_url, data=request_body, headers={"Authorization": "Bearer " + self.token})
             if res_polarity.status_code == 200:
                 res_polarity_json = res_polarity.json()
                 data.polarity = res_polarity_json['response']
             else:
                 raise DataError(f"Something went wrong in Article : {res_polarity.json()}")
-            '''
+
             # get books 
-            res_books = requests.post(self.books_to_article_url, data=request_body)
+            res_books = requests.post(self.books_to_article_url, data=request_body, headers={"Authorization": "Bearer " + self.token})
             if res_books.status_code == 200:
                 res_books_json = res_books.json()
                 data.recommended_book = res_books_json['response']
             else:
                 raise DataError(f"Something went wrong in Article : {res_books.json()}")
-            '''
+
             list_json.append(data.to_dict())
+            logger.debug("-------------------example---------------")
+            logger.debug(data)
 
         return list_json
     

@@ -1,0 +1,97 @@
+image:
+  name: "docker:27.0.1"
+  entrypoint: ["/bin/sh", "-c"]
+
+services:
+  - docker:27.0.1-dind
+
+variables:
+#  DOCKER_HOST: tcp://docker:2375/
+  DOCKER_DRIVER: overlay2
+  GIT_CLEAN_FLAGS: none
+
+#cache:
+#  key: $CI_COMMIT_REF_SLUG
+
+
+stages:
+  - build
+  - test
+  - deploy
+
+
+before_script:
+  - docker login -u "$DOCKERHUB_USERNAME" -p "$DOCKERHUB_PWD"
+  - docker info
+  - docker-compose --version
+
+
+after_script:
+  - docker logout
+
+
+build:
+  variables:
+    CI_JOB_TIMEOUT: 3000
+  stage: build
+  before_script:
+#    - docker login -u "$DOCKERHUB_USERNAME" -p "$DOCKERHUB_PWD"
+    - docker-compose --version
+    - docker --version
+    - echo MONGO_INITDB_ROOT_USERNAME=$MONGO_INITDB_ROOT_USERNAME >> .env
+    - echo MONGO_INITDB_ROOT_PASSWORD=$MONGO_INITDB_ROOT_PASSWORD >> .env
+    - echo MONGO_INITDB_DATABASE=$MONGO_INITDB_DATABASE >> .env
+    - echo MONGOEXPRESS_PASSWORD=$MONGOEXPRESS_PASSWORD >> .env
+    - echo MONGOEXPRESS_LOGIN=$MONGOEXPRESS_LOGIN >> .env
+    - echo USER1=$USER1 >> .env
+    - echo PASSWORD1=$PASSWORD1 >> .env
+    - echo CI_REGISTRY_IMAGE_PROJECT=$CI_REGISTRY_IMAGE_PROJECT >> .env
+    - echo NYT_API_KEY=$NYT_API_KEY >> .env
+    - echo SECRET_KEY=$SECRET_KEY >> .env
+    - echo ALGORITHM=$ALGORITHM >> .env
+    - echo ACCESS_TOKEN_EXPIRATION=$ACCESS_TOKEN_EXPIRATION >> .env
+    - echo "TOKEN='$TOKEN'" >> .env
+    - echo "HASH_PASSWORD='$HASH_PASSWORD'" >> .env
+    - ls -a
+    - cat .env
+    - echo "$CI_PROJECT_DIR"
+
+
+  script:
+    - docker-compose --profile build build
+
+  after_script:
+    - docker image ls --all --quiet --filter "reference=*polarity"
+    - ls -a
+    - IMAGEID="$(docker image ls --all --quiet --filter "reference=*polarity")"
+    - container_id=$(docker create "$IMAGEID")
+    - docker cp $container_id:/models $CI_PROJECT_DIR/ml/
+    - docker rm "$container_id"
+    - ls $CI_PROJECT_DIR/ml/models
+  artifacts:
+      paths:
+          - .env
+          - ml/models/*
+
+
+test:
+  script:
+    - ls $CI_PROJECT_DIR/ml/models
+    - ls -a
+    - docker-compose up -d
+    - docker ps -a
+    - docker-compose exec prediction pytest -vv
+    - docker-compose exec consumer pytest -vv
+  after_script:
+    - docker-compose down
+  artifacts:
+      paths:
+          - .env
+          - ml/models/*
+
+deploy:
+  stage: deploy
+  script:
+    - docker-compose up -d
+  only:
+    - main

@@ -1,10 +1,14 @@
 from transformers import pipeline, T5Tokenizer
 import re
 import os
+import logging
+
+logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(name)s : %(module)s - %(levelname)s - %(message)s')
+logger = logging.getLogger(__name__)
 
 
 class Polarity:
-    def __init__(self, model_name: str = "flan_seq2seq_model", device: str = 'cpu'):
+    def __init__(self, model_dir: str = '..' + os.sep + 'models', model_name: str = "flan_seq2seq_model", device: str = 'cpu'):
         """
             Init Polarity class
 
@@ -12,7 +16,7 @@ class Polarity:
                 model_name (str): name of the model to use for text generation.
                 device (str): device between 'cuda' and 'cpu'
         """
-        self.model = pipeline("text2text-generation", model='..' + os.sep + 'models' + os.sep + model_name, max_new_tokens=1, device=device)
+        self.model = pipeline("text2text-generation", model=model_dir + os.sep + model_name, max_new_tokens=1, device=device)
         # TODO : to complete
         self.entities = [{"date": 2024,
                          "candidates": ["Biden", "Trump"]},
@@ -122,12 +126,12 @@ class Polarity:
 
         for entity in entities:
             pred = None
-            if re.search(r'(^' + entity + r'|\s+' + entity + r'(\s|[’\']s)|' + entity + '$)', text):
+            if re.search(r'(^' + entity + r'|\s+' + entity + r'(\s|-|[’\']s)|' + entity + '$)', text):
                 formatted_text = re.sub('/ENTITY/', entity, text)
                 pred = self.model(formatted_text)[0]['generated_text']
                 if verbose:
-                    print("Entity :", entity)
-                    print("Prediction :", pred)
+                    logger.info("Entity :", entity)
+                    logger.info("Prediction :", pred)
 
             res.append({'entity': entity, 'prediction': pred})
         return res
@@ -150,6 +154,6 @@ if __name__ == '__main__':
         print("Titre :", args.text)
     if args.verbose:
         print("\nModel :", model)
-    get_polarity = Polarity(model, device)
+    get_polarity = Polarity(model_name=model, device=device)
     if args.verbose:
         print(get_polarity.predict(args.text, args.year, args.verbose))

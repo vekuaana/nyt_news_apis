@@ -1,8 +1,20 @@
 # coding:utf-8
 import os
+import logging.config
+import yaml
+
 from pymongo import MongoClient
 from pymongo.errors import OperationFailure
 from dotenv import load_dotenv, find_dotenv
+
+from config import PACKAGE_ROOT
+
+
+with open(PACKAGE_ROOT + os.sep + 'config_logger.yaml', 'rt') as f:
+    config = yaml.safe_load(f.read())
+
+logging.config.dictConfig(config)
+logger = logging.getLogger(__name__)
 
 load_dotenv(find_dotenv())
 
@@ -41,4 +53,4 @@ class MongoDBConnection(metaclass=Singleton):
             mongodb = client[os.getenv('MONGO_INITDB_DATABASE')]
             self.conn_db = mongodb
         except OperationFailure as of:
-            print(of)
+            logger.error(of)
