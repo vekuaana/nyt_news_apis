@@ -58,8 +58,7 @@ build:
 
 
   script:
-#    - docker-compose --profile build build
-    - docker-compose build
+    - docker-compose --profile build build
 
   after_script:
     - docker image ls --all --quiet --filter "reference=*polarity"
