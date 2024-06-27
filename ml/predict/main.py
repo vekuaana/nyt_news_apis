@@ -82,10 +82,10 @@ def get_model():
     aa = AuthAPI()
 
 
-@app.on_event("startup")
-def get_books_coll():
-    global book
-    book = get_books()
+# @app.on_event("startup")
+# def get_books_coll():
+#     global book
+#     book = get_books()
 
 
 class Article(BaseModel):
@@ -181,12 +181,13 @@ def get_polarity(article: Article, current_user: str = Depends(get_current_user)
     res = model.predict(title, year, False)
     return {"response": res}
 
-#
-# @app.post("/books")
-# def get_books_to_article(article: Article, current_user: str = Depends(get_current_user)):
-#     abstract = article.abstract
-#     res = get_top_3_books_to_article(abstract, book)
-#     return {"response": res}
+
+@app.post("/books")
+def get_books_to_article(article: Article, current_user: str = Depends(get_current_user)):
+    book = get_books()
+    abstract = article.abstract
+    res = get_top_3_books_to_article(abstract, book)
+    return {"response": res}
 
 
 @app.get("/health",

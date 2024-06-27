@@ -148,7 +148,7 @@ def main():
                     logger.error(f"Erreur de requête pour {year}-{month}: {e}")
                     if e.response.status_code == 429:
                         logger.warning("Trop de requêtes. Pause de 60 secondes.")
-                        time.sleep(3000)
+                        time.sleep(60)
                 except Exception as e:
                     logger.exception(f"Erreur inattendue pour {year}-{month}: {e}")
 

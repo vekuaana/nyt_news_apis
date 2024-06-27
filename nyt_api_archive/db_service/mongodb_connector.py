@@ -17,14 +17,14 @@ class MongoDBConnector:
 
         try:
             # Attempt to connect to MongoDB within a container environment
-            self.client = MongoClient(host='mongodb',
+            self.client = MongoClient(host='localhost',
                                       port=27017,
                                       username=user,
                                       password=pwd,
                                       authSource=source)
         except ServerSelectionTimeoutError:
             # Handle the case where the connection times out if we try to connect outside the container
-            self.client = MongoClient(host='localhost',
+            self.client = MongoClient(host='mongodb',
                                       port=27017,
                                       username=user,
                                       password=pwd,
