@@ -17,8 +17,7 @@ variables:
 stages:
   - build
   - test
-#  - push
-#  - deploy
+  - deploy
 
 
 before_script:
@@ -61,14 +60,12 @@ build:
   script:
 #    - docker-compose --profile build build
     - docker-compose build
-#    - ls ./ml/models/
 
   after_script:
     - docker image ls --all --quiet --filter "reference=*polarity"
     - ls -a
     - IMAGEID="$(docker image ls --all --quiet --filter "reference=*polarity")"
-#    - container_id=$(docker create "$IMAGEID")
-    - container_id=$(docker create "b03f9b44acd4")
+    - container_id=$(docker create "$IMAGEID")
     - docker cp $container_id:/models $CI_PROJECT_DIR/ml/
     - docker rm "$container_id"
     - ls $CI_PROJECT_DIR/ml/models
@@ -77,11 +74,6 @@ build:
           - .env
           - ml/models/*
 
-
-#  cache:
-#    key: build-cache
-#    paths:
-#      - ml/models/
 
 test:
   script:
@@ -98,85 +90,9 @@ test:
           - .env
           - ml/models/*
 
-#  cache:
-#    key: build-cache
-#    paths:
-#      - ml/models/
-
-#push:
-#  stage: push
-#  script:
-#    - docker compose push
-
-#deploy:
-#  stage: deploy
-#  script:
-#    - docker compose up -d
-#  only:
-#    - master
-# --------- previous version ------------------------------
-#
-#.do_testing:
-#  stage: test
-#  allow_failure: false
-#  image: $CI_REGISTRY_IMAGE/$IMAGE_NAME:$CI_COMMIT_SHORT_SHA
-#  script:
-#    - python -m pytest
-
-#.do_testing:
-#  stage: test
-#  allow_failure: false
-#  script:
-#    - echo "$CI_REGISTRY_IMAGE"
-#    - echo $CI_REGISTRY
-#    - cd ml/predict/
-#    - ls
-#    - if [ -d "env_predict/bin/activate" ]; then rm -Rf $WORKING_DIR; fi
-#    - docker pull $CI_REGISTRY_IMAGE/$IMAGE_NAME:$CI_COMMIT_SHORT_SHA
-#    - docker run $CI_REGISTRY_IMAGE/$IMAGE_NAME:$CI_COMMIT_SHORT_SHA
-#    - docker exec -it $IMAGE_NAME bash -c "pytest -v
-
-
-#
-#
-#
-#.template: &build_push
-#  variables:
-#    CI_JOB_TIMEOUT: 3000
-#  image: docker:latest
-#  services:
-#    - docker:dind
-#  stage: build
-#  before_script:
-#    - echo "$CI_REGISTRY_IMAGE"
-#    - echo $CI_REGISTRY
-#    - echo MONGO_INITDB_ROOT_USERNAME=$MONGO_INITDB_ROOT_USERNAME >> .env
-#    - echo MONGO_INITDB_ROOT_PASSWORD=$MONGO_INITDB_ROOT_PASSWORD >> .env
-#    - echo MONGO_INITDB_DATABASE=$MONGO_INITDB_DATABASE >> .env
-#    - echo MONGOEXPRESS_PASSWORD=$MONGOEXPRESS_PASSWORD >> .env
-#    - echo MONGOEXPRESS_LOGIN=$MONGOEXPRESS_LOGIN >> .env
-#    - echo USER1=$USER1 >> .env
-#    - echo PASSWORD1=$PASSWORD1 >> .env
-#    - ls -a
-#    - cp .env ./ml/polarity/
-#    - ls -a ./ml/polarity/
-#  script:
-#    - docker compose build
-#  after_script:
-#    - echo "$CI_REGISTRY_IMAGE"
-#    - docker tag "$CI_REGISTRY_IMAGE/$IMAGE_NAME:latest" "$CI_REGISTRY_IMAGE/$IMAGE_NAME:$CI_COMMIT_SHORT_SHA"
-#    - docker push "$CI_REGISTRY_IMAGE/$IMAGE_NAME:$CI_COMMIT_SHORT_SHA"
-#    # If we are building a tag, push the `latest` container image tag too
-##    - if [ ! -z "$CI_COMMIT_TAG" ]; then docker push "$CI_REGISTRY_IMAGE/$IMAGE_NAME:latest"; fi
-#
-#build:predict:
-#  <<: *build_push
-#  variables:
-#    IMAGE_NAME: nyt_news-prediction
-
-
-#deploy:
-#  stage: deploy
-#  script:
-#  - docker-compose pull
-#  - docker-compose up -d
+deploy:
+  stage: deploy
+  script:
+    - docker compose up -d
+  only:
+    - master
