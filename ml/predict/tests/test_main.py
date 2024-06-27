@@ -20,6 +20,7 @@ def token():
         }
     )
     if response.status_code == 200:
+        print('premier')
         token = response.json()['access_token']
     elif response.status_code == 500:
         response = requests.post(
@@ -30,6 +31,7 @@ def token():
             }
         )
         if response.status_code == 200:
+            print("deuxieme")
             token = response.json()['access_token']
         elif response.status_code == 500:
             token = os.getenv('TOKEN')
@@ -78,6 +80,7 @@ def test_get_polarity(token):
 
     request_body = json.dumps(data)
     res = requests.post(base_url + 'polarity', data=request_body, headers={"Authorization": "Bearer " + token})
+    print(res)
     res_json = res.json()['response']
     res_biden = [x for x in res_json if x['entity'] == 'Biden']
 
