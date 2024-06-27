@@ -1,15 +1,13 @@
-
-# still needs adjustement 
-
 from connection_db import MongoDBConnection
 from pymongo.errors import OperationFailure, ServerSelectionTimeoutError
+import logging
 
 from api_nyt import NYTConnector
 import configparser
 from config import api_nyt_path
 import ScrapperAppleBooks as sc
 
-# List from which books are retrieved 
+# Lists from which books are retrieved 
 non_fiction_book_lists = [
     {
         'list_name': 'paperback-nonfiction',
@@ -17,14 +15,34 @@ non_fiction_book_lists = [
         'end_date': '2011-02-13'
     },
     {
-        'list_name': 'hardcover-nonfiction',
-        'start_date': '2008-06-08',
-        'end_date': '2011-02-13'
+        'list_name': 'combined-print-and-e-book-nonfiction',
+        'start_date': '2011-02-20',
+        'end_date': '2011-06-20'
     },
     {
         'list_name': 'hardcover-political-books',
-        'start_date': '2012-07-01', # combler le trou entre la précédente et celle-ci
-        'end_date': '2017-01-01'
+        'start_date': '2011-07-01',
+        'end_date': '2011-11-01' # error avec 2011-12-01
+    },
+    {
+       'list_name': 'hardcover-political-books',
+        'start_date': '2012-01-01',
+        'end_date': '2012-03-01' 
+    },
+    {
+        'list_name': 'combined-print-and-e-book-nonfiction',
+        'start_date': '2012-04-01',
+        'end_date': '2012-06-20'
+    },
+    {
+        'list_name': 'hardcover-political-books',
+        'start_date': '2012-07-01',
+        'end_date': '2015-07-01' #error avec 2015-08-01
+    },
+    {
+        'list_name': 'hardcover-political-books',
+        'start_date': '2015-09-01', 
+        'end_date': '2016-12-01' 
     },
     {
         'list_name': 'combined-print-and-e-book-nonfiction',
@@ -33,7 +51,7 @@ non_fiction_book_lists = [
     }
 ]
 
-# add get_abstract function
+
 class Injector_books(NYTConnector):
 
     def __init__(self):
@@ -51,6 +69,7 @@ class Injector_books(NYTConnector):
         cfg.read(api_nyt_path)
         self.API_KEY = cfg.get('KEYS', 'key_nyt_news')
 
+# ajuster api_nyt pour pouvoir retirer cette fonction
     def add_bestsellers_to_list(self, response, books, unique_titles):
             # Save the number of books of the entire list
             num_books = response['num_results']
@@ -82,9 +101,9 @@ class Injector_books(NYTConnector):
             return books, unique_titles
     
     def add_bestsellers_to_db(self, response):
-
         # List of the 20 first NYT bestselling books of the list requested
         books_list = response['results']['books']
+        scraper = sc.AppleBooksScraper()
 
         try:
             for book in books_list:
@@ -97,7 +116,16 @@ class Injector_books(NYTConnector):
                     for link in buy_links:
                         if link.get('name') == 'Apple Books':
                             applebooks_url = link.get('url')
-                            break  # Exit the loop once the Apple Books link is found
+                            try:
+                                scraper.open_apple_books_link(applebooks_url)
+                                book_name, author_name, genre_name, summary_text = scraper.extract_book_information()
+                                book['genre'] = genre_name
+                                book['abstract'] = summary_text
+                            except Exception as e:
+                                logging.error(f"Error extracting information from Apple Books: {e}")
+                                book['genre'] = None
+                                book['abstract'] = None
+                            break  # Exit the loop 
 
                     # Create a new book entry
                     new_book = {
@@ -105,20 +133,21 @@ class Injector_books(NYTConnector):
                         "author": book["author"],
                         "publisher": book["publisher"],
                         "book_uri": book["book_uri"],
-                        "buy_links": applebooks_url
+                        "buy_links": applebooks_url,
+                        "genre": book['genre'],
+                        "abstract": book['abstract']
                     }
 
                     # Insert the new book into the database
                     self.db['book'].insert_one(new_book)
+                    logging.info(f"Book added to database: {new_book['title']} by {new_book['author']}")
 
         except Exception as e:
-            print(f"Error adding books to database: {e}")
-            return {'status': 'error', 'message': str(e)}
-
+            logging.error(f"Error adding books to database: {e}")
+            return {'status': 'error', 'message': str(e)} 
 
 injector = Injector_books()
 
-# go through the book lists, make requests and populate the database books
 for idx, list in enumerate(non_fiction_book_lists):
  list_name = list['list_name']
  start_date = list['start_date']
