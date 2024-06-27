@@ -12,19 +12,19 @@ class MongoDBConnector:
     """
     Cette classe gère la connexion et les opérations sur la bdd MongoDB.
     """
-    def __init__(self, uri: str, db_name: str, collection_name: str, user: str, pwd: str, source: str):
+    def __init__(self, db_name: str, collection_name: str, user: str, pwd: str, source: str):
 
 
         try:
             # Attempt to connect to MongoDB within a container environment
-            self.client = MongoClient(host='localhost',
+            self.client = MongoClient(host='mongodb',
                                       port=27017,
                                       username=user,
                                       password=pwd,
                                       authSource=source)
         except ServerSelectionTimeoutError:
             # Handle the case where the connection times out if we try to connect outside the container
-            self.client = MongoClient(host='mongodb',
+            self.client = MongoClient(host='localhost',
                                       port=27017,
                                       username=user,
                                       password=pwd,

@@ -47,8 +47,7 @@ def main():
     authsource_db = os.getenv('MONGO_INITDB_DATABASE')
 
     # Configurer la connexion à MongoDB
-    mongo_connector = MongoDBConnector('localhost',
-                                       'nyt_news',
+    mongo_connector = MongoDBConnector('nyt_news',
                                        'usa_election_articles',
                                        username_db,
                                        password_db,
