@@ -15,7 +15,6 @@ from pymongo.errors import OperationFailure, ServerSelectionTimeoutError
 
 from predict_polarity import Polarity
 from connection_db import MongoDBConnection
-
 import books_to_article_similarity
 
 load_dotenv(find_dotenv())
@@ -180,7 +179,7 @@ def get_polarity(article: Article, current_user: str = Depends(get_current_user)
 @app.post("/books")
 def get_books_to_article(article: Article, current_user: str = Depends(get_current_user)):
     abstract = article.abstract
-    res = books_to_article_similarity.get_top_3_books_to_article(abstract
+    res = books_to_article_similarity.get_top_3_books_to_article(abstract)
     return {"response": res}
 
 
