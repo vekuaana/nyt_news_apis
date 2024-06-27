@@ -166,98 +166,115 @@ class NYTConnector:
 
         return response
 
-    def request_bestsellers(self, list_name, start_date, end_date):
+    def request_bestsellers(self, list_name, start_date, end_date, add_bestsellers_to_list, add_bestsellers_to_db):
+
         """
         This function retrieves the unique bestsellers books of the NYT of a specific list over a specified period and
-        save it in a JSON file.
+        saves it in a JSON file.
 
-        Args :
-            list_name : The name of the list to be fetch.
-            start_date : The starting date for the retrieval of books.
-            end_date : The end date for the retrieval of books.
+        Args:
+            list_name: The name of the list to be fetched.
+            start_date: The starting date for the retrieval of books.
+            end_date: The end date for the retrieval of books.
 
-        Retruns:
-            A list of the published dates the loop when through.
+        Returns:
+            A list of the published dates the loop went through.
             A list of NYT best sellers from the starting date until the end date.
-
         """
-        date_format = '%Y-%m-%d'
-        end_date_obj = datetime.strptime(end_date, date_format)
-        next_published_date = start_date  # Inital date to start fetching the books.
-        next_published_date_obj = datetime.strptime(start_date, date_format)  # Inital date to start fetching the books.
+        
+        def get_books_list(date_str, params, list_name, BASE_URL_BOOKS = BASE_URL_BOOKS):
+            url = f"{BASE_URL_BOOKS}/lists/{date_str}/{list_name}.json"
+            response = requests.get(url, params=params)
+            time.sleep(12)
+            if response.status_code == 200:
+                return response.json()
+            else:
+                print(response.status_code)
+                return None
+        
+
+        next_published_date = start_date
+        next_published_date_obj = datetime.strptime(start_date, '%Y-%m-%d')
+        end_date_obj = datetime.strptime(end_date, '%Y-%m-%d')
 
         unique_titles = []  # List of unique book titles
-        published_dates = []  # List of the published date the loop went through.
+        published_dates = []  # List of the published dates the loop went through.
         books = []  # List to store books
+        total_request_count = 0 # allowed to make max 500 per day
 
         while next_published_date_obj <= end_date_obj:
 
-            # Build the endpoint URL for fetching the book list.
-            url = f"{BASE_URL_BOOKS}/lists/{next_published_date}/{list_name}.json"
-
-            counter_request = 1  # Initial number of requests.
-            total_request_iteration = 1  # Initial number of requests iterations of the same list
-            offset = 0  # Start reading the book list from the first book in the list
+            counter_request = 1
+            total_request_iteration = 1
+            offset = 0
 
             while counter_request <= total_request_iteration:
 
-                # Set request parameters
                 params = {"api-key": self.API_KEY, "offset": str(offset)}
+                response = None
 
-                # Send the HTTP GET request and get the JSON response
-                response = requests.get(url, params=params).json()
+                try:
+                    response = get_books_list(date_str=next_published_date, params=params, list_name=list_name)
+                    if not response:
+                        raise ValueError("No data available for this date")
+                    
+                except Exception as e:
+                    num_try = 0
+                    max_attempts = 5
+                    print(f'There are no lists available for {next_published_date}. Trying for the next {max_attempts} weeks.')
 
-                # Save the number of books of the entire liste
-                num_books = response['num_results']
+                    while num_try < max_attempts and not response:
+                        print(f'Week {next_published_date} was skipped. No list available')
+                        next_published_date_obj += timedelta(days=7)
+                        next_published_date = next_published_date_obj.strftime('%Y-%m-%d')
+                        response = get_books_list(next_published_date, params=params, list_name=list_name)
+                    
+                        num_try += 1
+                    
+                    if response:
+                            next_published_date = response['results']['published_date']
+                            print(f'There is a list available for {next_published_date}')
+                            break
 
-                # List of the 20th first NYT bestselling books of the list requested.
-                books_list = response['results']['books']
+                    if num_try == max_attempts:
+                        print(f'Maximum attempts reached.')
+                        output_file_name = f"bestsellers_{list_name}_from_{published_dates[0]}_to_{published_dates[-1]}.json"
+                        with open(output_file_name, 'w', encoding='utf-8') as f:
+                            json.dump(books, f, ensure_ascii=False, indent=4)
+                        return published_dates, books, unique_titles
+    
+                if response:
+                    # Save the number of books of the entire list
+                    num_books = response['num_results']
+                    total_request_iteration = math.ceil(num_books / 20)
+                    books, unique_titles = add_bestsellers_to_list(response, books, unique_titles)
+                    add_bestsellers_to_db(response)
+                    total_request_count += 1
+                
+                if total_request_count >= 485:
+                    time.sleep(8700) # wait 24h if the number of request exceed 485
+                    print(f"stopped at {published_dates[-1]}")
+                    print("pause for 24h")
+                    total_request_count = 0
 
-                for book in books_list:
+                counter_request += 1
+                offset += 20
 
-                    title = book["title"]
 
-                    # if the title is not in the list of unique title, add the book to the books list
-                    if title not in unique_titles:
-                        applebooks_url = None  # Handle the case when no apple links are provided
-                        buy_links = book.get('buy_links', [])  # Get the 'buy_links' list or an empty list if not present
-                        for link in buy_links:
-                            if link.get('name') == 'Apple Books':
-                                applebooks_url = link.get('url')
+            if response : 
+                published_dates.append(response['results']['published_date'])
+                next_published_date = response['results']['next_published_date']  # Update the publication date for the next iteration
+                next_published_date_obj = datetime.strptime(next_published_date, '%Y-%m-%d')
 
-                        new_book = {
-                            "title": book["title"],
-                            "author": book["author"],
-                            "publisher": book["publisher"],
-                            "book_uri": book["book_uri"],
-                            "buy_links": applebooks_url
-                        }
-
-                        books.append(new_book)
-                        unique_titles.append(title)
-
-                total_request_iteration = math.ceil(num_books / 20)  # The total number of request calls needed
-                counter_request += 1  # Increase the request counter
-                offset += 20  # Add 20 to the offset to query the next 20 books
-
-                # According to NYT FAQ, sleep 12 seconds between requests to avoid rate limits
-                time.sleep(12)
-
-            next_published_date = response['results']['next_published_date']  # Get the publication date of the next list
-            if next_published_date:
-                published_dates.append(next_published_date)
-
-            next_published_date_obj = datetime.strptime(next_published_date, date_format)
 
         # If books were retrieved, save the list to the output file
-        last_published_date = published_dates[-2]
-        output_file_name = f"bestsellers_{list_name}_from_{start_date}_to_{last_published_date}.json"
+        #last_published_date = published_dates[-1] if published_dates else end_date
+        output_file_name = f"bestsellers_{list_name}_from_{published_dates[0]}_to_{published_dates[-1]}_{total_request_count}.json"
 
-        if books:
-            with open(output_file_name, 'w', encoding='utf-8') as f:
+        with open(output_file_name, 'w', encoding='utf-8') as f:
                 json.dump(books, f, ensure_ascii=False, indent=4)
 
-        return published_dates, books
+        return published_dates, books, unique_titles
     
     def add_books_genre_and_abstract(self, books_list):
         """

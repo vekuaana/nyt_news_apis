@@ -16,7 +16,7 @@ Modifier le fichier  **.env.example** avec les informations d'authentification. 
 ```
 Lancer la commande suivante :
 ```console
-docker-compose up -d
+docker compose up -d
 ```
 ## Objectifs
 Réalisation d'une API qui offre une perspective dynamique sur les élections américaines.

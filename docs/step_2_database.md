@@ -26,7 +26,7 @@ L'architecture est composée de 4 collections de données hébergées sur MongoD
 * La collection Election reprenant les informations liées aux différentes élections américaines.
 * La collection Polarity_dataset contient les données pour l'entrainement du modèle de ML pour l'analyse de sentiment
   
-<img width="1000" alt="Screenshot 2024-05-15 at 11 55 47" src=https://github.com/Linenlp/nyt_news/assets/40054464/872173d0-e6dd-4cae-b205-5c03d346418a>
+<img width="1000" alt="Screenshot 2024-05-15 at 11 55 47" src=https://github.com/Linenlp/nyt_news/assets/40054464/421ae158-4f2e-4644-b410-77d2470c5765>
 
 ## API NYT : Liste des clés à extraire
 ### Books API
