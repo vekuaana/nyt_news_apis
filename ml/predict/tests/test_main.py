@@ -77,7 +77,7 @@ def test_get_polarity(token):
         'recommended_book': None,
         'election_id': 44,
         'lead_paragraph': None}
-
+    print(token)
     request_body = json.dumps(data)
     res = requests.post(base_url + 'polarity', data=request_body, headers={"Authorization": "Bearer " + token})
     print(res)
