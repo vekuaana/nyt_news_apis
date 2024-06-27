@@ -54,6 +54,7 @@ build:
     - echo TOKEN=$TOKEN >> .env
     - echo HASH_PASSWORD=$HASH_PASSWORD >> .env
     - ls -a
+    - cat .env
     - echo "$CI_PROJECT_DIR"
 
 
