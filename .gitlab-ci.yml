@@ -50,7 +50,7 @@ build:
     - echo NYT_API_KEY=$NYT_API_KEY >> .env
     - echo SECRET_KEY=$SECRET_KEY >> .env
     - echo ALGORITHM=$ALGORITHM >> .env
-    - echo ACCESS_TOKEN_EXPIRATION=$ACCESS_TOKEN_EXPIRATION >> .env
+    - echo "ACCESS_TOKEN_EXPIRATION='$ACCESS_TOKEN_EXPIRATION'" >> .env
     - echo TOKEN=$TOKEN >> .env
     - echo "HASH_PASSWORD='$HASH_PASSWORD'" >> .env
     - ls -a

@@ -15,7 +15,8 @@ from pymongo.errors import OperationFailure, ServerSelectionTimeoutError
 
 from predict_polarity import Polarity
 from connection_db import MongoDBConnection
-from books_to_article_similarity import get_books, get_top_3_books_to_article
+
+import books_to_article_similarity
 
 load_dotenv(find_dotenv())
 
@@ -80,12 +81,6 @@ def get_model():
     global aa
     model = Polarity(model_name="flan_seq2seq_model")
     aa = AuthAPI()
-
-
-# @app.on_event("startup")
-# def get_books_coll():
-#     global book
-#     book = get_books()
 
 
 class Article(BaseModel):
@@ -184,9 +179,8 @@ def get_polarity(article: Article, current_user: str = Depends(get_current_user)
 
 @app.post("/books")
 def get_books_to_article(article: Article, current_user: str = Depends(get_current_user)):
-    book = get_books()
     abstract = article.abstract
-    res = get_top_3_books_to_article(abstract, book)
+    res = books_to_article_similarity.get_top_3_books_to_article(abstract
     return {"response": res}
 
 
