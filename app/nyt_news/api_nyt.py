@@ -7,11 +7,12 @@ import json
 import math
 import datetime
 import os
-from datetime import datetime
 import re
 import logging.config
 import yaml
 from dotenv import load_dotenv, find_dotenv
+from datetime import datetime, timedelta
+import logging
 
 from config import PACKAGE_ROOT
 import ScrapperAppleBooks as sc
@@ -181,17 +182,18 @@ class NYTConnector:
             A list of the published dates the loop went through.
             A list of NYT best sellers from the starting date until the end date.
         """
-        
-        def get_books_list(date_str, params, list_name, BASE_URL_BOOKS = BASE_URL_BOOKS):
+
+        def get_books_list(date_str, params, list_name, BASE_URL_BOOKS=BASE_URL_BOOKS):
             url = f"{BASE_URL_BOOKS}/lists/{date_str}/{list_name}.json"
             response = requests.get(url, params=params)
             time.sleep(12)
             if response.status_code == 200:
-                return response.json()
+                    logging.info("Request successful")
+                    return response.json()
+            elif response.status_code == 429:
+                    raise RateLimitExceededError("Rate limit reached.")
             else:
-                print(response.status_code)
-                return None
-        
+                    raise requests.HTTPError(response.status_code)
 
         next_published_date = start_date
         next_published_date_obj = datetime.strptime(start_date, '%Y-%m-%d')
@@ -200,7 +202,6 @@ class NYTConnector:
         unique_titles = []  # List of unique book titles
         published_dates = []  # List of the published dates the loop went through.
         books = []  # List to store books
-        total_request_count = 0 # allowed to make max 500 per day
 
         while next_published_date_obj <= end_date_obj:
 
@@ -215,29 +216,34 @@ class NYTConnector:
 
                 try:
                     response = get_books_list(date_str=next_published_date, params=params, list_name=list_name)
-                    if not response:
-                        raise ValueError("No data available for this date")
-                    
-                except Exception as e:
+
+                except RateLimitExceededError as e:
+                    logging.warning(f"Rate limit reached. Raising RateLimitExceededError. Please wait 24 hours. Last used date :{next_published_date} ")
+                    time.sleep(86400)  # Sleep for 24 hours before retrying
+                    try : 
+                        response = get_books_list(date_str=next_published_date, params=params, list_name=list_name)
+                    except Exception as e: 
+                        pass
+
+                except requests.HTTPError as e:
                     num_try = 0
                     max_attempts = 5
-                    print(f'There are no lists available for {next_published_date}. Trying for the next {max_attempts} weeks.')
+                    logging.error(f"HTTP error occurred. There are no lists available for {next_published_date}. Trying for the next {max_attempts} weeks.")
 
                     while num_try < max_attempts and not response:
-                        print(f'Week {next_published_date} was skipped. No list available')
+                        logging.error(f'Week {next_published_date} was skipped. No list available')
                         next_published_date_obj += timedelta(days=7)
                         next_published_date = next_published_date_obj.strftime('%Y-%m-%d')
                         response = get_books_list(next_published_date, params=params, list_name=list_name)
-                    
                         num_try += 1
                     
                     if response:
                             next_published_date = response['results']['published_date']
-                            print(f'There is a list available for {next_published_date}')
+                            logging.info(f'There is a list available for {next_published_date}')
                             break
 
                     if num_try == max_attempts:
-                        print(f'Maximum attempts reached.')
+                        logging.error('Maximum attempts reached.')
                         output_file_name = f"bestsellers_{list_name}_from_{published_dates[0]}_to_{published_dates[-1]}.json"
                         with open(output_file_name, 'w', encoding='utf-8') as f:
                             json.dump(books, f, ensure_ascii=False, indent=4)
@@ -249,73 +255,45 @@ class NYTConnector:
                     total_request_iteration = math.ceil(num_books / 20)
                     books, unique_titles = add_bestsellers_to_list(response, books, unique_titles)
                     add_bestsellers_to_db(response)
-                    total_request_count += 1
+                    logging.info(f"List from week {next_published_date} added")
                 
-                if total_request_count >= 485:
-                    time.sleep(8700) # wait 24h if the number of request exceed 485
-                    print(f"stopped at {published_dates[-1]}")
-                    print("pause for 24h")
-                    total_request_count = 0
-
                 counter_request += 1
                 offset += 20
-
 
             if response : 
                 published_dates.append(response['results']['published_date'])
                 next_published_date = response['results']['next_published_date']  # Update the publication date for the next iteration
-                next_published_date_obj = datetime.strptime(next_published_date, '%Y-%m-%d')
-
+                try:
+                    next_published_date_obj = datetime.strptime(next_published_date, '%Y-%m-%d')
+                except Exception as e:
+                     next_published_date_obj += timedelta(days=7)
+                     next_published_date = next_published_date_obj.strftime('%Y-%m-%d') # handle cas when next_published_date is not of format '%Y-%m-%d'
 
         # If books were retrieved, save the list to the output file
         #last_published_date = published_dates[-1] if published_dates else end_date
-        output_file_name = f"bestsellers_{list_name}_from_{published_dates[0]}_to_{published_dates[-1]}_{total_request_count}.json"
+        output_file_name = f"bestsellers_{list_name}_from_{published_dates[0]}_to_{published_dates[-1]}.json"
 
         with open(output_file_name, 'w', encoding='utf-8') as f:
                 json.dump(books, f, ensure_ascii=False, indent=4)
 
         return published_dates, books, unique_titles
-    
-    def add_books_genre_and_abstract(self, books_list):
-        """
-        This function adds the book's abstract and the books's genre to the books list by scraping data from AppleBook.
-        
-        Args: 
-        - books_list: a list of books. Each book must contain their AppleBook url. 
-        
-        Return: 
-        - A list of books with their genre and abstract. 
-        """
-        scraper = sc.AppleBooksScraper()
-        book_count = 0
-
-        for book in books_list:
-            url = book['buy_links']
-            scraper.open_apple_books_link(url)
-            book_name, author_name, genre_name, summary_text = scraper.extract_book_information()
-            book['genre'] = genre_name
-            book['abstract'] = summary_text
-            book_count += 1
-        
-        output_file_name = f"bestsellers_with_abstract_and_genre_{book_count}"
-        with open(output_file_name, 'w', encoding='utf-8') as f:
-                json.dump(books_list, f, ensure_ascii=False, indent=4)
-
-        return books_list
 
 
 if __name__ == "__main__":
     nyt_c = NYTConnector()
     res = nyt_c.request_times_newswire('all', 'u.s.')
-    # nyt_c.request_weelkly_nonfiction_bestsellers_books('05', '08', '2020')
-    # nyt_c.request_most_popular(30)
-    # nyt_c.request_by_keyword('Presidential Election of 2024', 'data_us_election', '20240508', '20240512')
-    # nyt_c.request_bestsellers_list()
 
-    # file_paths = "data/merged_nonfiction_bestsellers.json"
-    # with open(file_paths, 'r') as file:
-    #         data = json.load(file)
-    #
-    # new_list = nyt_c.add_books_genre_and_abstract(data)
+
+class RateLimitExceededError(Exception):
+    """Exception raised when the rate limit is exceeded."""
+    pass
+
+
+class HTTPError(Exception):
+    """Exception raised for general HTTP errors."""
+    def __init__(self, status_code, message="HTTP request failed"):
+        self.status_code = status_code
+        self.message = message
+        super().__init__(f"{message}: Status code {status_code}")
 
 

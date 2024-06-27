@@ -119,7 +119,6 @@ def update_charts(selected_candidate):
         filtered_df_dict = requests.get(base_url + 'candidates/' + selected_candidate)
         json_candidate = filtered_df_dict.json()
         filtered_df = pd.DataFrame(json_candidate)
-        # filtered_df = data[data['main_candidate'] == selected_candidate]
 
     pie_colors = px.colors.qualitative.Plotly
 
@@ -139,12 +138,11 @@ def update_charts(selected_candidate):
     Input('interval-component', 'n_intervals')
 )
 def update_data(n):
-    # Fetch data from FastAPI endpoint
+    # Fetch data from consumer FastAPI endpoint
     response = requests.get('http://localhost:8000/last_published_article')
     if response.status_code ==200:
         data = response.json()['response']
 
-        # Prepare data for display (example assuming data is list of dicts)
         if len(data['main_candidate']) == 1:
             data_display = [
                 html.Span("Titre : "+  str(data['headline'])),
