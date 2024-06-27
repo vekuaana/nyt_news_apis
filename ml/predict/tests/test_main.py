@@ -12,14 +12,14 @@ def test_conn():
         # Attempt to connect to MongoDB within a container environment
         db = MongoDBConnection('mongodb').conn_db
         res = db['users'].find_one({'user': os.getenv('USER1')})
-        assert res == 'user1'
+        assert res['password'] == os.getenv('HASH_PASSWORD')
     except (ServerSelectionTimeoutError, TypeError):
         # Handle the case where the connection times out if we try to connect outside the container
         print("Try to connect outside the container with localhost")
         try:
             db = MongoDBConnection('localhost').conn_db
             res = db['users'].find_one({'user': os.getenv('USER1')})
-            assert res == 'user1'
+            assert res['password'] == os.getenv('HASH_PASSWORD')
         except ServerSelectionTimeoutError as sste:
             print("Unable to connect to database. Make sure the tunnel is still active.")
     except OperationFailure as of:
