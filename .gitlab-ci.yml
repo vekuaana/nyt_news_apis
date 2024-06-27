@@ -93,6 +93,6 @@ test:
 deploy:
   stage: deploy
   script:
-    - docker compose up -d
+    - docker-compose up -d
   only:
     - main
