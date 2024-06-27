@@ -132,8 +132,8 @@ class ETL(NYTConnector):
                 raise DataError(f"Something went wrong in Article : {res_books.json()}")
 
             list_json.append(data.to_dict())
-            logger.info("-------------------example---------------")
-            logger.info(data)
+            logger.debug("-------------------example---------------")
+            logger.debug(data)
 
         return list_json
     

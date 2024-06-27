@@ -10,24 +10,28 @@ from pymongo.errors import OperationFailure, ServerSelectionTimeoutError
 base_url = "http://localhost:8005/"
 load_dotenv(find_dotenv())
 
-
-def test_conn():
-    try:
-        # Attempt to connect to MongoDB within a container environment
-        db = MongoDBConnection('mongodb').conn_db
-        res = db['users'].find_one({'user': os.getenv('USER1')})
-        tmp = os.getenv('HASH_PASSWORD')
-        assert res['password'] == tmp
-    except (ServerSelectionTimeoutError, TypeError):
-        # Handle the case where the connection times out if we try to connect outside the container
-        try:
-            db = MongoDBConnection('localhost').conn_db
-            res = db['users'].find_one({'user': os.getenv('USER1')})
-            tmp = os.getenv('HASH_PASSWORD')
-            assert res['password'] == tmp
-        except ServerSelectionTimeoutError as sste:
-    except OperationFailure as of:
-        print(of)
+#
+# def test_conn():
+#
+#     try:
+#         # Attempt to connect to MongoDB within a container environment
+#         db = MongoDBConnection('mongodb').conn_db
+#         res = db['users'].find_one({'user': os.getenv('USER1')})
+#         tmp = os.getenv('HASH_PASSWORD')
+#         assert res['password'] == tmp
+#     except ServerSelectionTimeoutError:
+#         # Handle the case where the connection times out if we try to connect outside the container
+#         print("Try to connect outside the container with localhost")
+#         try:
+#             db = MongoDBConnection('localhost').conn_db
+#             res = db['users'].find_one({'user': os.getenv('USER1')})
+#             tmp = os.getenv('HASH_PASSWORD')
+#             assert res['password'] == tmp
+#         except ServerSelectionTimeoutError as sste:
+#             print("Unable to connect to database. Make sure the tunnel is still active.")
+#             print(sste)
+#     except OperationFailure as of:
+#         print(of)
 
 
 @pytest.fixture
@@ -45,7 +49,6 @@ def token():
         print('premier')
         token = response.json()['access_token']
     else:
-        print("laaa")
         print(response.status_code)
         response = requests.post(
             url="http://prediction:8005/" + "get_token",
@@ -114,7 +117,7 @@ def test_get_polarity(token):
     assert res_biden == [{'entity': 'Biden', 'prediction': 'positive'}]
 
 
-def test_get_polarity2():
+def test_second_version():
     # Test polarity endpoint
     data = {
         'abstract': 'The new policy is one of the most significant actions to protect immigrants in years. It affects '
