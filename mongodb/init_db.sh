@@ -19,7 +19,7 @@ db.createCollection('usa_election_articles');
 db.createCollection('book');
 db.createCollection('polarity_dataset');
 db.createCollection('users');
-db.users.insertOne({'user' : '$USER1','password': '$HASH_PASSWORD1'});
+db.users.insertOne({'user' : '$USER1','password': '$HASH_PASSWORD'});
 EOF
 mongoimport -d $MONGO_INITDB_DATABASE -c election --authenticationDatabase $MONGO_INITDB_DATABASE --username $USER1 --password $PASSWORD1 --type json --file data/db/data/election.json --jsonArray
 mongoimport -d $MONGO_INITDB_DATABASE -c polarity_dataset --type csv --authenticationDatabase $MONGO_INITDB_DATABASE --username $USER1 --password $PASSWORD1 --file data/db/data/merge_SEN.csv --headerline
