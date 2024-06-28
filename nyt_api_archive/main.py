@@ -94,7 +94,9 @@ def main():
                         election_id = election['election_id']
                         main_candidate = []
                         for entity in [x["name"].split()[-1] for x in election['candidate']]:
-                            if re.search(r'(^' + entity + r'|\s+' + entity + r'(\s|-|[’\']s)|' + entity + '$)', article_data["headline"]):
+                            search_entity = re.compile(
+                                r'(^(' + entity + r'|' + entity.upper() + r')|\s+(' + entity + r'|' + entity.upper() + r')(\s+|,|-|[’\']s)|(' + entity + r'|' + entity.upper() + r')\.?$)')
+                            if search_entity.search(article_data["headline"]):
                                 main_candidate.append(entity)
                         article_data['main_candidate'] = main_candidate
                         article_data['election_id'] = election_id

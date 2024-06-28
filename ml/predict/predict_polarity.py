@@ -125,13 +125,15 @@ class Polarity:
         res = []
 
         for entity in entities:
+            search_entity = re.compile(
+                r'(^(' + entity + r'|' + entity.upper() + r')|\s+(' + entity + r'|' + entity.upper() + r')(\s+|,|-|[’\']s)|(' + entity + r'|' + entity.upper() + r')\.?$)')
             pred = None
-            if re.search(r'(^' + entity + r'|\s+' + entity + r'(\s|-|[’\']s)|' + entity + '$)', text):
+            if search_entity.search(text):
                 formatted_text = re.sub('/ENTITY/', entity, text)
                 pred = self.model(formatted_text)[0]['generated_text']
                 if verbose:
-                    logger.info("Entity :", entity)
-                    logger.info("Prediction :", pred)
+                    logger.info("Entity :" + entity)
+                    logger.info("Prediction :" + str(pred))
 
             res.append({'entity': entity, 'prediction': pred})
         return res

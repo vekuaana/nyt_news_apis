@@ -221,7 +221,7 @@ services:
       build:
         context: ./nyt_api_archive
         dockerfile: Dockerfile
-      profiles: [build]
+#      profiles: [build]
       env_file:
         - .env
 #      image: registry.gitlab.com/nyt_news4/nyt_news/prediction:latest
