@@ -16,8 +16,11 @@ Modifier le fichier  **.env.example** avec les informations d'authentification. 
 ```
 Lancer la commande suivante :
 ```console
-docker compose up -d
+docker-compose --profile build up -d
 ```
+
+Note : s'il n'est pas nécessaire de retrain le modèle polarity, la mise à jour de l'app peut se faire avec la commande "docker-compose up -d" en ignorant le profile "build"
+
 ## Objectifs
 Réalisation d'une API qui offre une perspective dynamique sur les élections américaines.
 Dans un paysage politique en perpétuelle évolution, nous souhaitons mettre en évidence l'importance de rester informé et de comprendre les nuances des médias.
