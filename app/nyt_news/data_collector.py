@@ -97,7 +97,9 @@ class ETL(NYTConnector):
             # main_candidate = [x for x in entities if x in [x.split(',')[0] for x in doc['per_facet']]]
             main_candidate = []
             for entity in entities:
-                if re.search(r'(^' + entity + r'|\s+' + entity + r'(\s|-|[’\']s)|' + entity + '$)', doc["title"]):
+                search_entity = re.compile(
+                    r'(^(' + entity + r'|' + entity.upper() + r')|\s+(' + entity + r'|' + entity.upper() + r')(\s+|,|-|[’\']s)|(' + entity + r'|' + entity.upper() + r')\.?$)')
+                if search_entity.search(doc["title"]):
                     main_candidate.append(entity)
             if isinstance(doc['byline'], str):
                 doc['byline'] = [doc['byline']]

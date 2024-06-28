@@ -1,7 +1,10 @@
 import uvicorn
 import logging
+
+import pandas as pd
 from json import loads
 from typing import Optional
+import numpy as np
 
 from kafka import KafkaConsumer, KafkaAdminClient
 from kafka.errors import NoBrokersAvailable
@@ -11,10 +14,10 @@ from fastapi.templating import Jinja2Templates
 from fastapi.requests import Request
 from fastapi.responses import JSONResponse
 
-import numpy as np
 from pymongo.errors import OperationFailure, ServerSelectionTimeoutError
+
 from connection_db import MongoDBConnection
-import pandas as pd
+
 
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(name)s : %(module)s - %(levelname)s - %(message)s')
 logger = logging.getLogger(__name__)
@@ -79,7 +82,9 @@ class Consumer:
         self.consumer.close()
 
 
-@app.get("/last_published_article", name="Last published article")
+@app.get("articles/last_published_article",
+         name="Last published article",
+         tags=['articles'])
 def last_published_article(request: Request):
     nyt_data = consumer.consume_data()
     return {'response': nyt_data}
@@ -94,11 +99,29 @@ def health_check():
 
 
 data = None
+data_books_on_candidates = None
+data_books = None
+
+
+def get_top_books(data_books):
+    data_books = data_books[data_books['recommended_book'] != '']
+    data_books = data_books.explode('recommended_book').fillna(np.nan)
+    data_books = data_books.dropna(axis=0, subset=['recommended_book'])
+    data_books['type_book'] = [str(type(x)) for x in data_books['recommended_book']]
+    data_books['type_book'].value_counts()
+    data_books = data_books[data_books['type_book'] == "<class 'dict'>"]
+    data_books['Title'] = [x['title'] for x in data_books['recommended_book']]
+    data_books['Author'] = [x['author'] for x in data_books['recommended_book']]
+    data_books['Publisher'] = [x['publisher'] for x in data_books['recommended_book']]
+
+    return data_books
 
 
 @app.on_event("startup")
 def get_data():
     global data
+    global data_books
+    global data_books_on_candidates
     try:
         # Attempt to connect to MongoDB within a container environment
         print("Try to log with mongodb container")
@@ -112,36 +135,53 @@ def get_data():
         print(of)
 
     collection = db["usa_election_articles"]
-    data = pd.DataFrame(list(collection.find({})))
-    data['year'] = [int(str(x)[:4]) for x in data['pub_date']]
-    data = data.explode('main_candidate').fillna('')
+    df = pd.DataFrame(list(collection.find({})))
+    del df['_id']
+    df['year'] = [int(str(x)[:4]) for x in df['pub_date']]
+
+    data = df.explode('main_candidate').fillna('')
     data['cleaned_polarity'] = [[d['prediction'] for d in x if d["entity"] == y] for x, y in
                                 list(zip(data['polarity'], data['main_candidate']))]
     data['cleaned_polarity'] = [x[0] if x and isinstance(x, list) else np.nan if x == [] else x for x in
                                 data['cleaned_polarity']]
-    del data['_id']
     data = data.dropna(axis=0, subset=['cleaned_polarity'])
 
+    data_books = get_top_books(df)
+    data_books_on_candidates = get_top_books(data)
 
-@app.get("/top_candidate_positive_raw",
+
+@app.get("/polarity/top_candidate_positive_raw",
          summary="Positive top 5",
-         description="Top 5 candidates with the most positive reviews"
+         description="Top 5 candidates with the most positive reviews",
+         tags=['polarity']
          )
 def top_candidate_positive_raw():
     filtered_df = data[data['cleaned_polarity'] == 'positive']
     grouped_df = filtered_df.groupby('main_candidate').size()
-
-    # Step 3: Sort by count in descending order
     sorted_df = grouped_df.sort_values(ascending=False)
 
-    # Display the result
     res = sorted_df.head(5).to_dict()
     return {"response": res}
 
 
-@app.get("/top_candidate_positive_proportion",
+@app.get("/polarity/top_candidate_negative_raw",
+         summary="Negative top 5",
+         description="Top 5 candidates with the most negative reviews",
+         tags=['polarity']
+         )
+def top_candidate_negative_raw():
+    filtered_df = data[data['cleaned_polarity'] == 'negative']
+    grouped_df = filtered_df.groupby('main_candidate').size()
+    sorted_df = grouped_df.sort_values(ascending=False)
+
+    res = sorted_df.head(5).to_dict()
+    return {"response": res}
+
+
+@app.get("/polarity/top_candidate_positive_proportion",
          summary="Positive top 5 in proportion",
-         description="Top 5 candidates with the most positive reviews"
+         description="Top 5 candidates with the most positive reviews",
+         tags=['polarity']
          )
 def top_candidate_positive_proportion():
     filtered_df = data[data['cleaned_polarity'] == 'positive']
@@ -154,36 +194,87 @@ def top_candidate_positive_proportion():
     return {"response": res}
 
 
-@app.get("/top_candidate",
-         summary="mCandidate most often in the news",
-         description="Candidates who are most often in the news"
+@app.get("/polarity/top_candidate_negative_proportion",
+         summary="Negative top 5 in proportion",
+         description="Top 5 candidates with the most negative reviews",
+         tags=['polarity']
+         )
+def top_candidate_negative_proportion():
+    filtered_df = data[data['cleaned_polarity'] == 'negative']
+    negative_counts = filtered_df.groupby('main_candidate').size()
+    total_counts = data.groupby('main_candidate').size()
+    proportion_df = (negative_counts / total_counts * 100).fillna(0)
+    sorted_proportion_df = proportion_df.sort_values(ascending=False)
+
+    res = sorted_proportion_df.head(5).to_dict()
+    return {"response": res}
+
+
+@app.get("/candidates/top_candidate",
+         summary="Candidate most often in the news",
+         description="Candidates who are most often in the news",
+         tags=['candidates']
          )
 def top_candidate():
     grouped_df = data.groupby('main_candidate').size()
-
-    # Step 3: Sort by count in descending order
     sorted_df = grouped_df.sort_values(ascending=False)
     res = sorted_df.head(5).to_dict()
     return {"response": res}
 
 
-@app.get('/candidates_list')
+@app.get('/candidates/candidates_list',
+         name="List of candidates",
+         summary="Get unique candidates",
+         tags=['candidates'])
 def candidates_list():
     list_candidates = list(data['main_candidate'].unique())
     return {'response': list_candidates}
 
 
-@app.get('/candidates/{candidate}')
+@app.get('/articles/filter/{candidate}',
+         name="Filter articles by candidate",
+         summary="Filter articles by candidate",
+         tags=['articles'])
 def filter_data_by_candidate(candidate):
     filtered_data = data[data['main_candidate'] == candidate]
     filtered_data_dict = filtered_data.to_dict('records')
     return JSONResponse(content=filtered_data_dict)
 
 
-@app.get('/candidates_all')
+@app.get('/articles/all_data',
+         name="Get all articles",
+         summary="Extract all article",
+         description="Extracts all articles from usa election articles collection",
+         tags=['articles'])
 def extract_data():
     df_dict = data.to_dict(orient='records')
     return df_dict
+
+
+@app.get('/books/top_5',
+         name="Top 5 Books",
+         summary="Get top 5 recommended books",
+         description="Returns the top 5 recommended books for all articles",
+         tags=['books'])
+def top_5_books():
+    grouped_df = data_books.groupby(['Title', 'Author', 'Publisher']).size().to_frame('size').reset_index()
+    sorted_df = grouped_df.sort_values(ascending=False, by='size')
+    res = sorted_df.head(5).to_dict('records')
+    del sorted_df['size']
+    return {"response": res}
+
+
+@app.get('/books/top_5/{candidate}',
+         name="Filter books by candidate",
+         summary="Filter books by candidate",
+         tags=['books'])
+def top_5_books_by_candidate(candidate):
+    filtered_data = data_books_on_candidates[data_books_on_candidates['main_candidate'] == candidate]
+    grouped_df = filtered_data.groupby(['Title', 'Author', 'Publisher']).size().to_frame('size').reset_index()
+    sorted_df = grouped_df.sort_values(ascending=False, by='size')
+    del sorted_df['size']
+    res = sorted_df.head(5).to_dict('records')
+    return {"response": res}
 
 
 consumer = Consumer()
